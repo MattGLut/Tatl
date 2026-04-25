@@ -26,9 +26,10 @@ coverage/
 # Build artifacts (precompiled assets)
 /apps/portal/public/assets
 
-# Ignore master.key and any encrypted credentials master keys
-config/master.key
-config/credentials/*.key
+# Ignore master.key and any encrypted credentials master keys (any depth)
+**/config/master.key
+**/config/credentials/*.key
+**/*.key
 
 # Environment files (real values stay out of git)
 .env
