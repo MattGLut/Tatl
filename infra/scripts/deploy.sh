@@ -6,7 +6,9 @@ set -euo pipefail
 APP_ROOT="/opt/tatl"
 PORTAL="${APP_ROOT}/apps/portal"
 
+set -a
 source "${APP_ROOT}/.env.production"
+set +a
 export RAILS_ENV=production
 
 echo "── Pulling latest from develop ──"
@@ -16,7 +18,9 @@ git reset --hard origin/develop
 
 echo "── Installing gems ──"
 cd "$PORTAL"
-bundle install --deployment --without development test --jobs 4 --quiet
+bundle config set --local deployment true
+bundle config set --local without "development test"
+bundle install --jobs 4 --quiet
 
 echo "── Running migrations ──"
 bin/rails db:migrate
