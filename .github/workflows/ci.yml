@@ -45,7 +45,7 @@ jobs:
           bundler-cache: true
 
       - name: importmap audit
-        run: bundle exec importmap audit
+        run: bundle exec ruby bin/importmap audit
 
   lint:
     name: Lint
