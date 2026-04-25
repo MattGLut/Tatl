@@ -148,11 +148,16 @@ Add these in **Settings > Secrets and variables > Actions**:
 
 | Secret | Value |
 |---|---|
-| `STAGING_HOST` | EC2 elastic IP |
+| `STAGING_HOST` | EC2 elastic IP (`3.146.142.26`) |
 | `STAGING_SSH_KEY` | Contents of `~/.ssh/tatl-staging.pem` |
 | `RAILS_MASTER_KEY` | Contents of `apps/portal/config/master.key` |
+| `TATL_DB_HOST` | RDS endpoint hostname |
 | `TATL_DB_PASSWORD` | RDS master password |
-| `SENDGRID_API_KEY` | SendGrid API key (for reference; injected via `.env.production` on EC2) |
+| `SECRET_KEY_BASE` | Output of `bundle exec rails secret` |
+| `SENDGRID_API_KEY` | SendGrid API key |
+| `TATL_MAILER_SENDER` | From address for emails (e.g. `no-reply@yourdomain.com`) |
+
+The deploy workflow writes `/opt/tatl/.env.production` on every deploy from these secrets -- no need to SSH in to manage env vars.
 
 ### CI pipeline
 
@@ -165,13 +170,7 @@ When CI passes on `develop`, `.github/workflows/deploy-staging.yml` SSHs to the 
 ## Email
 
 - **Development:** emails are intercepted by `letter_opener_web` and viewable at <http://localhost:3000/letters>. No real emails are sent.
-- **Staging / Production:** emails are sent via [SendGrid](https://sendgrid.com/) SMTP. Three env vars must be set in `/opt/tatl/.env.production` on the EC2 instance:
-
-| Variable | Description |
-|---|---|
-| `SENDGRID_API_KEY` | SendGrid API key (used as SMTP password) |
-| `APP_HOST` | Public hostname or IP (e.g. `3.146.142.26`) |
-| `TATL_MAILER_SENDER` | From address for emails (e.g. `no-reply@yourdomain.com`) |
+- **Staging / Production:** emails are sent via [SendGrid](https://sendgrid.com/) SMTP. The `SENDGRID_API_KEY` and `TATL_MAILER_SENDER` GitHub Secrets are written to `.env.production` on every deploy automatically (see GitHub Secrets table above).
 
 Devise sends confirmation, password reset, unlock, email change, and password change emails automatically.
 

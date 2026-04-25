@@ -23,8 +23,17 @@ jobs:
           host: ${{ secrets.STAGING_HOST }}
           username: deploy
           key: ${{ secrets.STAGING_SSH_KEY }}
-          script: /opt/tatl/infra/scripts/deploy.sh
           command_timeout: 5m
+          envs: RAILS_MASTER_KEY,TATL_DB_HOST,TATL_DB_PASSWORD,SENDGRID_API_KEY,TATL_MAILER_SENDER,APP_HOST,SECRET_KEY_BASE
+          script: /opt/tatl/infra/scripts/deploy.sh
+        env:
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          TATL_DB_HOST: ${{ secrets.TATL_DB_HOST }}
+          TATL_DB_PASSWORD: ${{ secrets.TATL_DB_PASSWORD }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          TATL_MAILER_SENDER: ${{ secrets.TATL_MAILER_SENDER }}
+          APP_HOST: ${{ secrets.STAGING_HOST }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
 
       - name: Smoke test
         run: |
