@@ -1,0 +1,32 @@
+# Tatl staging - plain HTTP on the elastic IP.
+# When a domain is purchased, replace `:80` with the domain name
+# and Caddy will auto-provision HTTPS via Let's Encrypt.
+#
+# Example future config:
+#   portal.staging.tatl.dev {
+#       reverse_proxy localhost:3000
+#   }
+
+:80 {
+    reverse_proxy localhost:3000
+
+    encode gzip
+
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    handle /up {
+        reverse_proxy localhost:3000
+    }
+
+    log {
+        output file /var/log/caddy/tatl-access.log {
+            roll_size 50MiB
+            roll_keep 5
+        }
+    }
+}

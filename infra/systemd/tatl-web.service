@@ -1,0 +1,20 @@
+[Unit]
+Description=Tatl Portal - Puma web server
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/tatl/apps/portal
+EnvironmentFile=/opt/tatl/.env.production
+ExecStart=/home/deploy/.rbenv/shims/bundle exec puma -C config/puma.rb
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=tatl-web
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -10,10 +10,15 @@ This monorepo is being built in thin slices. Slice 1 is the Rails portal foundat
 
 ```
 apps/
-  portal/        Rails 8 app (this slice)
-infra/           Docker Compose, Caddy, AWS notes (later slices)
-docs/            Architecture, runbooks, environment notes (later slices)
-.github/         CI/CD workflows (later slice)
+  portal/          Rails 8 app
+infra/
+  aws/             AWS provisioning scripts
+  caddy/           Caddyfile per environment
+  scripts/         Server setup + deploy scripts
+  systemd/         systemd unit files for Puma + Solid Queue
+.github/
+  workflows/       CI + deploy-staging pipelines
+docs/              Architecture, runbooks (later slices)
 ```
 
 ## Slice 1 - what's here
@@ -105,13 +110,62 @@ ruby bin/ci
 
 This runs `bundler-audit`, `brakeman`, `rubocop`, `erb_lint`, then `rspec`.
 
+## Branch model
+
+- **`develop`** - integration branch; every push auto-deploys to staging
+- **`master`** - stable; production deploys (later slice)
+- **Feature branches** - PR into `develop`; CI runs on every PR
+
+## Staging deployment
+
+Staging runs on a single EC2 `t3.small` in `us-east-2` with RDS PostgreSQL. Rails runs natively (no Docker) via systemd, with Caddy as the reverse proxy.
+
+### Provisioning (one-time)
+
+1. Install [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and run `aws configure` (region: `us-east-2`)
+2. Run the provisioning script:
+
+```bash
+chmod +x infra/aws/provision-staging.sh
+./infra/aws/provision-staging.sh
+```
+
+3. SSH into the new EC2 and run server setup:
+
+```bash
+ssh -i ~/.ssh/tatl-staging.pem ubuntu@<elastic-ip>
+sudo bash /tmp/setup-server.sh   # or clone first, then run from repo
+```
+
+4. Create `/opt/tatl/.env.production` on the server (template printed by setup script)
+5. Run the first deploy: `sudo -u deploy /opt/tatl/infra/scripts/deploy.sh`
+
+### GitHub Secrets
+
+Add these in **Settings > Secrets and variables > Actions**:
+
+| Secret | Value |
+|---|---|
+| `STAGING_HOST` | EC2 elastic IP |
+| `STAGING_SSH_KEY` | Contents of `~/.ssh/tatl-staging.pem` |
+| `RAILS_MASTER_KEY` | Contents of `apps/portal/config/master.key` |
+| `TATL_DB_PASSWORD` | RDS master password |
+
+### CI pipeline
+
+Every PR and push to `develop`/`master` runs: Brakeman, bundler-audit, importmap audit, RuboCop, erb_lint, and RSpec (with a Postgres service container). See `.github/workflows/ci.yml`.
+
+### Auto-deploy
+
+When CI passes on `develop`, `.github/workflows/deploy-staging.yml` SSHs to the staging EC2 and runs `infra/scripts/deploy.sh` (pull, bundle, migrate, precompile, restart, health check).
+
 ## Roadmap (later slices)
 
 1. Doorkeeper + doorkeeper-openid_connect (OIDC IdP)
 2. Domain models: Property, Membership, Document, Account, Transaction, Dues
 3. Document upload with LightRAG sync job
 4. Chat UI proxied to n8n with Turbo Streams
-5. Docker Compose: Postgres, Zammad, Discourse, n8n, LightRAG, Caddy
+5. Docker Compose for sidecar services: Zammad, Discourse, n8n, LightRAG
 6. Zammad and Discourse SSO via Tatl OIDC
-7. AWS deployment: EC2 + RDS + S3 + ECR + Cloudflare DNS + SendGrid (staging then prod, in `us-east-2`)
-8. GitHub Actions CI/CD with OIDC role assumption
+7. Production environment: EC2 + RDS + S3 + Cloudflare DNS + SendGrid (in `us-east-2`)
+8. Deploy-to-prod workflow (merge `develop` -> `master`)

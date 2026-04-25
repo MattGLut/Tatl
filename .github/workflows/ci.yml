@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop, master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan_ruby:
+    name: Security scan (Ruby)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/portal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/portal
+          bundler-cache: true
+
+      - name: Brakeman
+        run: bundle exec brakeman --quiet --no-pager --exit-on-warn
+
+      - name: bundler-audit
+        run: bundle exec bundler-audit check --update
+
+  scan_js:
+    name: Security scan (JS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/portal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/portal
+          bundler-cache: true
+
+      - name: importmap audit
+        run: bin/importmap audit
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/portal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/portal
+          bundler-cache: true
+
+      - name: RuboCop
+        run: bundle exec rubocop --parallel
+
+      - name: erb_lint
+        run: bundle exec erb_lint --lint-all
+
+  test:
+    name: RSpec
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/portal
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tatl
+          POSTGRES_PASSWORD: tatl_test
+          POSTGRES_DB: tatl_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U tatl"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      RAILS_ENV: test
+      TATL_DB_HOST: localhost
+      TATL_DB_PORT: 5432
+      TATL_DB_USERNAME: tatl
+      TATL_DB_PASSWORD: tatl_test
+      TATL_TEST_DB_NAME: tatl_test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/portal
+          bundler-cache: true
+
+      - name: Database setup
+        run: |
+          bin/rails db:migrate
+          bin/rails db:test:prepare
+
+      - name: RSpec
+        run: bundle exec rspec --format documentation
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: apps/portal/coverage/
+          retention-days: 7
