@@ -14,6 +14,7 @@ AllCops:
     - "Gemfile.lock"
     - "bin/**/*"
     - "db/schema.rb"
+    - "db/queue_schema.rb"
     - "db/migrate/*_devise_create_users.rb"
     - "tmp/**/*"
     - "vendor/**/*"
@@ -31,6 +32,16 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - "db/migrate/*_create_solid_queue_tables.rb"
+
+Metrics/AbcSize:
+  Exclude:
+    - "db/migrate/*_create_solid_queue_tables.rb"
+
+Metrics/ClassLength:
+  Exclude:
+    - "db/migrate/*_create_solid_queue_tables.rb"
 
 Style/Documentation:
   Enabled: false
