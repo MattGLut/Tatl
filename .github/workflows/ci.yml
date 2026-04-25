@@ -45,7 +45,7 @@ jobs:
           bundler-cache: true
 
       - name: importmap audit
-        run: bin/importmap audit
+        run: bundle exec importmap audit
 
   lint:
     name: Lint
@@ -104,8 +104,8 @@ jobs:
 
       - name: Database setup
         run: |
-          bin/rails db:migrate
-          bin/rails db:test:prepare
+          bundle exec rails db:migrate
+          bundle exec rails db:test:prepare
 
       - name: RSpec
         run: bundle exec rspec --format documentation
