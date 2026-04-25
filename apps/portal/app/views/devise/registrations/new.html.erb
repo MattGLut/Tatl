@@ -1,0 +1,51 @@
+<% content_for :title, "Sign up - Tatl" %>
+
+<div class="mx-auto mt-8 max-w-md">
+  <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Create your account</h1>
+    <p class="mt-1 text-sm text-slate-600">Join your HOA community on Tatl.</p>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "mt-6 space-y-5" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :first_name, class: "block text-sm font-medium text-slate-700" %>
+          <%= f.text_field :first_name, autofocus: true, autocomplete: "given-name",
+                                        class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :last_name, class: "block text-sm font-medium text-slate-700" %>
+          <%= f.text_field :last_name, autocomplete: "family-name",
+                                       class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :email, class: "block text-sm font-medium text-slate-700" %>
+        <%= f.email_field :email, autocomplete: "email",
+                                  class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+
+      <div>
+        <%= f.label :password, class: "block text-sm font-medium text-slate-700" %>
+        <%= f.password_field :password, autocomplete: "new-password",
+                                        class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        <p class="mt-1 text-xs text-slate-500"><%= @minimum_password_length %> characters minimum</p>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, class: "block text-sm font-medium text-slate-700" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+                                                     class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+
+      <%= f.submit "Create account",
+                   class: "w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" %>
+    <% end %>
+
+    <div class="mt-6 space-y-2 text-center text-sm">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

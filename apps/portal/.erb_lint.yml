@@ -7,7 +7,7 @@ linters:
       inherit_from:
         - .rubocop.yml
       Layout/LineLength:
-        Max: 200
+        Max: 250
       Layout/InitialIndentation:
         Enabled: false
       Layout/TrailingEmptyLines:

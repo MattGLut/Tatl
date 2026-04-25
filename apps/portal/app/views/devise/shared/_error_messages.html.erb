@@ -1,0 +1,12 @@
+<% if resource.errors.any? %>
+  <div class="rounded-md border border-rose-200 bg-rose-50 p-4">
+    <h3 class="text-sm font-semibold text-rose-800">
+      <%= pluralize(resource.errors.count, "error") %> prevented this action:
+    </h3>
+    <ul class="mt-2 list-inside list-disc text-sm text-rose-700">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

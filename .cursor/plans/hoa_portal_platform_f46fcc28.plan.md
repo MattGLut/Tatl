@@ -1,18 +1,30 @@
 ---
 name: Tatl - HOA Portal Platform
-overview: "Tatl: a Rails 8 resident portal that acts as the OIDC identity provider and hub for Zammad (tickets), Discourse (forum), n8n + LightRAG (RAG chat), with a lightweight HOA accounting ledger. Same Docker Compose stack runs locally and on AWS EC2 (staging + prod) in us-east-2, backed by RDS Postgres and S3, with SendGrid email and Cloudflare DNS. Single monorepo."
+overview: "Tatl: a Rails 8 resident portal for HOA management. Future slices add OIDC IdP for Zammad (tickets) and Discourse (forum), n8n + LightRAG (RAG chat), and a lightweight accounting ledger. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
 todos:
   - id: scaffold_rails
     content: Scaffold Rails 8 app (apps/portal) with PostgreSQL, Tailwind, Solid Queue/Cache/Cable; skip Minitest in favor of RSpec
     status: completed
   - id: rspec_setup
     content: Install rspec-rails, factory_bot_rails, faker, shoulda-matchers, capybara, cuprite, vcr, webmock, simplecov; configure spec helpers and CI-friendly defaults
-    status: pending
+    status: completed
   - id: devise_pundit
-    content: Install Devise (with confirmable/lockable) and Pundit; generate base policies and request/system spec scaffolds for auth flows
-    status: pending
+    content: Install Devise (with confirmable/lockable/trackable) and Pundit; User model with role enum, base policies, request specs
+    status: completed
+  - id: ci_pipeline
+    content: "GitHub Actions CI on develop/master: Brakeman, bundler-audit, importmap audit, RuboCop, erb_lint, RSpec with Postgres service container"
+    status: completed
+  - id: aws_baseline
+    content: "Provision AWS staging in us-east-2: default VPC, security groups (tatl-staging-web, tatl-staging-rds), EC2 t3.small (Ubuntu 24.04), Elastic IP 3.146.142.26, RDS db.t4g.micro PostgreSQL 16, S3 tatl-staging-uploads"
+    status: completed
+  - id: staging_deploy
+    content: "Native Rails on EC2 via systemd (Puma + Solid Queue), Caddy reverse proxy, rbenv Ruby 3.4.8; deploy.sh pulls from develop, bundles, migrates, precompiles, restarts; GitHub Actions auto-deploy on CI pass"
+    status: completed
+  - id: sendgrid_email
+    content: "Configure SendGrid SMTP in production.rb, generate + Tailwind-style custom Devise views, permit first_name/last_name sign-up params, request + mailer specs, update env template"
+    status: in_progress
   - id: core_models
-    content: "Add core domain models with model + request specs: User+roles, Property, Membership, Document (Active Storage)"
+    content: "Add core domain models with model + request specs: Property, Membership, Document (Active Storage)"
     status: pending
   - id: doorkeeper_oidc
     content: Configure Doorkeeper + doorkeeper-openid_connect as OIDC IdP with custom roles claim and JWKS; spec coverage for token/userinfo/JWKS endpoints
@@ -26,11 +38,8 @@ todos:
   - id: chat_n8n
     content: Chat UI (Turbo Streams + Solid Cable) proxying to n8n webhook; system specs for chat flow with WebMock-stubbed n8n
     status: pending
-  - id: ci_pipeline
-    content: GitHub Actions CI - bundler-audit, brakeman, rubocop, erb_lint, rspec (with parallel + simplecov), build & push portal image
-    status: pending
-  - id: compose_local
-    content: docker-compose.yml + .env.development for local stack (Postgres, Zammad, Discourse, n8n, LightRAG, Caddy) and Makefile/bin scripts
+  - id: compose_sidecar
+    content: Docker Compose for sidecar services (Zammad, Discourse, n8n, LightRAG) on separate EC2 or same instance
     status: pending
   - id: sso_zammad_discourse
     content: Wire Zammad OIDC and Discourse openid-connect plugin to Rails IdP; verify role mapping in all three envs
@@ -38,20 +47,11 @@ todos:
   - id: webhooks_events
     content: Inbound webhooks (n8n chat callback, Zammad/Discourse events) with request specs and signed-payload verification
     status: pending
-  - id: aws_baseline
-    content: "Provision AWS baseline in us-east-2: VPC, security groups, GitHub Actions OIDC deploy role, ECR repo (tatl-portal), S3 buckets (tatl-staging-uploads, tatl-prod-uploads, tatl-backups), RDS Postgres staging+prod"
-    status: pending
-  - id: sendgrid_email
-    content: Configure SendGrid (verified sender, DKIM/SPF in Cloudflare DNS, API key per env in Rails encrypted credentials, ActionMailer SMTP delivery, mailer specs)
-    status: pending
   - id: cloudflare_dns
-    content: Configure Cloudflare DNS records (portal/tickets/forum/chat per env), DNS-only (gray cloud) pointing at EC2 elastic IPs; SendGrid DKIM/SPF and DMARC records
-    status: pending
-  - id: staging_deploy
-    content: Provision staging EC2 (t3.medium-ish), deploy docker-compose.staging.yml with Caddy + Let's Encrypt, RDS connection, S3 Active Storage; auto-deploy on merge to main; smoke tests
+    content: Purchase domain, configure Cloudflare DNS records per env, DKIM/SPF/DMARC for SendGrid, Let's Encrypt via Caddy
     status: pending
   - id: production_deploy
-    content: Provision production EC2, deploy docker-compose.production.yml; nightly RDS snapshots, S3 lifecycle, LightRAG volume snapshots; CloudWatch + Sentry; manual tagged deploy
+    content: Provision production EC2, deploy natively with systemd; RDS Multi-AZ with backups, S3 lifecycle, CloudWatch + Sentry; manual tagged deploy from master
     status: pending
   - id: seed_and_docs
     content: Seed data (sample HOA, accounts, properties, sample policies) and write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env)
@@ -61,13 +61,15 @@ isProject: false
 
 ## Project Conventions
 
-- **Name:** `Tatl` (Rails app module: `Tatl`, image: `tatl/portal`, ECR repo: `tatl-portal`, S3 buckets: `tatl-staging-uploads`, `tatl-prod-uploads`, `tatl-backups`).
-- **Domain:** placeholder `tatl.local` for dev, `tatl.example` in docs/configs until a real domain is purchased. Centralized in `infra/compose/.env.<env>.example` as `APP_DOMAIN=` so it's a one-liner swap later.
+- **Name:** `Tatl` (Rails app module: `Tatl`, S3 bucket: `tatl-staging-uploads`).
+- **Domain:** no domain purchased yet. Staging accessed via Elastic IP `3.146.142.26` over HTTP. Cloudflare DNS + HTTPS planned for when a domain is acquired.
 - **Region:** AWS `us-east-2` (Ohio) - closest AWS region to Tennessee with full service parity.
-- **Repo:** single monorepo (`apps/portal/`, `infra/`, `docs/`, `.github/workflows/`).
-- **Dev runtime:** Native on Windows. Host has Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, and PostgreSQL 18 (Windows service `postgresql-x64-18`). Rails dev server runs natively via `bin/dev`. Docker is reserved for later slices (Zammad, Discourse, n8n, LightRAG locally; full stack on AWS EC2 in staging/prod).
-- **Local Postgres:** running as Windows service. Dedicated `tatl` role (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) needs to be on PATH for `psql`, `createdb`, etc. Credentials live in `.env.development` (gitignored) and Rails `database.yml`.
-- **Execution order:** ship in thin slices, starting with Slice 1 = Rails portal foundation only (Rails 8 + Postgres + Tailwind + Solid Queue/Cache/Cable + RSpec stack + Devise + Pundit + lint/`bin/ci`). Doorkeeper/OIDC, accounting, RAG, AWS infra, Zammad/Discourse/n8n/LightRAG come in later slices.
+- **Repo:** single monorepo (`apps/portal/`, `infra/`, `.github/workflows/`). GitHub: `MattGLut/Tatl`.
+- **Branch model:** `develop` (staging auto-deploy), `master` (production, future). Feature branches PR into `develop`.
+- **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for later slices (sidecar services only).
+- **Local Postgres:** Windows service `postgresql-x64-18`. Role `tatl` (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) on PATH. Credentials in `.env.development` (gitignored).
+- **Staging runtime:** EC2 Ubuntu 24.04, rbenv Ruby 3.4.8, systemd units for Puma + Solid Queue, Caddy reverse proxy. `deploy` user owns `/opt/tatl`. Env vars in `/opt/tatl/.env.production`.
+- **Execution order:** ship in thin slices. Slice 1 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging. Current = SendGrid email + styled sign-up flow. Next = core domain models, then OIDC, accounting, RAG, sidecar services.
 
 ## Architecture
 
@@ -103,10 +105,11 @@ flowchart LR
 - **Discourse** (latest) - forum, OIDC client via `discourse-openid-connect` plugin
 - **n8n** - workflow/chat agent runtime
 - **LightRAG** (HKUDS) - knowledge graph + retrieval API
-- **Docker Compose** - same `docker-compose.yml` runs locally and on EC2 with env overlays
-- **AWS** - EC2 (per env) hosts the Compose stack; RDS Postgres 16 (managed, with backups); S3 for Active Storage + DB/LightRAG backups; ECR for portal images
-- **Cloudflare** - authoritative DNS (DNS-only records to EC2 elastic IPs); SendGrid DKIM/SPF/DMARC live here too
+- **Docker Compose** (future) - for sidecar services (Zammad, Discourse, n8n, LightRAG) only; Rails runs natively
+- **AWS** - EC2 hosts Rails natively via systemd; RDS Postgres 16 (managed); S3 for Active Storage; no ECR needed (no Docker for Rails)
+- **Caddy** - lightweight reverse proxy on EC2, port 80 -> localhost:3000 (HTTPS via Let's Encrypt when domain is ready)
 - **SendGrid** - transactional email (Action Mailer SMTP) for Devise confirmations/resets, dues notices, ticket and chat notifications
+- **Cloudflare** (future) - authoritative DNS once a domain is purchased; DKIM/SPF/DMARC for SendGrid
 
 ## Rails App Layout
 
@@ -175,58 +178,55 @@ Conventions:
 
 ## Environments (local / staging / production)
 
-Three environments, same Docker Compose stack, parameterized by env files. Staging and production live on AWS EC2 with RDS + S3 + SendGrid + Cloudflare DNS.
-
-- **Local development** (`docker-compose.yml` + `.env.development`)
-  - Caddy serves `*.local` with internal CA
-  - Postgres, Redis, Elasticsearch, Memcached run as containers locally
-  - Rails in dev mode via `bin/dev`, hot reload
+- **Local development** (native Windows, no Docker)
+  - Ruby 3.4.8, Rails 8.1.3, Bundler 4, PostgreSQL 18 as Windows service
+  - Rails in dev mode via `bin/dev` (or `ruby bin/rails server`), hot reload
+  - `.env.development` holds DB credentials (`tatl` role, password `tatl_dev`)
+  - `letter_opener_web` mounted at `/letters` for email preview (no real emails)
   - Seeded with fixtures from `db/seeds/development.rb`
-  - LightRAG points at OpenAI by default; n8n imports workflows from `infra/n8n/workflows/`
-  - SendGrid replaced with `letter_opener_web` so no real emails are sent
-- **Staging** (`docker-compose.staging.yml` overlay + `.env.staging`, on AWS EC2)
-  - Single EC2 instance (`t3.medium` to start) running the Compose stack
-  - Postgres moves to **RDS** (single-AZ, `db.t3.small`) with separate logical DBs `portal`, `zammad`, `discourse`
-  - Active Storage uses **S3** (`hoa-staging-uploads`) via EC2 instance profile
-  - **Caddy** + **Let's Encrypt** for `portal.staging.<domain>`, `tickets.staging.<domain>`, `forum.staging.<domain>`, `chat.staging.<domain>`
-  - **Cloudflare DNS** records, DNS-only (gray cloud) so HTTP-01 ACME works directly to the EC2 elastic IP
-  - **SendGrid** with `staging` API key and `no-reply+staging@<domain>` sender; DKIM/SPF/DMARC in Cloudflare
-  - Rails `RAILS_ENV=production` with `STAGING=1` flag (separate Sentry project, UI banner, `robots.txt` disallow)
-  - Anonymized seed data; `bin/staging-reset` re-seeds RDS + LightRAG
-  - Auto-deploys on every merge to `main`
-- **Production** (`docker-compose.production.yml` overlay + `.env.production`, on AWS EC2)
-  - Right-sized EC2 instance (start `t3.large`, revisit after profiling)
-  - **RDS** Multi-AZ Postgres with automated backups (30-day retention) plus daily logical `pg_dump` to S3 for offsite
-  - **S3** Active Storage bucket (`hoa-prod-uploads`) with versioning + lifecycle rules
-  - LightRAG storage volume snapshotted nightly to S3 via cron sidecar
-  - **Caddy** + Let's Encrypt for prod hostnames; **Cloudflare DNS** in DNS-only mode
-  - **SendGrid** with verified domain sender; DMARC progresses `none` -> `quarantine` -> `reject` after warm-up
-  - Real `RAILS_MASTER_KEY` / encrypted credentials per env
-  - Deploys only from tagged releases via manual GitHub Actions approval
+- **Staging** (AWS EC2, native Rails -- no Docker)
+  - EC2 `t3.small` (Ubuntu 24.04) in `us-east-2`, Elastic IP `3.146.142.26`
+  - Rails runs natively via **systemd** (tatl-web for Puma, tatl-worker for Solid Queue)
+  - **Caddy** reverse proxy on port 80 forwarding to `localhost:3000`
+  - **rbenv** + Ruby 3.4.8 installed on the server; `deploy` user owns `/opt/tatl`
+  - **RDS** PostgreSQL 16 (`db.t4g.micro`, single-AZ, 1-day backup retention for Free Tier)
+  - **S3** bucket `tatl-staging-uploads` for Active Storage
+  - **SendGrid** SMTP for transactional email (Devise confirmations/resets/unlocks)
+  - `/opt/tatl/.env.production` provides env vars (RAILS_MASTER_KEY, DB creds, SendGrid key, APP_HOST, etc.)
+  - `RAILS_ENV=production`; access via HTTP at the Elastic IP (no domain/HTTPS yet)
+  - Auto-deploys on every push to `develop` via GitHub Actions (CI passes -> deploy-staging.yml SSHs and runs `deploy.sh`)
+- **Production** (future)
+  - Separate EC2 instance, same native deployment pattern
+  - RDS Multi-AZ Postgres with automated backups (30-day retention)
+  - S3 Active Storage bucket with versioning + lifecycle rules
+  - Domain + Cloudflare DNS + Caddy Let's Encrypt HTTPS
+  - SendGrid with verified domain sender; DMARC progression
+  - Deploys from tagged releases via manual GitHub Actions approval on `master` branch
 
-AWS scope (intentionally small for MVP):
+AWS resources (staging, provisioned):
 
-- 1 VPC per env with public subnet (EC2) + private subnets (RDS), security group locked so only EC2 SG reaches RDS
-- 1 RDS Postgres instance per env (staging single-AZ, prod Multi-AZ)
-- 1 ECR repo for the `portal` image
-- 1 S3 bucket per env for Active Storage, plus a shared `hoa-backups` bucket
-- IAM: GitHub Actions deploy role via OIDC (no long-lived keys); EC2 instance profile with S3 + ECR pull
-- CloudWatch agent on EC2 for system metrics + Docker log shipping; Sentry for app-level errors
+- Default VPC in `us-east-2` with public subnets
+- Security groups: `tatl-staging-web` (SSH 22, HTTP 80, HTTPS 443) and `tatl-staging-rds` (Postgres 5432 from web SG only)
+- EC2 key pair: `tatl-staging` (PEM at `~/.ssh/tatl-staging.pem`)
+- IAM user `tatl-deployer` for AWS CLI and GitHub Actions
+- GitHub Secrets: `STAGING_HOST`, `STAGING_SSH_KEY`, `RAILS_MASTER_KEY`, `TATL_DB_PASSWORD`
 
 Configuration approach:
 
-- One `docker-compose.yml` (base) + `docker-compose.<env>.yml` overlays. Staging/prod overlays remove the `postgres` service and point `DATABASE_URL` at RDS.
-- Secrets: Rails encrypted credentials (`config/credentials/<env>.yml.enc`) for app secrets; AWS Secrets Manager holds the RDS master password and SendGrid API key, injected into the env file at deploy time.
-- All three envs run the identical Rails image so behavior parity is enforced.
+- Staging/production: `/opt/tatl/.env.production` sourced by `deploy.sh` before Rails commands
+- Secrets not in the repo; env vars supplied via the `.env.production` file on the server and GitHub Secrets for CI/CD
+- No Docker for the Rails app; sidecar services (Zammad, Discourse, n8n, LightRAG) will be containerized in later slices
 
 ## Email (SendGrid)
 
-- ActionMailer SMTP via `smtp.sendgrid.net:587` with API-key auth (single sender per env)
-- Per-env API keys with `mail.send` scope only
-- Cloudflare DNS holds SendGrid CNAMEs for DKIM, SPF `include:sendgrid.net`, and a DMARC TXT record
+- ActionMailer SMTP via `smtp.sendgrid.net:587` with API-key auth (`user_name: "apikey"`, `password: ENV["SENDGRID_API_KEY"]`)
+- Per-env API keys; staging uses a single sender address via `TATL_MAILER_SENDER` env var
 - Dev uses `letter_opener_web` mounted at `/letters`; specs use `ActionMailer::Base.deliveries`
-- Mailers: Devise (confirmation/reset/unlock), dues notices, ticket reply digests, chat-summary digests
-- SendGrid webhook (event subscription) hits `Webhooks::SendgridController` for bounce/complaint suppression, with signature verification and request specs
+- Custom Tailwind-styled Devise views for sign-up, sign-in, password reset, confirmation, unlock, and email templates
+- Devise permitted params include `first_name` and `last_name` for registration
+- Env vars on staging EC2 (`/opt/tatl/.env.production`): `SENDGRID_API_KEY`, `APP_HOST`, `TATL_MAILER_SENDER`
+- Future: Cloudflare DNS for DKIM/SPF/DMARC once a domain is purchased; SendGrid webhook for bounce/complaint suppression
+- Future mailers: dues notices, ticket reply digests, chat-summary digests
 
 ## DNS (Cloudflare)
 
@@ -236,10 +236,17 @@ Configuration approach:
 
 ## CI / CD (GitHub Actions)
 
-- `ci.yml` on every PR: `rubocop`, `erb_lint`, `brakeman`, `bundler-audit`, `rspec` (matrix: unit + system), upload `coverage/` artifact
-- `build.yml` on push to `main`: assume AWS deploy role via OIDC, build & push `portal` image to **ECR** tagged `:main` and `:sha-<short>`
-- `deploy-staging.yml`: SSH to staging EC2, `aws ecr get-login-password | docker login`, `docker compose pull && docker compose up -d`, run `db:migrate`, smoke test against `portal.staging.<domain>`
-- `deploy-production.yml`: manual trigger on a Git tag; same flow against prod EC2 with maintenance-mode toggle, RDS pre-deploy snapshot, and post-deploy backup verification
+- **`ci.yml`** on every PR and push to `develop`/`master`: four parallel jobs
+  - `scan_ruby`: Brakeman + bundler-audit
+  - `scan_js`: importmap audit
+  - `lint`: RuboCop + erb_lint
+  - `test`: RSpec with Postgres 16 service container, uploads coverage artifact
+  - All jobs use `working-directory: apps/portal`, `actions/checkout@v6`, `ruby/setup-ruby@v1` with `bundler-cache: true`
+- **`deploy-staging.yml`**: triggered by `workflow_run` on CI completion for `develop` branch; uses `appleboy/ssh-action@v1` to SSH as `deploy` user and run `/opt/tatl/infra/scripts/deploy.sh`; followed by an HTTP smoke test against `http://<STAGING_HOST>/up`
+- **`deploy-production.yml`** (future): manual trigger on a Git tag against `master`; same SSH pattern against prod EC2
+- **`dependabot.yml`**: weekly checks for Bundler (`/apps/portal`) and GitHub Actions (`/`), targeting `develop` branch
+
+Branch model: `develop` -> staging (auto), `master` -> production (manual, future)
 
 ## SSO Flow (OIDC)
 
@@ -264,25 +271,22 @@ Configuration approach:
 - CSV import for bank statements; optional later: OFX/Plaid.
 - Treasurer-only writes via Pundit policies; residents see only their own dues/payments.
 
-## Docker Compose Services
+## Sidecar Services (future, Docker Compose)
 
-- `portal` (Rails) + `portal-worker` (Solid Queue)
-- `postgres` (shared, multiple databases via init script)
-- `zammad-railsserver`, `zammad-websocket`, `zammad-scheduler`, `zammad-elasticsearch`, `zammad-memcached` (per official compose)
+- `zammad-railsserver`, `zammad-websocket`, `zammad-scheduler`, `zammad-elasticsearch`, `zammad-memcached`
 - `discourse` + `discourse-redis`
 - `n8n`
-- `lightrag` (their `lightrag-server` image)
-- `caddy` reverse proxy with automatic HTTPS for `portal.local`, `tickets.local`, `forum.local`, `chat.local`
+- `lightrag` (HKUDS `lightrag-server` image)
+- May run on the same EC2 or a dedicated instance depending on resource needs for ~200 users
 
 ## Repo Layout
 
-- `apps/portal/` - Rails app (with `spec/` for RSpec)
-- `infra/compose/` - `docker-compose.yml` (base) + `docker-compose.staging.yml` + `docker-compose.production.yml` + `Caddyfile.<env>` + env templates (`.env.development.example`, `.env.staging.example`, `.env.production.example`)
-- `infra/postgres/init/` - dev-only DB creation script for zammad, discourse, portal databases (RDS handles this in staging/prod)
-- `infra/lightrag/` - config + initial document seed script
-- `infra/n8n/workflows/` - exported JSON for the HOA chat workflow
-- `infra/aws/` - bootstrap notes / optional Terraform stubs for VPC, RDS, S3, ECR, IAM OIDC role
-- `infra/scripts/` - `deploy.sh`, `staging-reset.sh`, `backup.sh`, `restore.sh`
-- `.github/workflows/` - `ci.yml`, `build.yml`, `deploy-staging.yml`, `deploy-production.yml`
-- `docs/` - `architecture.md`, `testing.md`, `runbook.md`, `sso.md`, `environments.md`, `aws.md`, `email.md`
+- `apps/portal/` - Rails 8 app (with `spec/` for RSpec)
+- `infra/aws/` - `provision-staging.sh` (AWS CLI script to create SGs, EC2, RDS, S3, EIP)
+- `infra/scripts/` - `setup-server.sh` (one-time EC2 bootstrap), `deploy.sh` (per-deploy: pull, bundle, migrate, precompile, restart)
+- `infra/caddy/` - `Caddyfile.staging` (reverse proxy config)
+- `infra/systemd/` - `tatl-web.service` (Puma), `tatl-worker.service` (Solid Queue)
+- `.github/workflows/` - `ci.yml`, `deploy-staging.yml`
+- `.github/dependabot.yml` - weekly Bundler + Actions updates targeting `develop`
+- `docs/` (future) - `architecture.md`, `testing.md`, `runbook.md`, `sso.md`, `environments.md`
 

@@ -21,7 +21,7 @@ infra/
 docs/              Architecture, runbooks (later slices)
 ```
 
-## Slice 1 - what's here
+## What's here
 
 Rails 8.1 app at `apps/portal/` with:
 
@@ -29,7 +29,9 @@ Rails 8.1 app at `apps/portal/` with:
 - Hotwire (Turbo + Stimulus), Propshaft, Tailwind CSS, importmap
 - Solid Queue / Solid Cache / Solid Cable (Rails 8 defaults)
 - Devise authentication (`:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`, `:confirmable`, `:lockable`, `:trackable`)
+- Custom Tailwind-styled Devise views (sign-in, sign-up, password reset, confirmation, unlock, edit profile)
 - Pundit authorization, with `User` role enum (`resident`, `board`, `treasurer`, `admin`)
+- SendGrid SMTP for transactional email in staging/production (confirmations, password resets, unlocks)
 - Letter Opener Web at `/letters` for development emails
 - RSpec test suite with FactoryBot, shoulda-matchers, pundit-matchers, Capybara + Cuprite, WebMock, VCR, SimpleCov
 - RuboCop (rails-omakase + rspec + performance + capybara + factory_bot), erb_lint, Brakeman, bundler-audit
@@ -150,6 +152,7 @@ Add these in **Settings > Secrets and variables > Actions**:
 | `STAGING_SSH_KEY` | Contents of `~/.ssh/tatl-staging.pem` |
 | `RAILS_MASTER_KEY` | Contents of `apps/portal/config/master.key` |
 | `TATL_DB_PASSWORD` | RDS master password |
+| `SENDGRID_API_KEY` | SendGrid API key (for reference; injected via `.env.production` on EC2) |
 
 ### CI pipeline
 
@@ -158,6 +161,19 @@ Every PR and push to `develop`/`master` runs: Brakeman, bundler-audit, importmap
 ### Auto-deploy
 
 When CI passes on `develop`, `.github/workflows/deploy-staging.yml` SSHs to the staging EC2 and runs `infra/scripts/deploy.sh` (pull, bundle, migrate, precompile, restart, health check).
+
+## Email
+
+- **Development:** emails are intercepted by `letter_opener_web` and viewable at <http://localhost:3000/letters>. No real emails are sent.
+- **Staging / Production:** emails are sent via [SendGrid](https://sendgrid.com/) SMTP. Three env vars must be set in `/opt/tatl/.env.production` on the EC2 instance:
+
+| Variable | Description |
+|---|---|
+| `SENDGRID_API_KEY` | SendGrid API key (used as SMTP password) |
+| `APP_HOST` | Public hostname or IP (e.g. `3.146.142.26`) |
+| `TATL_MAILER_SENDER` | From address for emails (e.g. `no-reply@yourdomain.com`) |
+
+Devise sends confirmation, password reset, unlock, email change, and password change emails automatically.
 
 ## Roadmap (later slices)
 
