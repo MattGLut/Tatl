@@ -33,7 +33,7 @@ sudo systemctl restart tatl-web
 sudo systemctl restart tatl-worker
 
 echo "── Health check ──"
-sleep 3
+sleep 8
 if curl -sf http://localhost:3000/up > /dev/null; then
   echo "Deploy complete - health check passed"
 else
