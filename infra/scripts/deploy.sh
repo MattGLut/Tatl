@@ -5,16 +5,42 @@ set -euo pipefail
 
 APP_ROOT="/opt/tatl"
 PORTAL="${APP_ROOT}/apps/portal"
-
-set -a
-source "${APP_ROOT}/.env.production"
-set +a
-export RAILS_ENV=production
+ENV_FILE="${APP_ROOT}/.env.production"
 
 echo "── Pulling latest from develop ──"
 cd "$APP_ROOT"
 git fetch origin develop
 git reset --hard origin/develop
+
+# When called from GitHub Actions, secrets are forwarded as env vars.
+# Write them to .env.production so the server always stays in sync.
+if [[ -n "${RAILS_MASTER_KEY:-}" ]]; then
+  echo "── Writing .env.production from secrets ──"
+  cat > "$ENV_FILE" <<EOF
+RAILS_ENV=production
+RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+RAILS_SERVE_STATIC_FILES=true
+RAILS_LOG_TO_STDOUT=true
+TATL_DB_HOST=${TATL_DB_HOST:-localhost}
+TATL_DB_PORT=5432
+TATL_DB_USERNAME=tatl
+TATL_DB_PASSWORD=${TATL_DB_PASSWORD:-}
+TATL_DB_NAME=tatl_staging
+SOLID_QUEUE_IN_PUMA=true
+WEB_CONCURRENCY=2
+RAILS_MAX_THREADS=3
+SECRET_KEY_BASE=${SECRET_KEY_BASE:-}
+APP_HOST=${APP_HOST:-localhost}
+SENDGRID_API_KEY=${SENDGRID_API_KEY:-}
+TATL_MAILER_SENDER=${TATL_MAILER_SENDER:-no-reply@tatl.local}
+EOF
+  chmod 600 "$ENV_FILE"
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+export RAILS_ENV=production
 
 echo "── Installing gems ──"
 cd "$PORTAL"
