@@ -1,0 +1,85 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-performance
+  - rubocop-capybara
+  - rubocop-factory_bot
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "Gemfile.lock"
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/*_devise_create_users.rb"
+    - "tmp/**/*"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "storage/**/*"
+    - "log/**/*"
+    - "coverage/**/*"
+    - "public/**/*"
+
+# Long, multi-block files are normal in Rails projects.
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "config/**/*"
+
+Metrics/MethodLength:
+  Max: 20
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - "config/initializers/devise.rb"
+    - "db/migrate/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Cross-platform line-ending tolerance; .gitattributes normalizes on commit.
+Layout/EndOfLine:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - "config/**/*"
+    - "db/**/*"
+    - "bin/**/*"
+    - "Rakefile"
+
+Style/FetchEnvVar:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false
+
+# RSpec defaults are too strict for the way the omakase community writes specs.
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/ExampleLength:
+  Max: 12
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 8
+
+RSpec/IndexedLet:
+  Enabled: false
+
+# Allow Rails view-rendering style with `is_expected.to`.
+RSpec/ImplicitSubject:
+  EnforcedStyle: single_line_only

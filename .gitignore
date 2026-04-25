@@ -1,0 +1,55 @@
+# --- Ruby / Rails ---
+*.rbc
+*.gem
+.bundle/
+log/*
+!log/.keep
+tmp/*
+!tmp/.keep
+tmp/pids/*
+!tmp/pids/.keep
+storage/*
+!storage/.keep
+public/assets/
+.byebug_history
+.rspec_status
+coverage/
+
+# Bundler / SimpleCov / RSpec
+/apps/portal/.bundle
+/apps/portal/coverage
+/apps/portal/log/*
+/apps/portal/tmp/*
+/apps/portal/storage/*
+/apps/portal/spec/fixtures/vcr_cassettes/*
+
+# Build artifacts (precompiled assets)
+/apps/portal/public/assets
+
+# Ignore master.key and any encrypted credentials master keys
+config/master.key
+config/credentials/*.key
+
+# Environment files (real values stay out of git)
+.env
+.env.*
+!.env.*.example
+
+# --- IDE / editor ---
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Node ---
+node_modules/
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+
+# --- OS / misc ---
+*.log
+*.pid
+*.sublime-workspace

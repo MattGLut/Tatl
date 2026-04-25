@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Runs the same lint + security + spec suite locally as in CI.
+# Usage: ruby bin/ci  (from apps/portal/)
+
+require "shellwords"
+
+STEPS = [
+  ["bundler-audit", %w[bundle exec bundler-audit check --update]],
+  ["brakeman",      %w[bundle exec brakeman --quiet --no-pager --exit-on-warn]],
+  ["rubocop",       %w[bundle exec rubocop --parallel]],
+  ["erb_lint",      %w[bundle exec erb_lint --lint-all]],
+  ["rspec",         %w[bundle exec rspec --no-color]]
+].freeze
+
+failures = []
+
+STEPS.each do |label, cmd|
+  puts "\n==> #{label}: #{cmd.shelljoin}"
+  ok = system(*cmd)
+  failures << label unless ok
+end
+
+if failures.any?
+  warn "\nFAILED: #{failures.join(', ')}"
+  exit 1
+else
+  puts "\nALL GREEN"
+end
