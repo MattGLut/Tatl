@@ -24,8 +24,7 @@ jobs:
           username: deploy
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: /opt/tatl/infra/scripts/deploy.sh
-          script_stop: true
-          timeout: 300s
+          command_timeout: 5m
 
       - name: Smoke test
         run: |
