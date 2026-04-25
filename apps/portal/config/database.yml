@@ -16,20 +16,8 @@ test:
   database: <%= ENV.fetch("TATL_TEST_DB_NAME", "tatl_test") %>
 
 production:
-  primary: &primary_production
+  primary:
     <<: *default
     database: <%= ENV.fetch("TATL_DB_NAME", "tatl_production") %>
     username: <%= ENV.fetch("TATL_DB_USERNAME", "tatl") %>
     password: <%= ENV["TATL_DB_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: <%= ENV.fetch("TATL_CACHE_DB_NAME", "tatl_production_cache") %>
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: <%= ENV.fetch("TATL_QUEUE_DB_NAME", "tatl_production_queue") %>
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: <%= ENV.fetch("TATL_CABLE_DB_NAME", "tatl_production_cable") %>
-    migrations_paths: db/cable_migrate
