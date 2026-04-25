@@ -52,16 +52,18 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost") }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.sendgrid.net",
-    port: 587,
-    authentication: :plain,
-    user_name: "apikey",
-    password: ENV.fetch("SENDGRID_API_KEY"),
-    domain: ENV.fetch("APP_HOST", "localhost"),
-    enable_starttls: true
-  }
+  if ENV["SENDGRID_API_KEY"].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: "smtp.sendgrid.net",
+      port: 587,
+      authentication: :plain,
+      user_name: "apikey",
+      password: ENV.fetch("SENDGRID_API_KEY"),
+      domain: ENV.fetch("APP_HOST", "localhost"),
+      enable_starttls: true
+    }
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
