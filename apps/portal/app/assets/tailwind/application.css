@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind only scans certain paths by default; class strings in Ruby helpers are not included unless listed here. */
+@source "../../helpers/**/*.rb";
+
 @theme {
   --color-brand-50:  #f0faf1;
   --color-brand-100: #e8f5e9;

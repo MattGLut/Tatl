@@ -1,0 +1,10 @@
+<%# Renders a user's avatar (Active Storage variant) when attached, otherwise a colored circle showing the user's initials. Locals: user (User, required), size (:sm | :md | :lg, defaults to :sm). %>
+<% if user.avatar.attached? && user.avatar.variable? %>
+  <%= image_tag user.avatar.variant(resize_to_fill: [256, 256]),
+                alt: "#{user.display_name} avatar",
+                class: "#{avatar_size_class(local_assigns[:size])} shrink-0 rounded-full object-cover ring-1 ring-slate-200" %>
+<% else %>
+  <%# No whitespace inside the span — stray text nodes throw off flex/grid centering of initials. %>
+  <span class="<%= avatar_initials_circle_classes(user, local_assigns[:size]) %>"
+        aria-label="<%= user.display_name %> avatar"><%= user.initials %></span>
+<% end %>

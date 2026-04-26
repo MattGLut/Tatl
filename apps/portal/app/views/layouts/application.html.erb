@@ -56,8 +56,20 @@
                 </div>
               </div>
             <% end %>
-            <span class="text-slate-600">Hi, <%= current_user.display_name %></span>
-            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100" %>
+            <div class="relative group">
+              <%# p-0: strip UA button padding (it skews flex cross-axis vs the avatar). Greeting span: h-8 matches sm avatar so text centers in the same row height. %>
+              <button type="button" class="flex cursor-pointer items-center gap-2 rounded-md p-0 text-left text-slate-600 hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                <%= render "shared/avatar", user: current_user, size: :sm %>
+                <span class="flex h-8 items-center leading-none">Hi, <%= current_user.display_name %></span>
+              </button>
+              <div class="invisible absolute right-0 top-full z-10 w-48 pt-1 group-hover:visible group-focus-within:visible">
+                <div class="rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+                  <%= link_to "Account settings", edit_user_registration_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <hr class="my-1 border-slate-200">
+                  <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 cursor-pointer" %>
+                </div>
+              </div>
+            </div>
           <% else %>
             <%= link_to "Sign in", new_user_session_path, class: "rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100" %>
             <%= link_to "Sign up", new_user_registration_path, class: "rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700" %>
