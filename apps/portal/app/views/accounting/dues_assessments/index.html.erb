@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-bold">Dues Assessments</h1>
   <% if policy([:accounting, DuesAssessment.new]).create? %>
-    <%= link_to "New Assessment", new_accounting_dues_assessment_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+    <%= link_to "New Assessment", new_accounting_dues_assessment_path, class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700" %>
   <% end %>
 </div>
 
@@ -53,7 +53,7 @@
       <div>
         <span class="mb-1 block text-xs">&nbsp;</span>
         <div class="flex gap-2">
-          <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700" %>
+          <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700" %>
           <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
         </div>
       </div>
@@ -86,7 +86,7 @@
             </span>
           </td>
           <td class="px-4 py-3 text-right text-sm">
-            <%= link_to "View", accounting_dues_assessment_path(assessment), class: "text-indigo-600 hover:text-indigo-800" %>
+            <%= link_to "View", accounting_dues_assessment_path(assessment), class: "text-brand-600 hover:text-brand-800" %>
           </td>
         </tr>
       <% end %>

@@ -2,14 +2,14 @@
   <h1 class="text-2xl font-bold">Budget &mdash; FY <%= @fiscal_year %></h1>
   <div class="flex gap-2">
     <% if policy([:accounting, BudgetLine.new]).create? %>
-      <%= link_to "New Budget Line", new_accounting_budget_line_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+      <%= link_to "New Budget Line", new_accounting_budget_line_path, class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700" %>
     <% end %>
   </div>
 </div>
 
 <div class="mt-4 flex gap-2">
   <% ((Date.current.year - 1)..(Date.current.year + 1)).each do |year| %>
-    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? "bg-indigo-600 text-white" : "border border-slate-300 hover:bg-slate-100"}" %>
+    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? "bg-brand-600 text-white" : "border border-slate-300 hover:bg-slate-100"}" %>
   <% end %>
 </div>
 
@@ -31,7 +31,7 @@
           <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-slate-900"><%= humanized_money_with_symbol(bl.amount) %></td>
           <td class="px-4 py-3 text-right text-sm">
             <% if policy([:accounting, bl]).update? %>
-              <%= link_to "Edit", edit_accounting_budget_line_path(bl), class: "text-indigo-600 hover:text-indigo-800" %>
+              <%= link_to "Edit", edit_accounting_budget_line_path(bl), class: "text-brand-600 hover:text-brand-800" %>
             <% end %>
           </td>
         </tr>

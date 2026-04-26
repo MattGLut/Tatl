@@ -9,7 +9,7 @@
     <ul class="mt-4 space-y-3">
       <% @recent_tickets.each do |ticket| %>
         <li>
-          <%= link_to tickets_ticket_path(ticket), class: "block rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 text-sm transition hover:border-indigo-200 hover:bg-white" do %>
+          <%= link_to tickets_ticket_path(ticket), class: "block rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 text-sm transition hover:border-brand-200 hover:bg-white" do %>
             <div class="flex items-start justify-between gap-2">
               <span class="font-medium text-slate-900 line-clamp-1"><%= ticket.subject %></span>
               <span class="shrink-0 text-xs text-slate-500"><%= ticket.status.titleize %></span>
@@ -26,8 +26,8 @@
   <% end %>
 
   <p class="mt-4">
-    <%= link_to "View all tickets", tickets_tickets_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" %>
+    <%= link_to "View all tickets", tickets_tickets_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800" %>
     <span class="text-slate-300">&nbsp;&middot;&nbsp;</span>
-    <%= link_to "New ticket", new_tickets_ticket_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" %>
+    <%= link_to "New ticket", new_tickets_ticket_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800" %>
   </p>
 </div>

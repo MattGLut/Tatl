@@ -3,16 +3,16 @@
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-bold tracking-tight text-slate-900">Documents</h1>
   <% if policy(Document).create? %>
-    <%= link_to "Upload document", new_document_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+    <%= link_to "Upload document", new_document_path, class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700" %>
   <% end %>
 </div>
 
 <nav class="mt-4 flex gap-2">
   <%= link_to("All", documents_path,
-              class: params[:category].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+              class: params[:category].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
   <% Document.categories.each_key do |cat| %>
     <%= link_to(cat.humanize, documents_path(category: cat),
-                class: params[:category] == cat ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+                class: params[:category] == cat ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
   <% end %>
 </nav>
 
@@ -31,7 +31,7 @@
         <% @documents.each do |document| %>
           <tr class="hover:bg-slate-50">
             <td class="px-4 py-3 text-sm">
-              <%= link_to document.title, document_path(document), class: "font-medium text-indigo-600 hover:text-indigo-800" %>
+              <%= link_to document.title, document_path(document), class: "font-medium text-brand-600 hover:text-brand-800" %>
             </td>
             <td class="px-4 py-3 text-sm">
               <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= document.category.humanize %></span>
