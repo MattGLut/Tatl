@@ -1,0 +1,18 @@
+<div class="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-6">
+  <h2 class="text-lg font-semibold text-slate-900">Accounting &amp; reporting</h2>
+  <p class="mt-1 text-sm text-slate-600">Quick access to money reports and the chart of accounts.</p>
+  <ul class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-4">
+    <li>
+      <%= link_to "Dues aging", accounting_reports_dues_aging_path, class: "text-sm font-medium text-indigo-700 hover:text-indigo-900" %>
+    </li>
+    <li>
+      <%= link_to "Reserve balance", accounting_reports_reserve_balance_path, class: "text-sm font-medium text-indigo-700 hover:text-indigo-900" %>
+    </li>
+    <li>
+      <%= link_to "Summary report", accounting_reports_summary_path, class: "text-sm font-medium text-indigo-700 hover:text-indigo-900" %>
+    </li>
+    <li>
+      <%= link_to "All assessments", accounting_dues_assessments_path, class: "text-sm font-medium text-indigo-700 hover:text-indigo-900" %>
+    </li>
+  </ul>
+</div>

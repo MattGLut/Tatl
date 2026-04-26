@@ -40,6 +40,18 @@ RSpec.describe User do
     end
   end
 
+  describe "#staff?" do
+    it "is true for board, treasurer, and admin" do
+      expect(build(:user, :board)).to be_staff
+      expect(build(:user, :treasurer)).to be_staff
+      expect(build(:user, :admin)).to be_staff
+    end
+
+    it "is false for residents" do
+      expect(build(:user)).not_to be_staff
+    end
+  end
+
   describe "#display_name" do
     it "returns the full name when present" do
       user = build(:user, first_name: "Ada", last_name: "Lovelace")

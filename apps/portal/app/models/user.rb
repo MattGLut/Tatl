@@ -39,4 +39,8 @@ class User < ApplicationRecord
   def display_name
     full_name.presence || email
   end
+
+  def staff?
+    admin? || board? || treasurer?
+  end
 end

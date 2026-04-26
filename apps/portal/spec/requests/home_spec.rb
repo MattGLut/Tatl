@@ -9,15 +9,26 @@ RSpec.describe "Home" do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Welcome to NeIQhbor")
       expect(response.body).to include("Sign up")
+      expect(response.body).not_to include("Community overview")
     end
 
-    it "greets a signed-in user with their role" do
+    it "renders a staff dashboard for board members" do
       user = create(:user, :board, first_name: "Ada", last_name: "Lovelace")
       sign_in user
 
       get root_path
-      expect(response.body).to include("Ada Lovelace")
-      expect(response.body).to include("Board")
+      expect(response.body).to include("Hi, Ada Lovelace")
+      expect(response.body).to include("Community overview")
+      expect(response.body).to include("Support tickets")
+    end
+
+    it "renders a resident dashboard for residents" do
+      user = create(:user, first_name: "Rae", last_name: "Resident")
+      sign_in user
+
+      get root_path
+      expect(response.body).to include("Your account")
+      expect(response.body).to include("Your tickets")
     end
   end
 
