@@ -23,7 +23,7 @@
           </td>
           <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-400"><%= account.account_type.titleize %></td>
           <td class="px-4 py-3 text-sm">
-            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= account.active? ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300" %>">
+            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= account_status_pill_class(active: account.active?) %>">
               <%= account.active? ? "Active" : "Inactive" %>
             </span>
           </td>

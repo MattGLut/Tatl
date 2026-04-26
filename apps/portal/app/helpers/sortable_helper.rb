@@ -4,9 +4,16 @@ module SortableHelper
   DEFAULT_TH_CLASS = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider " \
                      "text-slate-500 dark:text-slate-400"
 
+  DEFAULT_TH_RIGHT_CLASS = "px-4 py-3 text-right text-xs font-medium uppercase " \
+                           "tracking-wider text-slate-500 dark:text-slate-400"
+
   # Render a <th> whose label links back to the current page with sort/dir
   # query params toggled. Existing query params (filters, etc.) are preserved;
   # the page param is dropped so a sort change always goes back to page 1.
+  def sortable_th_right_class
+    DEFAULT_TH_RIGHT_CLASS
+  end
+
   def sortable_th(column, label, default_dir: :asc, th_class: DEFAULT_TH_CLASS)
     column_str = column.to_s
     active = params[:sort].to_s == column_str

@@ -21,7 +21,7 @@
         <div class="flex-1 space-y-2">
           <%= f.label :avatar, "Profile picture", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
           <%= f.file_field :avatar, accept: User::AVATAR_CONTENT_TYPES.join(","),
-                                    class: "block w-full text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 dark:text-slate-300 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600" %>
+                                    class: registration_file_field_class %>
           <p class="text-xs text-slate-500 dark:text-slate-400">PNG, JPEG, GIF, or WebP. Max 5 MB.</p>
           <% if resource.avatar.attached? %>
             <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
@@ -36,19 +36,19 @@
         <div>
           <%= f.label :first_name, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
           <%= f.text_field :first_name, autocomplete: "given-name",
-                                        class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                        class: form_input_lg_class %>
         </div>
         <div>
           <%= f.label :last_name, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
           <%= f.text_field :last_name, autocomplete: "family-name",
-                                       class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                       class: form_input_lg_class %>
         </div>
       </div>
 
       <div>
         <%= f.label :email, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
         <%= f.email_field :email, autocomplete: "email",
-                                  class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                  class: form_input_lg_class %>
         <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
           <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">Pending confirmation for: <%= resource.unconfirmed_email %></p>
         <% end %>
@@ -57,13 +57,12 @@
       <div>
         <%= f.label :current_password, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
         <%= f.password_field :current_password, autocomplete: "current-password",
-                                                class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                                class: form_input_lg_class %>
         <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Only required if you're changing your email.</p>
       </div>
 
       <div class="flex justify-end">
-        <%= f.submit "Save profile",
-                     class: "rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 cursor-pointer" %>
+        <%= f.submit "Save profile", class: devise_form_submit_class %>
       </div>
     <% end %>
   </section>
@@ -75,7 +74,7 @@
     <div class="mt-6 flex gap-3">
       <button type="button"
               aria-pressed="false"
-              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 aria-pressed:border-brand-600 aria-pressed:bg-brand-600 aria-pressed:text-white dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:aria-pressed:border-brand-600 dark:aria-pressed:bg-brand-600 dark:aria-pressed:text-white"
+              class="<%= theme_appearance_mode_button_class %>"
               data-theme-target="modeButton"
               data-theme-mode-param="system"
               data-action="click->theme#setMode">
@@ -84,7 +83,7 @@
       </button>
       <button type="button"
               aria-pressed="false"
-              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 aria-pressed:border-brand-600 aria-pressed:bg-brand-600 aria-pressed:text-white dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:aria-pressed:border-brand-600 dark:aria-pressed:bg-brand-600 dark:aria-pressed:text-white"
+              class="<%= theme_appearance_mode_button_class %>"
               data-theme-target="modeButton"
               data-theme-mode-param="light"
               data-action="click->theme#setMode">
@@ -93,7 +92,7 @@
       </button>
       <button type="button"
               aria-pressed="false"
-              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 aria-pressed:border-brand-600 aria-pressed:bg-brand-600 aria-pressed:text-white dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:aria-pressed:border-brand-600 dark:aria-pressed:bg-brand-600 dark:aria-pressed:text-white"
+              class="<%= theme_appearance_mode_button_class %>"
               data-theme-target="modeButton"
               data-theme-mode-param="dark"
               data-action="click->theme#setMode">
@@ -114,25 +113,24 @@
       <div>
         <%= f.label :password, "New password", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
         <%= f.password_field :password, autocomplete: "new-password",
-                                        class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                        class: form_input_lg_class %>
       </div>
 
       <div>
         <%= f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
         <%= f.password_field :password_confirmation, autocomplete: "new-password",
-                                                     class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                                     class: form_input_lg_class %>
       </div>
 
       <div>
         <%= f.label :current_password, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
         <%= f.password_field :current_password, autocomplete: "current-password",
-                                                class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+                                                class: form_input_lg_class %>
         <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">We need your current password to confirm changes.</p>
       </div>
 
       <div class="flex justify-end">
-        <%= f.submit "Update password",
-                     class: "rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 cursor-pointer" %>
+        <%= f.submit "Update password", class: devise_form_submit_class %>
       </div>
     <% end %>
   </section>

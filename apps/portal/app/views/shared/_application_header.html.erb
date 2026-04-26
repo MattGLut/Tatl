@@ -128,7 +128,9 @@
             </div>
             <%= link_to "Account settings", edit_user_registration_path, class: "block rounded-md px-2 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
             <div>
-              <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "mt-1 w-full cursor-pointer rounded-md border-0 bg-transparent px-2 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
+              <%= button_to "Sign out", destroy_user_session_path,
+                            method: :delete,
+                            class: mobile_sign_out_button_class %>
             </div>
           </div>
         <% else %>

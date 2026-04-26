@@ -63,11 +63,13 @@
     <%= form_with(url: update_status_tickets_ticket_path(@ticket), method: :patch, scope: :ticket, class: "mt-3 flex flex-wrap items-end gap-4") do |f| %>
       <div>
         <%= f.label :status, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
-        <%= f.select :status, Ticket.statuses.keys.map { |s| [s.humanize, s] }, { selected: @ticket.status }, class: "mt-1 block rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+        <%= f.select :status, Ticket.statuses.keys.map { |s| [s.humanize, s] }, { selected: @ticket.status },
+                     class: ticket_admin_select_class %>
       </div>
       <div>
         <%= f.label :priority, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
-        <%= f.select :priority, Ticket.priorities.keys.map { |p| [p.humanize, p] }, { selected: @ticket.priority }, class: "mt-1 block rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+        <%= f.select :priority, Ticket.priorities.keys.map { |p| [p.humanize, p] }, { selected: @ticket.priority },
+                     class: ticket_admin_select_class %>
       </div>
       <%= f.submit "Update", class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 cursor-pointer" %>
     <% end %>
@@ -126,11 +128,11 @@
     <% end %>
 
     <div>
-      <%= f.text_area :body, rows: 3, placeholder: "Write your comment...", class: "block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" %>
+      <%= f.text_area :body, rows: 3, placeholder: "Write your comment...", class: comment_text_area_class %>
     </div>
     <div>
       <%= f.label :file, "Attach a file (optional)", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
-      <%= f.file_field :file, class: "mt-1 block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-slate-400 dark:file:bg-brand-900/30 dark:file:text-brand-400 dark:hover:file:bg-brand-900/50" %>
+      <%= f.file_field :file, class: document_file_input_class %>
     </div>
     <div class="flex justify-end">
       <%= f.submit "Post comment", class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 cursor-pointer" %>

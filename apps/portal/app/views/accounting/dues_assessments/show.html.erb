@@ -70,7 +70,10 @@
               <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-400"><%= payment.reference %></td>
               <td class="px-4 py-3 text-right text-sm">
                 <% if policy([:accounting, payment]).destroy? %>
-                  <%= button_to "Remove", accounting_dues_assessment_payment_path(@assessment, payment), method: :delete, class: "cursor-pointer text-rose-600 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-300", data: { turbo_confirm: "Are you sure?" } %>
+                  <%= button_to "Remove", accounting_dues_assessment_payment_path(@assessment, payment),
+                                method: :delete,
+                                class: "cursor-pointer text-rose-600 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-300",
+                                data: { turbo_confirm: "Are you sure?" } %>
                 <% end %>
               </td>
             </tr>

@@ -1,6 +1,22 @@
 # frozen_string_literal: true
 
 module AccountingHelper
+  def account_status_pill_class(active:)
+    if active
+      "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400"
+    else
+      "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+    end
+  end
+
+  def budget_fiscal_year_pill_class(year, current_year:)
+    if year == current_year
+      "bg-brand-600 text-white"
+    else
+      "border border-slate-300 dark:border-slate-600 " \
+        "hover:bg-slate-100 dark:hover:bg-slate-700"
+    end
+  end
   ASSESSMENT_STATUS_CLASSES = {
     "open" => "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
     "partial" => "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",

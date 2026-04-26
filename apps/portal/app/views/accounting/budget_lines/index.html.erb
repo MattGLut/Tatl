@@ -9,7 +9,8 @@
 
 <div class="mt-4 flex gap-2">
   <% ((Date.current.year - 1)..(Date.current.year + 1)).each do |year| %>
-    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? "bg-brand-600 text-white" : "border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700"}" %>
+    <%= link_to year, accounting_budget_lines_path(fiscal_year: year),
+                class: "rounded-md px-3 py-1.5 text-sm #{budget_fiscal_year_pill_class(year, current_year: @fiscal_year)}" %>
   <% end %>
 </div>
 
@@ -19,7 +20,7 @@
       <tr>
         <%= sortable_th "account", "Account" %>
         <%= sortable_th "description", "Description" %>
-        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: "px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400" %>
+        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: sortable_th_right_class %>
         <th class="px-4 py-3"></th>
       </tr>
     </thead>
