@@ -16,7 +16,7 @@
     </div>
     <div>
       <dt class="text-sm font-medium text-slate-500">Amount</dt>
-      <dd class="mt-1 text-sm font-medium <%= @transaction.amount_cents.negative? ? 'text-rose-600' : 'text-emerald-600' %>">
+      <dd class="mt-1 text-sm font-medium <%= @transaction.amount_cents.negative? ? "text-rose-600" : "text-emerald-600" %>">
         <%= humanized_money_with_symbol(@transaction.amount) %>
       </dd>
     </div>

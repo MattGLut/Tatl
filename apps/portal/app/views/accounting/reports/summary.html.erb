@@ -20,9 +20,12 @@
 <div class="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
   <h2 class="text-lg font-semibold text-slate-900">Income vs Expenses</h2>
   <div class="mt-4">
-    <%= line_chart [
-      { name: "Income", data: @income_by_month },
-      { name: "Expenses", data: @expense_by_month }
-    ], prefix: "$", colors: ["#10b981", "#f43f5e"] %>
+    <%= line_chart(
+          [
+            { name: "Income", data: @income_by_month },
+            { name: "Expenses", data: @expense_by_month }
+          ],
+          prefix: "$", colors: ["#10b981", "#f43f5e"]
+        ) %>
   </div>
 </div>

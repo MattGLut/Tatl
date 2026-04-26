@@ -22,7 +22,7 @@
           <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-600"><%= txn.transacted_on.strftime("%b %d, %Y") %></td>
           <td class="px-4 py-3 text-sm text-slate-600"><%= txn.account.name %></td>
           <td class="px-4 py-3 text-sm text-slate-900"><%= txn.memo %></td>
-          <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium <%= txn.amount_cents.negative? ? 'text-rose-600' : 'text-emerald-600' %>">
+          <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium <%= txn.amount_cents.negative? ? "text-rose-600" : "text-emerald-600" %>">
             <%= humanized_money_with_symbol(txn.amount) %>
           </td>
           <td class="px-4 py-3 text-right text-sm">

@@ -9,7 +9,7 @@
 
 <div class="mt-4 flex gap-2">
   <% ((Date.current.year - 1)..(Date.current.year + 1)).each do |year| %>
-    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? 'bg-indigo-600 text-white' : 'border border-slate-300 hover:bg-slate-100'}" %>
+    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? "bg-indigo-600 text-white" : "border border-slate-300 hover:bg-slate-100"}" %>
   <% end %>
 </div>
 
