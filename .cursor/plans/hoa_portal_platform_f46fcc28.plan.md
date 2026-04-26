@@ -1,6 +1,6 @@
 ---
 name: Tatl - HOA Portal Platform
-overview: "Tatl: a Rails 8 resident portal for HOA management. Doorkeeper OIDC IdP is live for Zammad (tickets) and Discourse (forum) SSO. Future slices add accounting ledger, n8n + LightRAG (RAG chat), and sidecar service wiring. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
+overview: "Tatl: a Rails 8 resident portal for HOA management. Doorkeeper OIDC IdP is live for Zammad (tickets) and Discourse (forum) SSO. Native ticketing system built into the portal (Ticket + TicketComment models, Pundit policies, email notifications, demo seed data). Future slices add document/LightRAG sync, n8n chat, and sidecar service wiring. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
 todos:
   - id: scaffold_rails
     content: Scaffold Rails 8 app (apps/portal) with PostgreSQL, Tailwind, Solid Queue/Cache/Cable; skip Minitest in favor of RSpec
@@ -32,6 +32,12 @@ todos:
   - id: accounting_ledger
     content: Build ledger-lite accounting (Account, Transaction, DuesAssessment, DuesPayment, BudgetLine) with model + policy specs and treasurer report request specs
     status: completed
+  - id: seed_data
+    content: "Demo seed data via rake demo:seed (users, properties, memberships, accounts, transactions, assessments, payments, budget lines, tickets, comments) with demo:teardown"
+    status: completed
+  - id: native_ticketing
+    content: "Native ticketing system: Ticket + TicketComment models, Tickets:: controller namespace, Pundit policies (residents own, staff all), TicketMailer (new ticket, status change, comment notifications), Tailwind UI, demo seed data, full RSpec coverage"
+    status: completed
   - id: documents_lightrag
     content: Document upload UI + Active Job pushing/updating docs to LightRAG, with VCR-backed job specs and sync-state tracking
     status: pending
@@ -54,7 +60,7 @@ todos:
     content: Provision production EC2, deploy natively with systemd; RDS Multi-AZ with backups, S3 lifecycle, CloudWatch + Sentry; manual tagged deploy from master
     status: pending
   - id: seed_and_docs
-    content: Seed data (sample HOA, accounts, properties, sample policies) and write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env)
+    content: "Write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env). Seed data is complete via demo:seed."
     status: pending
 isProject: false
 ---
@@ -69,7 +75,7 @@ isProject: false
 - **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for later slices (sidecar services only).
 - **Local Postgres:** Windows service `postgresql-x64-18`. Role `tatl` (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) on PATH. Credentials in `.env.development` (gitignored).
 - **Staging runtime:** EC2 Ubuntu 24.04, rbenv Ruby 3.4.8, systemd units for Puma + Solid Queue, Caddy reverse proxy. `deploy` user owns `/opt/tatl`. Env vars in `/opt/tatl/.env.production`.
-- **Execution order:** ship in thin slices. Slices 1-5 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document) + Doorkeeper OIDC IdP + Accounting Ledger. Next = documents/LightRAG, then chat/n8n, sidecar services.
+- **Execution order:** ship in thin slices. Slices 1-7 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document) + Doorkeeper OIDC IdP + Accounting Ledger + Demo Seed Data + Native Ticketing (Ticket, TicketComment). Next = documents/LightRAG, then chat/n8n, sidecar services.
 
 ## Architecture
 
@@ -124,6 +130,9 @@ Models (key ones):
   - `Transaction` (date, amount, account, memo, attachment)
   - `DuesAssessment`, `DuesPayment` (linked to Property)
   - `BudgetLine` per fiscal year
+- **Ticketing:**
+  - `Ticket` (subject, description, category enum, priority enum, status enum, belongs_to user + optional property, closed_at)
+  - `TicketComment` (body, belongs_to ticket + user, optional Active Storage file attachment)
 - `OauthApplication`, `AccessToken` (Doorkeeper)
 - `ChatSession`, `ChatMessage` (proxied to n8n)
 
@@ -133,6 +142,7 @@ Controllers / namespaces:
 - `MembershipsController` - nested under properties (staff-only create/edit/destroy)
 - `DocumentsController` - index/show/new/create/destroy with category filtering (staff manages, residents see published only)
 - `Portal::`* (future) - dashboard, dues, payments
+- `Tickets::`* - ticket index/show/new/create (all users), status/priority management (staff), comments with file attachments
 - `Accounting::`* - admin/treasurer tools, reports
 - `Chat::`* - chat UI -> POSTs to n8n webhook, streams reply via Turbo Streams
 - `Oauth::`* - mounted from Doorkeeper

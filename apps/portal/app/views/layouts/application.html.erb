@@ -31,6 +31,7 @@
           <% if user_signed_in? %>
             <%= link_to "Properties", properties_path, class: "text-slate-600 hover:text-indigo-600" %>
             <%= link_to "Documents", documents_path, class: "text-slate-600 hover:text-indigo-600" %>
+            <%= link_to "Tickets", tickets_tickets_path, class: "text-slate-600 hover:text-indigo-600" %>
             <%= link_to "Dues", accounting_dues_assessments_path, class: "text-slate-600 hover:text-indigo-600" %>
             <% if current_user.admin? || current_user.board? || current_user.treasurer? %>
               <div class="relative group">

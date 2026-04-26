@@ -4,6 +4,7 @@ class Property < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :dues_assessments, dependent: :destroy
+  has_many :tickets, dependent: :nullify
 
   enum :property_type, {
     single_family: 0,
