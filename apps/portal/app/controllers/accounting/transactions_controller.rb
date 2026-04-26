@@ -66,7 +66,7 @@ module Accounting
 
     def transaction_account_id_param
       s = params[:account_id].to_s
-      return if s !~ /\A[1-9]\d*\z/
+      return unless s.match?(/\A[1-9]\d*\z/)
 
       s.to_i
     end

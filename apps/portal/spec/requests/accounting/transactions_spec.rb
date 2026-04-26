@@ -42,38 +42,17 @@ RSpec.describe "Accounting::Transactions" do
     end
 
     it "filters by transacted date range" do
-      create(
-        :transaction,
-        transacted_on: Date.new(2026, 4, 1),
-        memo: "In range"
-      )
-      create(
-        :transaction,
-        transacted_on: Date.new(2026, 1, 1),
-        memo: "Too early"
-      )
-
+      create(:transaction, transacted_on: Date.new(2026, 4, 1), memo: "In range")
+      create(:transaction, transacted_on: Date.new(2026, 1, 1), memo: "Too early")
       sign_in treasurer
-      get accounting_transactions_path(
-        transacted_on_start: "2026-03-15",
-        transacted_on_end: "2026-04-15"
-      )
+      get accounting_transactions_path(transacted_on_start: "2026-03-15", transacted_on_end: "2026-04-15")
       expect(response.body).to include("In range")
       expect(response.body).not_to include("Too early")
     end
 
     it "filters from transacted_on_start when end is open" do
-      create(
-        :transaction,
-        transacted_on: Date.new(2026, 5, 1),
-        memo: "After cutoff"
-      )
-      create(
-        :transaction,
-        transacted_on: Date.new(2025, 1, 1),
-        memo: "Before cutoff"
-      )
-
+      create(:transaction, transacted_on: Date.new(2026, 5, 1), memo: "After cutoff")
+      create(:transaction, transacted_on: Date.new(2025, 1, 1), memo: "Before cutoff")
       sign_in treasurer
       get accounting_transactions_path(transacted_on_start: "2026-01-01")
       expect(response.body).to include("After cutoff")
@@ -128,23 +107,17 @@ RSpec.describe "Accounting::Transactions" do
       end
 
       it "keeps account and date in pagination next link" do
-        a = create(:account, name: "Pagy Acct")
+        acct = create(:account, name: "Pagy Acct")
+        d = "2020-01-15"
         with_pagy_limit(1) do
-          create_list(:transaction, 2, account: a)
-          acct_id = a.id
-          d = "2020-01-15"
-
+          create_list(:transaction, 2, account: acct)
           sign_in treasurer
           get accounting_transactions_path(
-            account_id: acct_id,
-            transacted_on_start: d,
-            transacted_on_end: "2030-12-31"
+            account_id: acct.id, transacted_on_start: d, transacted_on_end: "2030-12-31"
           )
         end
-        expect(response.body).to include("Next")
-        expect(response.body).to include("account_id=")
-        expect(response.body).to include("transacted_on_start=")
-        expect(response.body).to include(a.id.to_s)
+        expect(response.body).to include("Next", "account_id=", "transacted_on_start=")
+        expect(response.body).to include(acct.id.to_s)
       end
     end
   end

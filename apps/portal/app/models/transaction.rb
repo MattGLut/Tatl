@@ -14,6 +14,6 @@ class Transaction < ApplicationRecord
   scope :recent, -> { order(transacted_on: :desc, created_at: :desc) }
   scope :for_account, ->(account_id) { where(account_id: account_id) }
   scope :in_period, ->(start_date, end_date) { where(transacted_on: start_date..end_date) }
-  scope :transacted_on_or_after, ->(date) { where("transacted_on >= ?", date) }
-  scope :transacted_on_or_before, ->(date) { where("transacted_on <= ?", date) }
+  scope :transacted_on_or_after, ->(date) { where(transacted_on: date..) }
+  scope :transacted_on_or_before, ->(date) { where(transacted_on: ..date) }
 end

@@ -16,19 +16,7 @@ module Accounting
     def index
       authorize DuesAssessment, :index?, policy_class: Accounting::DuesAssessmentPolicy
       @filter_properties = policy_scope(Property, policy_scope_class: PropertyPolicy::Scope).order(:name)
-      scope = policy_scope(DuesAssessment, policy_scope_class: Accounting::DuesAssessmentPolicy::Scope)
-              .includes(:property, :dues_payments)
-              .references(:property)
-      scope = scope.for_property(dues_property_id_param) if dues_property_id_param
-      if (s = params[:status].presence) && DuesAssessment.statuses.key?(s)
-        scope = scope.where(status: s)
-      end
-      if (d = date_from_param(:due_on_or_after))
-        scope = scope.due_on_or_after(d)
-      end
-      if (d = date_from_param(:due_on_or_before))
-        scope = scope.due_on_or_before(d)
-      end
+      scope = apply_dues_index_filters(dues_assessments_index_scope)
       scope = apply_sort(scope, allowed: DUES_ASSESSMENT_SORTS, default: { due_date: :desc })
       @pagy, @assessments = pagy(scope)
     end
@@ -80,9 +68,28 @@ module Accounting
 
     def dues_property_id_param
       s = params[:property_id].to_s
-      return if s !~ /\A[1-9]\d*\z/
+      return unless s.match?(/\A[1-9]\d*\z/)
 
       s.to_i
+    end
+
+    def dues_assessments_index_scope
+      policy_scope(DuesAssessment, policy_scope_class: Accounting::DuesAssessmentPolicy::Scope)
+        .includes(:property, :dues_payments)
+        .references(:property)
+    end
+
+    def apply_dues_index_filters(scope)
+      scope = scope.for_property(dues_property_id_param) if dues_property_id_param
+      s = params[:status].presence
+      scope = scope.where(status: s) if s && DuesAssessment.statuses.key?(s)
+      if (d = date_from_param(:due_on_or_after))
+        scope = scope.due_on_or_after(d)
+      end
+      if (d = date_from_param(:due_on_or_before))
+        scope = scope.due_on_or_before(d)
+      end
+      scope
     end
   end
 end

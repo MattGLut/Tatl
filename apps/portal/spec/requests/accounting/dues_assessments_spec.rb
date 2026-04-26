@@ -66,27 +66,15 @@ RSpec.describe "Accounting::DuesAssessments" do
     end
 
     it "filters by due date range" do
-      in_name = "Due range keep prop"
-      out_name = "Due range skip prop"
-      create(
-        :dues_assessment,
-        property: create(:property, name: in_name),
-        due_date: Date.new(2026, 2, 10)
-      )
-      create(
-        :dues_assessment,
-        property: create(:property, name: out_name),
-        due_date: Date.new(2026, 6, 1)
-      )
-
+      in_p = create(:property, name: "Due range keep prop")
+      out_p = create(:property, name: "Due range skip prop")
+      create(:dues_assessment, property: in_p, due_date: Date.new(2026, 2, 10))
+      create(:dues_assessment, property: out_p, due_date: Date.new(2026, 6, 1))
       sign_in treasurer
-      get accounting_dues_assessments_path(
-        due_on_or_after: "2026-02-01",
-        due_on_or_before: "2026-02-28"
-      )
+      get accounting_dues_assessments_path(due_on_or_after: "2026-02-01", due_on_or_before: "2026-02-28")
       tbody = first_table_tbody_text(response)
-      expect(tbody).to include(in_name)
-      expect(tbody).not_to include(out_name)
+      expect(tbody).to include(in_p.name)
+      expect(tbody).not_to include(out_p.name)
     end
 
     it "invalid status param does not error and lists all" do

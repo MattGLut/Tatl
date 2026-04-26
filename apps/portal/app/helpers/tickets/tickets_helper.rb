@@ -14,9 +14,7 @@ module Tickets
     ].freeze
 
     def tickets_index_path_params(extra = {})
-      FILTER_PARAM_KEYS.index_with { |k| params[k] }
-        .merge(extra)
-        .compact_blank
+      FILTER_PARAM_KEYS.index_with { |k| params[k] }.merge(extra).compact_blank
     end
   end
 end
