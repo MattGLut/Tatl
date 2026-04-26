@@ -7,7 +7,7 @@ RSpec.describe "Home" do
     it "renders the landing page for guests" do
       get root_path
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Welcome to Tatl")
+      expect(response.body).to include("Welcome to NeIQhbor")
       expect(response.body).to include("Sign up")
     end
 

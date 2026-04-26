@@ -4,7 +4,7 @@
       <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#1e293b;">Confirm your email</h1>
       <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#475569;">Hi <%= @resource.first_name.presence || @resource.email %>,</p>
       <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#475569;">
-        Welcome to Tatl! Please confirm your email address by clicking the button below.
+        Welcome to NeIQhbor! Please confirm your email address by clicking the button below.
       </p>
       <p style="margin:0 0 24px;">
         <a href="<%= confirmation_url(@resource, confirmation_token: @token) %>"
