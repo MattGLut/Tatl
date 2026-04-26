@@ -42,6 +42,10 @@ gem "view_component"
 # Domain helpers
 gem "money-rails"
 
+# Reporting / charts
+gem "chartkick"
+gem "groupdate"
+
 # Observability
 gem "lograge"
 

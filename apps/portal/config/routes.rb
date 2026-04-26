@@ -7,6 +7,18 @@ Rails.application.routes.draw do
 
   resources :documents, only: %i[index show new create destroy]
 
+  namespace :accounting do
+    resources :accounts
+    resources :transactions
+    resources :dues_assessments, path: "dues" do
+      resources :payments, controller: "dues_payments", only: %i[new create destroy]
+    end
+    resources :budget_lines, only: %i[index new create edit update destroy]
+    get "reports/summary", to: "reports#summary"
+    get "reports/dues_aging", to: "reports#dues_aging"
+    get "reports/reserve_balance", to: "reports#reserve_balance"
+  end
+
   use_doorkeeper do
     skip_controllers :applications, :authorized_applications
   end

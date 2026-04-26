@@ -1,0 +1,38 @@
+<h1 class="text-2xl font-bold">Record Payment</h1>
+<p class="mt-1 text-sm text-slate-500">
+  For: <%= @assessment.property.name %> &mdash; <%= humanized_money_with_symbol(@assessment.amount) %> due <%= @assessment.due_date.strftime("%b %d, %Y") %>
+</p>
+
+<div class="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+  <%= form_with(model: @payment, url: accounting_dues_assessment_payments_path(@assessment), class: "space-y-6") do |f| %>
+    <% if @payment.errors.any? %>
+      <div class="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+        <ul class="list-inside list-disc">
+          <% @payment.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :amount, class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :amount, value: @payment.amount.to_f.nonzero?, placeholder: "0.00", class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :paid_on, "Date Paid", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.date_field :paid_on, value: @payment.paid_on || Date.current, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :reference, "Reference (check number, etc.)", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :reference, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div class="flex gap-2">
+      <%= f.submit "Record Payment", class: "rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 cursor-pointer" %>
+      <%= link_to "Cancel", accounting_dues_assessment_path(@assessment), class: "rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    </div>
+  <% end %>
+</div>

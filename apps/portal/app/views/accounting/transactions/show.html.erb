@@ -1,0 +1,38 @@
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-bold">Transaction Details</h1>
+  <div class="flex gap-2">
+    <% if policy([:accounting, @transaction]).update? %>
+      <%= link_to "Edit", edit_accounting_transaction_path(@transaction), class: "rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100" %>
+    <% end %>
+    <%= link_to "Back", accounting_transactions_path, class: "rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100" %>
+  </div>
+</div>
+
+<div class="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+  <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <dt class="text-sm font-medium text-slate-500">Date</dt>
+      <dd class="mt-1 text-sm text-slate-900"><%= @transaction.transacted_on.strftime("%B %d, %Y") %></dd>
+    </div>
+    <div>
+      <dt class="text-sm font-medium text-slate-500">Amount</dt>
+      <dd class="mt-1 text-sm font-medium <%= @transaction.amount_cents.negative? ? 'text-rose-600' : 'text-emerald-600' %>">
+        <%= humanized_money_with_symbol(@transaction.amount) %>
+      </dd>
+    </div>
+    <div>
+      <dt class="text-sm font-medium text-slate-500">Account</dt>
+      <dd class="mt-1 text-sm text-slate-900"><%= @transaction.account.name %></dd>
+    </div>
+    <div>
+      <dt class="text-sm font-medium text-slate-500">Recorded By</dt>
+      <dd class="mt-1 text-sm text-slate-900"><%= @transaction.recorded_by.display_name %></dd>
+    </div>
+    <% if @transaction.memo.present? %>
+      <div class="sm:col-span-2">
+        <dt class="text-sm font-medium text-slate-500">Memo</dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= @transaction.memo %></dd>
+      </div>
+    <% end %>
+  </dl>
+</div>
