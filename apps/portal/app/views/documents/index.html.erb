@@ -7,12 +7,11 @@
   <% end %>
 </div>
 
-<nav class="mt-4 flex gap-2">
-  <%= link_to("All", documents_path,
-              class: params[:category].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+<nav class="mt-4 flex flex-wrap gap-2" aria-label="Document categories">
+  <%= link_to "All", documents_path, class: document_category_filter_pill_class(active: params[:category].blank?) %>
   <% Document.categories.each_key do |cat| %>
-    <%= link_to(cat.humanize, documents_path(category: cat),
-                class: params[:category] == cat ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+    <%= link_to cat.humanize, documents_path(category: cat),
+                class: document_category_filter_pill_class(active: params[:category] == cat) %>
   <% end %>
 </nav>
 
