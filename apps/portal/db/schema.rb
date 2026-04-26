@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_26_120007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.integer "account_type", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_type"], name: "index_accounts_on_account_type"
+    t.index ["active"], name: "index_accounts_on_active"
+    t.index ["name"], name: "index_accounts_on_name", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -42,6 +54,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "budget_lines", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.integer "amount_cents", default: 0, null: false
+    t.string "amount_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.integer "fiscal_year", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "fiscal_year"], name: "index_budget_lines_on_account_id_and_fiscal_year", unique: true
+    t.index ["account_id"], name: "index_budget_lines_on_account_id"
+  end
+
   create_table "documents", force: :cascade do |t|
     t.integer "category", default: 0, null: false
     t.datetime "created_at", null: false
@@ -56,6 +80,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
     t.index ["published_at"], name: "index_documents_on_published_at"
     t.index ["rag_sync_status"], name: "index_documents_on_rag_sync_status"
     t.index ["uploaded_by_id"], name: "index_documents_on_uploaded_by_id"
+  end
+
+  create_table "dues_assessments", force: :cascade do |t|
+    t.integer "amount_cents", default: 0, null: false
+    t.string "amount_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.date "due_date", null: false
+    t.date "period_end", null: false
+    t.date "period_start", null: false
+    t.bigint "property_id", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "transaction_id"
+    t.datetime "updated_at", null: false
+    t.index ["due_date"], name: "index_dues_assessments_on_due_date"
+    t.index ["property_id"], name: "index_dues_assessments_on_property_id"
+    t.index ["status"], name: "index_dues_assessments_on_status"
+    t.index ["transaction_id"], name: "index_dues_assessments_on_transaction_id"
+  end
+
+  create_table "dues_payments", force: :cascade do |t|
+    t.integer "amount_cents", default: 0, null: false
+    t.string "amount_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.bigint "dues_assessment_id", null: false
+    t.date "paid_on", null: false
+    t.string "reference"
+    t.bigint "transaction_id"
+    t.datetime "updated_at", null: false
+    t.index ["dues_assessment_id"], name: "index_dues_payments_on_dues_assessment_id"
+    t.index ["paid_on"], name: "index_dues_payments_on_paid_on"
+    t.index ["transaction_id"], name: "index_dues_payments_on_transaction_id"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -255,6 +311,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.integer "amount_cents", default: 0, null: false
+    t.string "amount_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.text "memo"
+    t.bigint "recorded_by_id", null: false
+    t.date "transacted_on", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_transactions_on_account_id"
+    t.index ["recorded_by_id"], name: "index_transactions_on_recorded_by_id"
+    t.index ["transacted_on"], name: "index_transactions_on_transacted_on"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -287,7 +357,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "budget_lines", "accounts"
   add_foreign_key "documents", "users", column: "uploaded_by_id"
+  add_foreign_key "dues_assessments", "properties"
+  add_foreign_key "dues_assessments", "transactions"
+  add_foreign_key "dues_payments", "dues_assessments"
+  add_foreign_key "dues_payments", "transactions"
   add_foreign_key "memberships", "properties"
   add_foreign_key "memberships", "users"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
@@ -301,4 +376,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_115425) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "transactions", "accounts"
+  add_foreign_key "transactions", "users", column: "recorded_by_id"
 end

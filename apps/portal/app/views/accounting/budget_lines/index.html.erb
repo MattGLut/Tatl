@@ -1,0 +1,48 @@
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-bold">Budget &mdash; FY <%= @fiscal_year %></h1>
+  <div class="flex gap-2">
+    <% if policy([:accounting, BudgetLine.new]).create? %>
+      <%= link_to "New Budget Line", new_accounting_budget_line_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="mt-4 flex gap-2">
+  <% ((Date.current.year - 1)..(Date.current.year + 1)).each do |year| %>
+    <%= link_to year, accounting_budget_lines_path(fiscal_year: year), class: "rounded-md px-3 py-1.5 text-sm #{year == @fiscal_year ? "bg-indigo-600 text-white" : "border border-slate-300 hover:bg-slate-100"}" %>
+  <% end %>
+</div>
+
+<div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-slate-200">
+    <thead class="bg-slate-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Account</th>
+        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Description</th>
+        <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500">Amount</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200">
+      <% @budget_lines.each do |bl| %>
+        <tr>
+          <td class="px-4 py-3 text-sm text-slate-900"><%= bl.account.name %></td>
+          <td class="px-4 py-3 text-sm text-slate-600"><%= bl.description %></td>
+          <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-slate-900"><%= humanized_money_with_symbol(bl.amount) %></td>
+          <td class="px-4 py-3 text-right text-sm">
+            <% if policy([:accounting, bl]).update? %>
+              <%= link_to "Edit", edit_accounting_budget_line_path(bl), class: "text-indigo-600 hover:text-indigo-800" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @budget_lines.any? %>
+        <tr class="bg-slate-50 font-medium">
+          <td class="px-4 py-3 text-sm text-slate-900" colspan="2">Total</td>
+          <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-slate-900"><%= humanized_money_with_symbol(Money.new(@budget_lines.sum(:amount_cents), "USD")) %></td>
+          <td></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

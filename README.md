@@ -37,6 +37,15 @@ Rails 8.1 app at `apps/portal/` with:
   - `Document` (HOA documents with Active Storage file attachments, categories, published/draft state)
 - Full CRUD UI for properties, memberships (nested), and documents with category filtering
 - Pundit policies: staff (admin/board/treasurer) manages; residents view their own properties and published documents
+- **Doorkeeper OIDC Identity Provider** (RS256, auth code flow, custom `roles` claim, JWKS endpoint)
+- **Accounting ledger (single-entry):**
+  - `Account` (chart of accounts: operating, reserve, income, expense)
+  - `Transaction` (signed amounts with money-rails, Active Storage attachments)
+  - `DuesAssessment` (billed to properties, auto-status: open/partial/paid/overdue)
+  - `DuesPayment` (payments against assessments with auto-recalculation)
+  - `BudgetLine` (annual budget per account)
+- Treasurer reports: financial summary with chartkick charts, dues aging by bucket, reserve balance over time
+- Accounting namespace with Pundit policies: treasurer/admin write, board read, residents see own dues
 - SendGrid SMTP for transactional email in staging/production (confirmations, password resets, unlocks)
 - Letter Opener Web at `/letters` for development emails
 - RSpec test suite with FactoryBot, shoulda-matchers, pundit-matchers, Capybara + Cuprite, WebMock, VCR, SimpleCov
@@ -182,11 +191,9 @@ Devise sends confirmation, password reset, unlock, email change, and password ch
 
 ## Roadmap (later slices)
 
-1. Doorkeeper + doorkeeper-openid_connect (OIDC IdP)
-2. Accounting ledger: Account, Transaction, DuesAssessment, DuesPayment, BudgetLine
-3. Document upload with LightRAG sync job
-4. Chat UI proxied to n8n with Turbo Streams
-5. Docker Compose for sidecar services: Zammad, Discourse, n8n, LightRAG
-6. Zammad and Discourse SSO via Tatl OIDC
-7. Production environment: EC2 + RDS + S3 + Cloudflare DNS + SendGrid (in `us-east-2`)
-8. Deploy-to-prod workflow (merge `develop` -> `master`)
+1. Document upload with LightRAG sync job
+2. Chat UI proxied to n8n with Turbo Streams
+3. Docker Compose for sidecar services: Zammad, Discourse, n8n, LightRAG
+4. Zammad and Discourse SSO via Tatl OIDC
+5. Production environment: EC2 + RDS + S3 + Cloudflare DNS + SendGrid (in `us-east-2`)
+6. Deploy-to-prod workflow (merge `develop` -> `master`)

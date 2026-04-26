@@ -1,0 +1,31 @@
+<h1 class="text-2xl font-bold">Financial Summary</h1>
+<p class="mt-1 text-sm text-slate-500"><%= @start_date.strftime("%b %d, %Y") %> &ndash; <%= @end_date.strftime("%b %d, %Y") %></p>
+
+<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900">Income by Month</h2>
+    <div class="mt-4">
+      <%= column_chart @income_by_month, prefix: "$", colors: ["#10b981"], library: { plugins: { legend: { display: false } } } %>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900">Expenses by Month</h2>
+    <div class="mt-4">
+      <%= column_chart @expense_by_month, prefix: "$", colors: ["#f43f5e"], library: { plugins: { legend: { display: false } } } %>
+    </div>
+  </div>
+</div>
+
+<div class="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+  <h2 class="text-lg font-semibold text-slate-900">Income vs Expenses</h2>
+  <div class="mt-4">
+    <%= line_chart(
+          [
+            { name: "Income", data: @income_by_month },
+            { name: "Expenses", data: @expense_by_month }
+          ],
+          prefix: "$", colors: ["#10b981", "#f43f5e"]
+        ) %>
+  </div>
+</div>

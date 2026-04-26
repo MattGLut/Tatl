@@ -16,6 +16,10 @@ class User < ApplicationRecord
                                 foreign_key: :uploaded_by_id,
                                 dependent: :nullify,
                                 inverse_of: :uploaded_by
+  has_many :recorded_transactions, class_name: "Transaction",
+                                   foreign_key: :recorded_by_id,
+                                   dependent: :restrict_with_error,
+                                   inverse_of: :recorded_by
 
   enum :role, {
     resident: 0,

@@ -1,6 +1,6 @@
 ---
 name: Tatl - HOA Portal Platform
-overview: "Tatl: a Rails 8 resident portal for HOA management. Future slices add OIDC IdP for Zammad (tickets) and Discourse (forum), n8n + LightRAG (RAG chat), and a lightweight accounting ledger. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
+overview: "Tatl: a Rails 8 resident portal for HOA management. Doorkeeper OIDC IdP is live for Zammad (tickets) and Discourse (forum) SSO. Future slices add accounting ledger, n8n + LightRAG (RAG chat), and sidecar service wiring. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
 todos:
   - id: scaffold_rails
     content: Scaffold Rails 8 app (apps/portal) with PostgreSQL, Tailwind, Solid Queue/Cache/Cable; skip Minitest in favor of RSpec
@@ -28,10 +28,10 @@ todos:
     status: completed
   - id: doorkeeper_oidc
     content: Configure Doorkeeper + doorkeeper-openid_connect as OIDC IdP with custom roles claim and JWKS; spec coverage for token/userinfo/JWKS endpoints
-    status: pending
+    status: completed
   - id: accounting_ledger
     content: Build ledger-lite accounting (Account, Transaction, DuesAssessment, DuesPayment, BudgetLine) with model + policy specs and treasurer report request specs
-    status: pending
+    status: completed
   - id: documents_lightrag
     content: Document upload UI + Active Job pushing/updating docs to LightRAG, with VCR-backed job specs and sync-state tracking
     status: pending
@@ -69,7 +69,7 @@ isProject: false
 - **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for later slices (sidecar services only).
 - **Local Postgres:** Windows service `postgresql-x64-18`. Role `tatl` (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) on PATH. Credentials in `.env.development` (gitignored).
 - **Staging runtime:** EC2 Ubuntu 24.04, rbenv Ruby 3.4.8, systemd units for Puma + Solid Queue, Caddy reverse proxy. `deploy` user owns `/opt/tatl`. Env vars in `/opt/tatl/.env.production`.
-- **Execution order:** ship in thin slices. Slices 1-3 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document). Next = Doorkeeper OIDC, then accounting, RAG, sidecar services.
+- **Execution order:** ship in thin slices. Slices 1-5 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document) + Doorkeeper OIDC IdP + Accounting Ledger. Next = documents/LightRAG, then chat/n8n, sidecar services.
 
 ## Architecture
 
@@ -196,7 +196,7 @@ Conventions:
   - **RDS** PostgreSQL 16 (`db.t4g.micro`, single-AZ, 1-day backup retention for Free Tier)
   - **S3** bucket `tatl-staging-uploads` for Active Storage
   - **SendGrid** SMTP for transactional email (Devise confirmations/resets/unlocks)
-  - `/opt/tatl/.env.production` provides env vars (RAILS_MASTER_KEY, DB creds, SendGrid key, APP_HOST, etc.)
+  - `/opt/tatl/.env.production` provides env vars (RAILS_MASTER_KEY, DB creds, SendGrid key, APP_HOST, OIDC_ISSUER, OIDC_SIGNING_KEY, etc.)
   - `RAILS_ENV=production`; access via HTTP at the Elastic IP (no domain/HTTPS yet)
   - Auto-deploys on every push to `develop` via GitHub Actions (CI passes -> deploy-staging.yml SSHs and runs `deploy.sh`)
 - **Production** (future)
@@ -252,12 +252,27 @@ Configuration approach:
 
 Branch model: `develop` -> staging (auto), `master` -> production (manual, future)
 
-## SSO Flow (OIDC)
+## SSO Flow (OIDC) -- IdP deployed
 
-1. Rails registers two Doorkeeper OAuth applications: `zammad`, `discourse`, each with its callback URL and `openid profile email` scopes.
-2. Discourse `discourse-openid-connect` plugin configured with Rails' `/oauth/authorize`, `/oauth/token`, `/oauth/userinfo`, and JWKS endpoints.
-3. Zammad configured via Admin > Security > Third-party > OIDC pointing at the same endpoints.
-4. User claims include `sub`, `email`, `name`, and a custom `roles` claim (configured via `doorkeeper-openid_connect` `protocols` block) so Zammad/Discourse can map board/admin to elevated groups.
+Rails is now a full OIDC Identity Provider via Doorkeeper 5.9 + doorkeeper-openid_connect 1.9.
+
+**Endpoints live on staging:**
+- Discovery: `/.well-known/openid-configuration`
+- Authorization: `/oauth/authorize`
+- Token: `/oauth/token`
+- UserInfo: `/oauth/userinfo`
+- JWKS: `/oauth/discovery/keys`
+
+**Configuration:**
+- Auth code grant flow only (no implicit), RS256 JWT signing, refresh tokens enabled, 1-hour access token expiry.
+- Signing key: ephemeral in dev/test, persistent via `OIDC_SIGNING_KEY` env var in staging/production. Generate with `rake oidc:generate_signing_key`.
+- Claims: `sub`, `iss`, `email`, `email_verified`, `name`, `given_name`, `family_name`, and custom `roles` (in both ID token and UserInfo).
+- OAuth apps for Zammad and Discourse can be seeded via `rake oidc:seed_applications` (placeholder redirect URIs until those services are deployed).
+
+**Remaining (future slices):**
+1. Discourse `discourse-openid-connect` plugin configured with the above endpoints.
+2. Zammad configured via Admin > Security > Third-party > OIDC pointing at the same endpoints.
+3. Verify role mapping (admin/board -> elevated groups) in all three envs.
 
 ## RAG / Chat Path
 

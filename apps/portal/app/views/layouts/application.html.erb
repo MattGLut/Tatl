@@ -31,6 +31,21 @@
           <% if user_signed_in? %>
             <%= link_to "Properties", properties_path, class: "text-slate-600 hover:text-indigo-600" %>
             <%= link_to "Documents", documents_path, class: "text-slate-600 hover:text-indigo-600" %>
+            <%= link_to "Dues", accounting_dues_assessments_path, class: "text-slate-600 hover:text-indigo-600" %>
+            <% if current_user.admin? || current_user.board? || current_user.treasurer? %>
+              <div class="relative group">
+                <button type="button" class="text-slate-600 hover:text-indigo-600">Accounting</button>
+                <div class="invisible absolute right-0 z-10 mt-1 w-48 rounded-md border border-slate-200 bg-white py-1 shadow-lg group-hover:visible">
+                  <%= link_to "Accounts", accounting_accounts_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <%= link_to "Transactions", accounting_transactions_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <%= link_to "Budget", accounting_budget_lines_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <hr class="my-1 border-slate-200">
+                  <%= link_to "Summary Report", accounting_reports_summary_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <%= link_to "Dues Aging", accounting_reports_dues_aging_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                  <%= link_to "Reserve Balance", accounting_reports_reserve_balance_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+                </div>
+              </div>
+            <% end %>
             <span class="text-slate-600">Hi, <%= current_user.display_name %></span>
             <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100" %>
           <% else %>

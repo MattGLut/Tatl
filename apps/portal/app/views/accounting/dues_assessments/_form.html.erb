@@ -1,0 +1,47 @@
+<%= form_with(model: [:accounting, assessment], class: "space-y-6") do |f| %>
+  <% if assessment.errors.any? %>
+    <div class="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+      <ul class="list-inside list-disc">
+        <% assessment.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :property_id, "Property", class: "block text-sm font-medium text-slate-700" %>
+    <%= f.collection_select :property_id, Property.order(:name), :id, :name, { prompt: "Select a property" }, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div>
+    <%= f.label :amount, class: "block text-sm font-medium text-slate-700" %>
+    <%= f.text_field :amount, value: assessment.amount.to_f.nonzero?, placeholder: "0.00", class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :period_start, class: "block text-sm font-medium text-slate-700" %>
+      <%= f.date_field :period_start, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+    <div>
+      <%= f.label :period_end, class: "block text-sm font-medium text-slate-700" %>
+      <%= f.date_field :period_end, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :due_date, class: "block text-sm font-medium text-slate-700" %>
+    <%= f.date_field :due_date, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div>
+    <%= f.label :description, class: "block text-sm font-medium text-slate-700" %>
+    <%= f.text_field :description, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 cursor-pointer" %>
+    <%= link_to "Cancel", accounting_dues_assessments_path, class: "rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+  </div>
+<% end %>
