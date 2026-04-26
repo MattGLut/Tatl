@@ -156,7 +156,7 @@ RSpec.describe "Tickets::Tickets" do
 
         sign_in resident
         get tickets_tickets_path
-        expect(response.body.scan(%r{<tr class="[^"]*hover:bg-slate-50[^"]*">}).size).to eq(3)
+        expect(response.body.scan(/<tr class="[^"]*hover:bg-slate-50[^"]*">/).size).to eq(3)
       end
 
       it "renders subsequent pages via the page param" do
@@ -164,7 +164,7 @@ RSpec.describe "Tickets::Tickets" do
 
         sign_in resident
         get tickets_tickets_path(page: 2)
-        expect(response.body.scan(%r{<tr class="[^"]*hover:bg-slate-50[^"]*">}).size).to eq(2)
+        expect(response.body.scan(/<tr class="[^"]*hover:bg-slate-50[^"]*">/).size).to eq(2)
       end
 
       it "preserves filter and sort across pages" do
