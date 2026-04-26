@@ -5,6 +5,50 @@
   <% end %>
 </div>
 
+<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+  <%= form_tag accounting_transactions_path, method: :get do %>
+    <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+    <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
+      <div>
+        <label for="txn_account_id" class="mb-1 block text-xs font-medium text-slate-500">Account</label>
+        <%= select_tag(
+              :account_id,
+              options_from_collection_for_select(
+                @filter_accounts, :id, :name, params[:account_id]
+              ),
+              include_blank: "All",
+              id: "txn_account_id",
+              class: filter_form_control_class
+            ) %>
+      </div>
+      <div>
+        <label for="txn_transacted_on_start" class="mb-1 block text-xs font-medium text-slate-500">Date from</label>
+        <%= date_field_tag :transacted_on_start, params[:transacted_on_start], {
+              id: "txn_transacted_on_start",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
+      </div>
+      <div>
+        <label for="txn_transacted_on_end" class="mb-1 block text-xs font-medium text-slate-500">Date to</label>
+        <%= date_field_tag :transacted_on_end, params[:transacted_on_end], {
+              id: "txn_transacted_on_end",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
+      </div>
+      <div>
+        <span class="mb-1 block text-xs">&nbsp;</span>
+        <div class="flex gap-2">
+          <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700" %>
+          <%= link_to "Clear", accounting_transactions_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
 <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">

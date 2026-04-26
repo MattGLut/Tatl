@@ -3,6 +3,10 @@
 require "rails_helper"
 
 RSpec.describe "Accounting::DuesAssessments" do
+  def first_table_tbody_text(response)
+    Nokogiri::HTML(response.body).at_css("div.mt-6 table tbody")&.text || ""
+  end
+
   let(:admin) { create(:user, :admin) }
   let(:treasurer) { create(:user, :treasurer) }
   let(:resident) { create(:user) }
@@ -33,6 +37,52 @@ RSpec.describe "Accounting::DuesAssessments" do
       get accounting_dues_assessments_path
       expect(response.body).to include("My Lot")
       expect(response.body).not_to include("Other Lot")
+    end
+
+    it "filters by property_id" do
+      a = create(:property, name: "Alpha Ave")
+      b = create(:property, name: "Beta Blvd")
+      create(:dues_assessment, property: a)
+      create(:dues_assessment, property: b)
+
+      sign_in treasurer
+      get accounting_dues_assessments_path(property_id: a.id)
+      tbody = first_table_tbody_text(response)
+      expect(tbody).to include("Alpha Ave")
+      expect(tbody).not_to include("Beta Blvd")
+    end
+
+    it "filters by status" do
+      own_name = "OpenStatus Alpha Prop"
+      drop_name = "OpenStatus Beta Prop"
+      create(:dues_assessment, status: :open, property: create(:property, name: own_name))
+      create(:dues_assessment, :paid, property: create(:property, name: drop_name))
+
+      sign_in treasurer
+      get accounting_dues_assessments_path(status: "open")
+      tbody = first_table_tbody_text(response)
+      expect(tbody).to include(own_name)
+      expect(tbody).not_to include(drop_name)
+    end
+
+    it "filters by due date range" do
+      in_p = create(:property, name: "Due range keep prop")
+      out_p = create(:property, name: "Due range skip prop")
+      create(:dues_assessment, property: in_p, due_date: Date.new(2026, 2, 10))
+      create(:dues_assessment, property: out_p, due_date: Date.new(2026, 6, 1))
+      sign_in treasurer
+      get accounting_dues_assessments_path(due_on_or_after: "2026-02-01", due_on_or_before: "2026-02-28")
+      tbody = first_table_tbody_text(response)
+      expect(tbody).to include(in_p.name)
+      expect(tbody).not_to include(out_p.name)
+    end
+
+    it "invalid status param does not error and lists all" do
+      create(:dues_assessment, property: property)
+      sign_in treasurer
+      get accounting_dues_assessments_path(status: "nope")
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(property.name)
     end
 
     describe "sorting" do
@@ -69,6 +119,19 @@ RSpec.describe "Accounting::DuesAssessments" do
         get accounting_dues_assessments_path(page: 2)
         # 2 remaining body rows + 1 thead row
         expect(response.body.scan("<tr>").size).to eq(3)
+      end
+
+      it "keeps property filter in pagination next link" do
+        p2 = create(:property, name: "Only This")
+        with_pagy_limit(1) do
+          create_list(:dues_assessment, 2, property: p2, description: "Row")
+
+          sign_in treasurer
+          get accounting_dues_assessments_path(property_id: p2.id, sort: "due_date", dir: "desc")
+        end
+        expect(response.body).to include("Next")
+        expect(response.body).to include("property_id=")
+        expect(response.body).to include(p2.id.to_s)
       end
     end
   end

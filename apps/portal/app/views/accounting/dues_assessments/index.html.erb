@@ -5,6 +5,62 @@
   <% end %>
 </div>
 
+<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+  <%= form_tag accounting_dues_assessments_path, method: :get do %>
+    <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+    <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div>
+        <label for="dues_property_id" class="mb-1 block text-xs font-medium text-slate-500">Property</label>
+        <%= select_tag(
+              :property_id,
+              options_from_collection_for_select(
+                @filter_properties, :id, :name, params[:property_id]
+              ),
+              include_blank: "All",
+              id: "dues_property_id",
+              class: filter_form_control_class
+            ) %>
+      </div>
+      <div>
+        <label for="dues_status" class="mb-1 block text-xs font-medium text-slate-500">Status</label>
+        <%= select_tag(
+              :status,
+              options_for_select(
+                [["All", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] },
+                params[:status]
+              ),
+              id: "dues_status",
+              class: filter_form_control_class
+            ) %>
+      </div>
+      <div>
+        <label for="dues_due_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Due from</label>
+        <%= date_field_tag :due_on_or_after, params[:due_on_or_after], {
+              id: "dues_due_on_or_after",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
+      </div>
+      <div>
+        <label for="dues_due_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Due to</label>
+        <%= date_field_tag :due_on_or_before, params[:due_on_or_before], {
+              id: "dues_due_on_or_before",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
+      </div>
+      <div>
+        <span class="mb-1 block text-xs">&nbsp;</span>
+        <div class="flex gap-2">
+          <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700" %>
+          <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
 <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">

@@ -29,6 +29,47 @@ RSpec.describe "Accounting::Transactions" do
       expect(response).to redirect_to(root_path)
     end
 
+    it "filters by account_id" do
+      a1 = create(:account, name: "Op Account")
+      a2 = create(:account, name: "Other Account")
+      create(:transaction, account: a1, memo: "First memo")
+      create(:transaction, account: a2, memo: "Second memo")
+
+      sign_in treasurer
+      get accounting_transactions_path(account_id: a1.id)
+      expect(response.body).to include("First memo")
+      expect(response.body).not_to include("Second memo")
+    end
+
+    it "filters by transacted date range" do
+      create(:transaction, transacted_on: Date.new(2026, 4, 1), memo: "In range")
+      create(:transaction, transacted_on: Date.new(2026, 1, 1), memo: "Too early")
+      sign_in treasurer
+      get accounting_transactions_path(transacted_on_start: "2026-03-15", transacted_on_end: "2026-04-15")
+      expect(response.body).to include("In range")
+      expect(response.body).not_to include("Too early")
+    end
+
+    it "filters from transacted_on_start when end is open" do
+      create(:transaction, transacted_on: Date.new(2026, 5, 1), memo: "After cutoff")
+      create(:transaction, transacted_on: Date.new(2025, 1, 1), memo: "Before cutoff")
+      sign_in treasurer
+      get accounting_transactions_path(transacted_on_start: "2026-01-01")
+      expect(response.body).to include("After cutoff")
+      expect(response.body).not_to include("Before cutoff")
+    end
+
+    it "ignores invalid transacted date params" do
+      create(:transaction, memo: "Solo line")
+      sign_in treasurer
+      get accounting_transactions_path(
+        transacted_on_start: "nope",
+        transacted_on_end: "x"
+      )
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Solo line")
+    end
+
     describe "sorting" do
       it "sorts by memo asc" do
         create(:transaction, memo: "Zebra")
@@ -63,6 +104,20 @@ RSpec.describe "Accounting::Transactions" do
         get accounting_transactions_path(page: 2)
         # 2 remaining body rows + 1 thead row
         expect(response.body.scan("<tr>").size).to eq(3)
+      end
+
+      it "keeps account and date in pagination next link" do
+        acct = create(:account, name: "Pagy Acct")
+        d = "2020-01-15"
+        with_pagy_limit(1) do
+          create_list(:transaction, 2, account: acct)
+          sign_in treasurer
+          get accounting_transactions_path(
+            account_id: acct.id, transacted_on_start: d, transacted_on_end: "2030-12-31"
+          )
+        end
+        expect(response.body).to include("Next", "account_id=", "transacted_on_start=")
+        expect(response.body).to include(acct.id.to_s)
       end
     end
   end

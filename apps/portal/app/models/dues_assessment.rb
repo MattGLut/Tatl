@@ -26,6 +26,8 @@ class DuesAssessment < ApplicationRecord
   scope :for_fiscal_year, lambda { |year|
     where(period_start: Date.new(year, 1, 1)..Date.new(year, 12, 31))
   }
+  scope :due_on_or_after, ->(date) { where(due_date: date..) }
+  scope :due_on_or_before, ->(date) { where(due_date: ..date) }
 
   def recalculate_status!
     total_paid = dues_payments.sum(:amount_cents)

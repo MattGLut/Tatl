@@ -67,6 +67,61 @@ RSpec.describe "Tickets::Tickets" do
       expect(response.body).not_to include("Low priority item")
     end
 
+    describe "filter by created date" do
+      it "applies created_on_or_after" do
+        create(:ticket, user: resident, created_at: 1.day.ago, subject: "Zeta recent ticket")
+        create(:ticket, user: resident, created_at: 40.days.ago, subject: "Yoga old ticket")
+
+        sign_in resident
+        get tickets_tickets_path(created_on_or_after: 5.days.ago.to_date.iso8601)
+        expect(response.body).to include("Zeta recent ticket")
+        expect(response.body).not_to include("Yoga old ticket")
+      end
+
+      it "applies created_on_or_after and created_on_or_before together" do
+        create(:ticket, user: resident, created_at: Time.zone.local(2026, 3, 1, 12), subject: "March first ticket")
+        create(:ticket, user: resident, created_at: Time.zone.local(2026, 3, 15, 12), subject: "Mid March only")
+        create(:ticket, user: resident, created_at: Time.zone.local(2026, 3, 30, 12), subject: "March end ticket")
+
+        sign_in resident
+        get tickets_tickets_path(created_on_or_after: "2026-03-10", created_on_or_before: "2026-03-20")
+        expect(response.body).to include("Mid March only")
+        expect(response.body).not_to include("March first ticket")
+        expect(response.body).not_to include("March end ticket")
+      end
+
+      it "ignores invalid date params" do
+        create(:ticket, subject: "One ticket", user: resident)
+
+        sign_in resident
+        get tickets_tickets_path(created_on_or_after: "nope", created_on_or_before: "also-bad")
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("One ticket")
+      end
+    end
+
+    describe "filter by submitter" do
+      it "for staff, filters to the selected user" do
+        create(:ticket, user: resident, subject: "From A")
+        create(:ticket, user: other_resident, subject: "From B")
+
+        sign_in create(:user, :treasurer)
+        get tickets_tickets_path(user_id: resident.id)
+        expect(response.body).to include("From A")
+        expect(response.body).not_to include("From B")
+      end
+
+      it "ignores user_id for residents (cannot narrow to another submitter's tickets by param)" do
+        create(:ticket, subject: "My ticket", user: resident)
+        other = create(:ticket, subject: "Theirs", user: other_resident)
+
+        sign_in resident
+        get tickets_tickets_path(user_id: other_resident.id)
+        expect(response.body).to include("My ticket")
+        expect(response.body).not_to include(other.subject)
+      end
+    end
+
     describe "sorting" do
       it "orders by sort param when whitelisted" do
         create(:ticket, subject: "Banana", user: resident)
@@ -120,6 +175,20 @@ RSpec.describe "Tickets::Tickets" do
         get tickets_tickets_path(status: "open", sort: "subject", dir: "asc", page: 2)
         expect(response).to have_http_status(:ok)
         expect(response.body).not_to include("Closed one")
+      end
+
+      it "keeps date filter in pagination next link" do
+        d = 5.days.ago.to_date.iso8601
+        with_pagy_limit(1) do
+          create_list(:ticket, 2, user: resident, created_at: 1.day.ago, status: :open)
+
+          sign_in resident
+          get tickets_tickets_path(created_on_or_after: d, sort: "created_at", dir: "asc")
+        end
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Next")
+        expect(response.body).to include("created_on_or_after=")
+        expect(response.body).to include(d)
       end
     end
   end

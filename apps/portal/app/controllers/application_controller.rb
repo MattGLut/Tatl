@@ -23,4 +23,13 @@ class ApplicationController < ActionController::Base
     flash[:alert] = I18n.t("pundit.not_authorized")
     redirect_back_or_to(root_path)
   end
+
+  def date_from_param(key)
+    value = params[key]
+    return if value.blank?
+
+    Date.iso8601(value.to_s)
+  rescue ArgumentError, TypeError
+    nil
+  end
 end
