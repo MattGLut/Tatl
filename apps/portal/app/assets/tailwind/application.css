@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Tailwind only scans certain paths by default; class strings in Ruby helpers are not included unless listed here. */
 @source "../../helpers/**/*.rb";
 
@@ -25,4 +27,26 @@
   --color-navy-700: #1f2f48;
   --color-navy-800: #1b2a4a;
   --color-navy-900: #111c32;
+}
+
+@layer base {
+  :root {
+    --color-surface: var(--color-slate-50);
+    --color-surface-card: #fff;
+    --color-surface-hover: var(--color-slate-100);
+    --color-text-primary: var(--color-slate-900);
+    --color-text-secondary: var(--color-slate-600);
+    --color-text-muted: var(--color-slate-500);
+    --color-border: var(--color-slate-200);
+  }
+
+  .dark {
+    --color-surface: var(--color-slate-900);
+    --color-surface-card: var(--color-slate-800);
+    --color-surface-hover: var(--color-slate-700);
+    --color-text-primary: #ffffff;
+    --color-text-secondary: var(--color-slate-300);
+    --color-text-muted: var(--color-slate-400);
+    --color-border: var(--color-slate-700);
+  }
 }

@@ -1,14 +1,14 @@
 <h1 class="text-2xl font-bold">Reserve Fund Balance</h1>
 
 <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
-    <p class="text-sm font-medium text-slate-500">Current Reserve Balance</p>
-    <p class="mt-2 text-3xl font-bold text-slate-900"><%= humanized_money_with_symbol(@current_reserve) %></p>
+  <div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm lg:col-span-1">
+    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Current Reserve Balance</p>
+    <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100"><%= humanized_money_with_symbol(@current_reserve) %></p>
   </div>
 </div>
 
-<div class="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-  <h2 class="text-lg font-semibold text-slate-900">Reserve Activity by Month</h2>
+<div class="mt-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Reserve Activity by Month</h2>
   <div class="mt-4">
     <%= area_chart @reserve_over_time, prefix: "$", colors: ["#339e3d"], library: { plugins: { legend: { display: false } } } %>
   </div>

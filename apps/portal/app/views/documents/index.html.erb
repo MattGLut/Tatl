@@ -1,7 +1,7 @@
 <% content_for :title, "Documents - NeIQhbor" %>
 
 <div class="flex items-center justify-between">
-  <h1 class="text-2xl font-bold tracking-tight text-slate-900">Documents</h1>
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Documents</h1>
   <% if policy(Document).create? %>
     <%= link_to "Upload document", new_document_path, class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700" %>
   <% end %>
@@ -16,9 +16,9 @@
 </nav>
 
 <% if @documents.any? %>
-  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
-    <table class="min-w-full divide-y divide-slate-200">
-      <thead class="bg-slate-50">
+  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+      <thead class="bg-slate-50 dark:bg-slate-800/80">
         <tr>
           <%= sortable_th "title", "Title" %>
           <%= sortable_th "category", "Category" %>
@@ -26,23 +26,23 @@
           <%= sortable_th "created_at", "Uploaded", default_dir: :desc %>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
         <% @documents.each do |document| %>
-          <tr class="hover:bg-slate-50">
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
             <td class="px-4 py-3 text-sm">
-              <%= link_to document.title, document_path(document), class: "font-medium text-brand-600 hover:text-brand-800" %>
+              <%= link_to document.title, document_path(document), class: "font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
             </td>
             <td class="px-4 py-3 text-sm">
-              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= document.category.humanize %></span>
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300"><%= document.category.humanize %></span>
             </td>
             <td class="px-4 py-3 text-sm">
               <% if document.published? %>
-                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">Published</span>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Published</span>
               <% else %>
-                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Draft</span>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">Draft</span>
               <% end %>
             </td>
-            <td class="px-4 py-3 text-sm text-slate-500"><%= document.created_at.strftime("%b %d, %Y") %></td>
+            <td class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400"><%= document.created_at.strftime("%b %d, %Y") %></td>
           </tr>
         <% end %>
       </tbody>
@@ -50,7 +50,7 @@
     <%= render "shared/pagination", pagy: @pagy %>
   </div>
 <% else %>
-  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center">
-    <p class="text-sm text-slate-500">No documents found.</p>
+  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center dark:border-slate-600">
+    <p class="text-sm text-slate-500 dark:text-slate-400">No documents found.</p>
   </div>
 <% end %>

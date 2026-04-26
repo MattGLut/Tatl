@@ -43,7 +43,8 @@ module AvatarHelper
     [
       avatar_size_class(size),
       avatar_initials_classes(user),
-      "grid shrink-0 place-items-center rounded-full font-semibold tabular-nums ring-1 ring-slate-200 select-none"
+      "grid shrink-0 place-items-center rounded-full font-semibold tabular-nums " \
+      "ring-1 ring-slate-200 dark:ring-slate-700 select-none"
     ].join(" ")
   end
 end

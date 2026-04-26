@@ -5,13 +5,13 @@
   <% end %>
 </div>
 
-<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+<div class="mt-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4">
   <%= form_tag accounting_dues_assessments_path, method: :get do %>
     <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
     <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
     <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
       <div>
-        <label for="dues_property_id" class="mb-1 block text-xs font-medium text-slate-500">Property</label>
+        <label for="dues_property_id" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Property</label>
         <%= select_tag(
               :property_id,
               options_from_collection_for_select(
@@ -23,7 +23,7 @@
             ) %>
       </div>
       <div>
-        <label for="dues_status" class="mb-1 block text-xs font-medium text-slate-500">Status</label>
+        <label for="dues_status" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Status</label>
         <%= select_tag(
               :status,
               options_for_select(
@@ -35,7 +35,7 @@
             ) %>
       </div>
       <div>
-        <label for="dues_due_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Due from</label>
+        <label for="dues_due_on_or_after" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Due from</label>
         <%= date_field_tag :due_on_or_after, params[:due_on_or_after], {
               id: "dues_due_on_or_after",
               class: filter_form_control_class,
@@ -43,7 +43,7 @@
             } %>
       </div>
       <div>
-        <label for="dues_due_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Due to</label>
+        <label for="dues_due_on_or_before" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Due to</label>
         <%= date_field_tag :due_on_or_before, params[:due_on_or_before], {
               id: "dues_due_on_or_before",
               class: filter_form_control_class,
@@ -54,39 +54,39 @@
         <span class="mb-1 block text-xs">&nbsp;</span>
         <div class="flex gap-2">
           <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700" %>
-          <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
+          <%= link_to "Clear", accounting_dues_assessments_path, class: filter_clear_link_class %>
         </div>
       </div>
     </div>
   <% end %>
 </div>
 
-<div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-  <table class="min-w-full divide-y divide-slate-200">
-    <thead class="bg-slate-50">
+<div class="mt-6 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+  <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+    <thead class="bg-slate-50 dark:bg-slate-800/80">
       <tr>
         <%= sortable_th "property", "Property" %>
         <%= sortable_th "period_start", "Period" %>
         <%= sortable_th "due_date", "Due Date", default_dir: :desc %>
-        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: "px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500" %>
+        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: sortable_th_right_class %>
         <%= sortable_th "status", "Status" %>
         <th class="px-4 py-3"></th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-slate-200">
+    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
       <% @assessments.each do |assessment| %>
         <tr>
-          <td class="px-4 py-3 text-sm text-slate-900"><%= assessment.property.name %></td>
-          <td class="px-4 py-3 text-sm text-slate-600"><%= assessment.period_start.strftime("%b %Y") %> - <%= assessment.period_end.strftime("%b %Y") %></td>
-          <td class="px-4 py-3 text-sm text-slate-600"><%= assessment.due_date.strftime("%b %d, %Y") %></td>
-          <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-slate-900"><%= humanized_money_with_symbol(assessment.amount) %></td>
+          <td class="px-4 py-3 text-sm text-slate-900 dark:text-slate-100"><%= assessment.property.name %></td>
+          <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-400"><%= assessment.period_start.strftime("%b %Y") %> - <%= assessment.period_end.strftime("%b %Y") %></td>
+          <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-400"><%= assessment.due_date.strftime("%b %d, %Y") %></td>
+          <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-slate-900 dark:text-slate-100"><%= humanized_money_with_symbol(assessment.amount) %></td>
           <td class="px-4 py-3 text-sm">
             <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= assessment_status_class(assessment.status) %>">
               <%= assessment.status.titleize %>
             </span>
           </td>
           <td class="px-4 py-3 text-right text-sm">
-            <%= link_to "View", accounting_dues_assessment_path(assessment), class: "text-brand-600 hover:text-brand-800" %>
+            <%= link_to "View", accounting_dues_assessment_path(assessment), class: "text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
           </td>
         </tr>
       <% end %>
