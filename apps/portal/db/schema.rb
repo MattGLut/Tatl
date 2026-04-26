@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_120007) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_26_150130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -311,6 +311,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_120007) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "ticket_comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "ticket_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["ticket_id"], name: "index_ticket_comments_on_ticket_id"
+    t.index ["user_id"], name: "index_ticket_comments_on_user_id"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.integer "category", default: 0, null: false
+    t.datetime "closed_at"
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.integer "priority", default: 1, null: false
+    t.bigint "property_id"
+    t.integer "status", default: 0, null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["category"], name: "index_tickets_on_category"
+    t.index ["priority"], name: "index_tickets_on_priority"
+    t.index ["property_id"], name: "index_tickets_on_property_id"
+    t.index ["status"], name: "index_tickets_on_status"
+    t.index ["user_id"], name: "index_tickets_on_user_id"
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.integer "amount_cents", default: 0, null: false
@@ -376,6 +404,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_120007) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "ticket_comments", "tickets"
+  add_foreign_key "ticket_comments", "users"
+  add_foreign_key "tickets", "properties"
+  add_foreign_key "tickets", "users"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "users", column: "recorded_by_id"
 end

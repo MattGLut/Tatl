@@ -275,6 +275,97 @@ namespace :demo do
       puts "  #{attrs[:reference].ljust(10)} $#{"%.2f" % attrs[:amount]}  on #{attrs[:paid_on]}"
     end
 
+    # ─── Tickets ──────────────────────────────────────────────────────
+    puts "\n--- Tickets ---"
+
+    tickets_data = [
+      {
+        subject: "Broken sprinkler head on Lot 3 common area",
+        description: "The sprinkler head near the sidewalk on the Lot 3 side of the common area is broken and spraying water onto the walkway. It's been like this for about a week and is creating a puddle that freezes in the morning.",
+        category: :maintenance,
+        priority: :high,
+        status: :resolved,
+        user_key: :resident_owner,
+        property: "LOT-003",
+        comments: [
+          { user_key: :admin, body: "Thanks for reporting this, Casey. I've contacted our landscaping company and they'll have someone out this week to replace the head." },
+          { user_key: :resident_owner, body: "Great, thank you! Just wanted to follow up — the puddle is getting worse with the rain." },
+          { user_key: :admin, body: "The sprinkler head has been replaced as of this morning. Let us know if you see any further issues." }
+        ]
+      },
+      {
+        subject: "Noise complaint — 104 Oakridge late-night music",
+        description: "For the past two weekends, there has been very loud music coming from 104 Oakridge Lane well past midnight (around 1-2 AM). It's disturbing sleep for several neighbors on the street. We'd appreciate the board addressing this.",
+        category: :noise_complaint,
+        priority: :normal,
+        status: :in_progress,
+        user_key: :resident_second,
+        property: "LOT-004",
+        comments: [
+          { user_key: :admin, body: "Thank you for letting us know, Morgan. We'll send a courtesy reminder to the resident at 104 Oakridge about the community quiet hours (10 PM – 7 AM). If it continues, please document the dates and times." }
+        ]
+      },
+      {
+        subject: "Parking in fire lane near mailboxes",
+        description: "Someone has been consistently parking a white SUV in the fire lane next to the community mailboxes, usually in the afternoons. This blocks access and is a safety hazard.",
+        category: :parking,
+        priority: :normal,
+        status: :open,
+        user_key: :resident_tenant,
+        property: nil,
+        comments: []
+      },
+      {
+        subject: "Suggestion: add dog waste stations",
+        description: "We have a lot of dog owners in the community and I've noticed pet waste being left on the walking paths. It would be great if the HOA could install a couple of dog waste bag stations along the main trail — one near the entrance and one by the playground.",
+        category: :suggestion,
+        priority: :low,
+        status: :open,
+        user_key: :resident_owner,
+        property: nil,
+        comments: []
+      },
+      {
+        subject: "Q1 dues question — payment not reflected",
+        description: "I mailed my Q1 dues check (CHK-1003) on January 28th but my account still shows a balance. Can someone confirm it was received and applied?",
+        category: :dues_question,
+        priority: :normal,
+        status: :closed,
+        user_key: :resident_owner,
+        property: "LOT-004",
+        closed_at: Date.new(year, 2, 10),
+        comments: [
+          { user_key: :admin, body: "Hi Casey, I checked with Pat (treasurer) and your payment was received and posted on February 3rd. It looks like there was a short delay in processing. Your account now shows a partial payment of $2,100 for Q1." },
+          { user_key: :resident_owner, body: "That makes sense — I sent a partial payment. Thanks for confirming!" }
+        ]
+      }
+    ]
+
+    tickets_data.each do |attrs|
+      user = created_users[attrs[:user_key]]
+      prop = attrs[:property] ? created_properties[attrs[:property]] : nil
+
+      ticket = Ticket.find_or_initialize_by(subject: attrs[:subject], user: user)
+      ticket.assign_attributes(
+        description: attrs[:description],
+        category: attrs[:category],
+        priority: attrs[:priority],
+        status: attrs[:status],
+        property: prop,
+        closed_at: attrs[:closed_at]
+      )
+      ticket.save!
+
+      puts "  [#{ticket.status.ljust(11)}] #{ticket.subject.truncate(50)}"
+
+      attrs[:comments].each_with_index do |c, idx|
+        comment_user = created_users[c[:user_key]]
+        comment = ticket.ticket_comments.find_or_initialize_by(user: comment_user, body: c[:body])
+        comment.save!
+        puts "    └─ Comment #{idx + 1} by #{comment_user.display_name}"
+      end
+    end
+
     # ─── Summary ────────────────────────────────────────────────────────
     puts "\n#{"=" * 60}"
     puts "  Demo data seeded successfully!"
@@ -292,6 +383,8 @@ namespace :demo do
     puts "  Dues Assessments: #{DuesAssessment.count}"
     puts "  Dues Payments: #{DuesPayment.count}"
     puts "  Budget Lines: #{BudgetLine.count}"
+    puts "  Tickets: #{Ticket.count}"
+    puts "  Ticket Comments: #{TicketComment.count}"
     puts ""
   end
 
@@ -310,6 +403,12 @@ namespace :demo do
     puts "  Found #{demo_emails.size} demo users: #{demo_emails.join(", ")}"
 
     ActiveRecord::Base.transaction do
+      TicketComment.where(ticket: Ticket.where(user: demo_users)).find_each do |tc|
+        tc.file.purge if tc.file.attached?
+      end
+      TicketComment.where(ticket: Ticket.where(user: demo_users)).delete_all
+      Ticket.where(user: demo_users).delete_all
+
       Transaction.where(recorded_by: demo_users).find_each do |txn|
         txn.file.purge if txn.file.attached?
       end

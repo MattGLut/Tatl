@@ -1,0 +1,22 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: system-ui, -apple-system, sans-serif; color: #1e293b;">
+  <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 16px; margin-bottom: 24px;">
+    <h1 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">New Ticket Submitted</h1>
+  </div>
+
+  <p style="font-size: 14px; line-height: 1.5; color: #475569;">
+    <strong><%= @ticket.user.display_name %></strong> submitted a new ticket:
+  </p>
+
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0;">
+    <p style="font-size: 16px; font-weight: 600; color: #1e293b; margin: 0 0 8px 0;"><%= @ticket.subject %></p>
+    <p style="font-size: 13px; color: #64748b; margin: 0 0 4px 0;">Category: <%= @ticket.category.humanize %></p>
+    <% if @ticket.property.present? %>
+      <p style="font-size: 13px; color: #64748b; margin: 0 0 4px 0;">Property: <%= @ticket.property.name %></p>
+    <% end %>
+    <p style="font-size: 14px; color: #475569; margin: 12px 0 0 0;"><%= truncate(@ticket.description, length: 300) %></p>
+  </div>
+
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 24px;">
+    This notification was sent from NeIQhbor.
+  </p>
+</div>

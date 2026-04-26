@@ -1,0 +1,18 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: system-ui, -apple-system, sans-serif; color: #1e293b;">
+  <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 16px; margin-bottom: 24px;">
+    <h1 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">Ticket Updated</h1>
+  </div>
+
+  <p style="font-size: 14px; line-height: 1.5; color: #475569;">
+    Your ticket <strong><%= @ticket.subject %></strong> has been updated.
+  </p>
+
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0;">
+    <p style="font-size: 14px; color: #475569; margin: 0 0 4px 0;">Status: <strong><%= @ticket.status.humanize %></strong></p>
+    <p style="font-size: 14px; color: #475569; margin: 0;">Priority: <strong><%= @ticket.priority.humanize %></strong></p>
+  </div>
+
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 24px;">
+    This notification was sent from NeIQhbor.
+  </p>
+</div>

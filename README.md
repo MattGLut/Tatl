@@ -46,6 +46,11 @@ Rails 8.1 app at `apps/portal/` with:
   - `BudgetLine` (annual budget per account)
 - Treasurer reports: financial summary with chartkick charts, dues aging by bucket, reserve balance over time
 - Accounting namespace with Pundit policies: treasurer/admin write, board read, residents see own dues
+- **Native ticketing system:**
+  - `Ticket` (subject, description, category, priority, status, optional property link)
+  - `TicketComment` (threaded comments with optional file attachments)
+  - Tickets namespace with Pundit policies: residents submit/view own, staff manage all
+  - TicketMailer notifications (new ticket to admin, status changes to resident, comment replies)
 - SendGrid SMTP for transactional email in staging/production (confirmations, password resets, unlocks)
 - Letter Opener Web at `/letters` for development emails
 - RSpec test suite with FactoryBot, shoulda-matchers, pundit-matchers, Capybara + Cuprite, WebMock, VCR, SimpleCov

@@ -20,6 +20,8 @@ class User < ApplicationRecord
                                    foreign_key: :recorded_by_id,
                                    dependent: :restrict_with_error,
                                    inverse_of: :recorded_by
+  has_many :tickets, dependent: :destroy
+  has_many :ticket_comments, dependent: :destroy
 
   enum :role, {
     resident: 0,

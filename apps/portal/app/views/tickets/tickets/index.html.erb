@@ -1,0 +1,83 @@
+<% content_for :title, "Tickets - NeIQhbor" %>
+
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900">Tickets</h1>
+  <%= link_to "New ticket", new_tickets_ticket_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+</div>
+
+<% if policy(Ticket).update_status? %>
+  <nav class="mt-4 flex flex-wrap gap-2">
+    <%= link_to("All", tickets_tickets_path(category: params[:category], priority: params[:priority]),
+                class: params[:status].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+    <% Ticket.statuses.each_key do |s| %>
+      <%= link_to(s.humanize, tickets_tickets_path(status: s, category: params[:category], priority: params[:priority]),
+                  class: params[:status] == s ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+    <% end %>
+  </nav>
+<% end %>
+
+<% if @tickets.any? %>
+  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Subject</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Category</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Priority</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
+          <% if policy(Ticket).update_status? %>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Submitted by</th>
+          <% end %>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Created</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <% @tickets.each do |ticket| %>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm">
+              <%= link_to ticket.subject, tickets_ticket_path(ticket), class: "font-medium text-indigo-600 hover:text-indigo-800" %>
+              <% if ticket.property.present? %>
+                <span class="ml-1 text-xs text-slate-400"><%= ticket.property.name %></span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= ticket.category.humanize %></span>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <% case ticket.priority %>
+              <% when "low" %>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">Low</span>
+              <% when "normal" %>
+                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Normal</span>
+              <% when "high" %>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">High</span>
+              <% when "urgent" %>
+                <span class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700">Urgent</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <% case ticket.status %>
+              <% when "open" %>
+                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Open</span>
+              <% when "in_progress" %>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">In progress</span>
+              <% when "resolved" %>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">Resolved</span>
+              <% when "closed" %>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">Closed</span>
+              <% end %>
+            </td>
+            <% if policy(Ticket).update_status? %>
+              <td class="px-4 py-3 text-sm text-slate-500"><%= ticket.user.display_name %></td>
+            <% end %>
+            <td class="px-4 py-3 text-sm text-slate-500"><%= ticket.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center">
+    <p class="text-sm text-slate-500">No tickets found.</p>
+  </div>
+<% end %>
