@@ -74,5 +74,32 @@ RSpec.describe "User Password Reset" do
 
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "rejects an invalid reset token" do
+      put user_password_path, params: {
+        user: {
+          reset_password_token: "bogus-token",
+          password: "NewSecure-Pass-1!",
+          password_confirmation: "NewSecure-Pass-1!"
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "rejects a password that is too short" do
+      token = user.send_reset_password_instructions
+      ActionMailer::Base.deliveries.clear
+
+      put user_password_path, params: {
+        user: {
+          reset_password_token: token,
+          password: "short",
+          password_confirmation: "short"
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 end

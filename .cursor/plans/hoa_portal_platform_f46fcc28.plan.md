@@ -18,10 +18,10 @@ todos:
     content: "Provision AWS staging in us-east-2: default VPC, security groups (tatl-staging-web, tatl-staging-rds), EC2 t3.small (Ubuntu 24.04), Elastic IP 3.146.142.26, RDS db.t4g.micro PostgreSQL 16, S3 tatl-staging-uploads"
     status: completed
   - id: staging_deploy
-    content: "Native Rails on EC2 via systemd (Puma + Solid Queue), Caddy reverse proxy, rbenv Ruby 3.4.8; deploy.sh pulls from develop, bundles, migrates, precompiles, restarts; GitHub Actions auto-deploy on CI pass"
+    content: Native Rails on EC2 via systemd (Puma + Solid Queue), Caddy reverse proxy, rbenv Ruby 3.4.8; deploy.sh pulls from develop, bundles, migrates, precompiles, restarts; GitHub Actions auto-deploy on CI pass
     status: completed
   - id: sendgrid_email
-    content: "Configure SendGrid SMTP in production.rb, generate + Tailwind-style custom Devise views, permit first_name/last_name sign-up params, request + mailer specs, update env template"
+    content: Configure SendGrid SMTP in production.rb, generate + Tailwind-style custom Devise views, permit first_name/last_name sign-up params, request + mailer specs, update env template
     status: in_progress
   - id: core_models
     content: "Add core domain models with model + request specs: Property, Membership, Document (Active Storage)"

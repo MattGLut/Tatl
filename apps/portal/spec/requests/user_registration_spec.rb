@@ -78,5 +78,39 @@ RSpec.describe "User Registration" do
 
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "rejects registration with missing last_name" do
+      invalid_params = valid_params.deep_dup
+      invalid_params[:user][:last_name] = ""
+
+      expect do
+        post user_registration_path, params: invalid_params
+      end.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "rejects registration with a password that is too short" do
+      invalid_params = valid_params.deep_dup
+      invalid_params[:user][:password] = "short"
+      invalid_params[:user][:password_confirmation] = "short"
+
+      expect do
+        post user_registration_path, params: invalid_params
+      end.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "rejects registration with an invalid email format" do
+      invalid_params = valid_params.deep_dup
+      invalid_params[:user][:email] = "not-an-email"
+
+      expect do
+        post user_registration_path, params: invalid_params
+      end.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 end

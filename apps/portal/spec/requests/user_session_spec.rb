@@ -42,6 +42,29 @@ RSpec.describe "User Session" do
     end
   end
 
+  describe "POST /users/sign_in (lockout)" do
+    it "locks the account after maximum failed attempts" do
+      lockable_user = create(:user, password: "Tatl-Password-1!", failed_attempts: Devise.maximum_attempts - 1)
+
+      post user_session_path, params: {
+        user: { email: lockable_user.email, password: "wrong" }
+      }
+
+      expect(lockable_user.reload).to be_access_locked
+    end
+
+    it "allows sign-in after the account is unlocked" do
+      locked_user = create(:user, :locked, password: "Tatl-Password-1!")
+      locked_user.unlock_access!
+
+      post user_session_path, params: {
+        user: { email: locked_user.email, password: "Tatl-Password-1!" }
+      }
+
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "DELETE /users/sign_out" do
     it "signs out the current user" do
       sign_in user
