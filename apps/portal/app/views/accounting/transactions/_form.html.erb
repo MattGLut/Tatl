@@ -1,6 +1,6 @@
 <%= form_with(model: [:accounting, transaction], class: "space-y-6") do |f| %>
   <% if transaction.errors.any? %>
-    <div class="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+    <div class="rounded-md border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 p-4 text-sm text-rose-800 dark:text-rose-300">
       <ul class="list-inside list-disc">
         <% transaction.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
@@ -10,35 +10,35 @@
   <% end %>
 
   <div>
-    <%= f.label :transacted_on, "Date", class: "block text-sm font-medium text-slate-700" %>
-    <%= f.date_field :transacted_on, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
+    <%= f.label :transacted_on, "Date", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+    <%= f.date_field :transacted_on, class: "mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
   </div>
 
   <div>
-    <%= f.label :amount, class: "block text-sm font-medium text-slate-700" %>
-    <%= f.text_field :amount, value: transaction.amount.to_f.nonzero?, placeholder: "0.00", class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
-    <p class="mt-1 text-xs text-slate-500">Positive for income, negative for expenses</p>
+    <%= f.label :amount, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+    <%= f.text_field :amount, value: transaction.amount.to_f.nonzero?, placeholder: "0.00", class: "mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Positive for income, negative for expenses</p>
   </div>
 
   <div>
-    <%= f.label :account_id, "Account", class: "block text-sm font-medium text-slate-700" %>
+    <%= f.label :account_id, "Account", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
     <%= f.collection_select :account_id, Account.active.order(:name), :id, :name,
                             { prompt: "Select an account" },
-                            class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
+                            class: "mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
   </div>
 
   <div>
-    <%= f.label :memo, class: "block text-sm font-medium text-slate-700" %>
-    <%= f.text_area :memo, rows: 3, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
+    <%= f.label :memo, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+    <%= f.text_area :memo, rows: 3, class: "mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" %>
   </div>
 
   <div>
-    <%= f.label :file, "Attachment (optional)", class: "block text-sm font-medium text-slate-700" %>
-    <%= f.file_field :file, class: "mt-1 block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" %>
+    <%= f.label :file, "Attachment (optional)", class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+    <%= f.file_field :file, class: "mt-1 block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:rounded-md file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:file:bg-brand-900/40 dark:file:text-brand-400 dark:hover:file:bg-brand-900/60" %>
   </div>
 
   <div class="flex gap-2">
     <%= f.submit class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 cursor-pointer" %>
-    <%= link_to "Cancel", accounting_transactions_path, class: "rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <%= link_to "Cancel", accounting_transactions_path, class: "rounded-md border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700" %>
   </div>
 <% end %>

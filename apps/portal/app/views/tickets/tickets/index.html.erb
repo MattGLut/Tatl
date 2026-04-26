@@ -1,18 +1,18 @@
 <% content_for :title, "Tickets - NeIQhbor" %>
 
 <div class="flex items-center justify-between">
-  <h1 class="text-2xl font-bold tracking-tight text-slate-900">Tickets</h1>
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tickets</h1>
   <%= link_to "New ticket", new_tickets_ticket_path, class: "rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700" %>
 </div>
 
-<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-800">
   <%= form_tag tickets_tickets_path, method: :get, id: "tickets_filters" do %>
     <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
     <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
     <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
     <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
       <div>
-        <label for="tickets_category" class="mb-1 block text-xs font-medium text-slate-500">Category</label>
+        <label for="tickets_category" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Category</label>
         <%= select_tag(
               :category,
               options_for_select(
@@ -24,7 +24,7 @@
             ) %>
       </div>
       <div>
-        <label for="tickets_priority" class="mb-1 block text-xs font-medium text-slate-500">Priority</label>
+        <label for="tickets_priority" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Priority</label>
         <%= select_tag(
               :priority,
               options_for_select(
@@ -36,7 +36,7 @@
             ) %>
       </div>
       <div>
-        <label for="tickets_created_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Created from</label>
+        <label for="tickets_created_on_or_after" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Created from</label>
         <%= date_field_tag :created_on_or_after, params[:created_on_or_after], {
               id: "tickets_created_on_or_after",
               class: filter_form_control_class,
@@ -44,7 +44,7 @@
             } %>
       </div>
       <div>
-        <label for="tickets_created_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Created to</label>
+        <label for="tickets_created_on_or_before" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Created to</label>
         <%= date_field_tag :created_on_or_before, params[:created_on_or_before], {
               id: "tickets_created_on_or_before",
               class: filter_form_control_class,
@@ -53,7 +53,7 @@
       </div>
       <% if @ticket_submitters %>
         <div>
-          <label for="tickets_user_id" class="mb-1 block text-xs font-medium text-slate-500">Submitted by</label>
+          <label for="tickets_user_id" class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Submitted by</label>
           <%= select_tag(
                 :user_id,
                 options_from_collection_for_select(
@@ -69,7 +69,7 @@
         <span class="mb-1 block text-xs">&nbsp;</span>
         <div class="flex gap-2">
           <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700" %>
-          <%= link_to "Clear", tickets_tickets_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
+          <%= link_to "Clear", tickets_tickets_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700" %>
         </div>
       </div>
     </div>
@@ -79,69 +79,69 @@
 <% if policy(Ticket).update_status? %>
   <nav class="mt-4 flex flex-wrap gap-2" aria-label="Status">
     <%= link_to "All", tickets_tickets_path(tickets_index_path_params.except(:status)),
-                class: params[:status].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100" %>
+                class: params[:status].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700" %>
     <% Ticket.statuses.each_key do |s| %>
       <%= link_to s.humanize, tickets_tickets_path(tickets_index_path_params.merge(status: s)),
-                  class: params[:status] == s ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100" %>
+                  class: params[:status] == s ? "rounded-md px-3 py-1.5 text-sm font-medium bg-brand-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700" %>
     <% end %>
   </nav>
 <% end %>
 
 <% if @tickets.any? %>
-  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
-    <table class="min-w-full divide-y divide-slate-200">
-      <thead class="bg-slate-50">
+  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+      <thead class="bg-slate-50 dark:bg-slate-800/80">
         <tr>
           <%= sortable_th "subject", "Subject" %>
           <%= sortable_th "category", "Category" %>
           <%= sortable_th "priority", "Priority" %>
           <%= sortable_th "status", "Status" %>
           <% if policy(Ticket).update_status? %>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Submitted by</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Submitted by</th>
           <% end %>
           <%= sortable_th "created_at", "Created", default_dir: :desc %>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
         <% @tickets.each do |ticket| %>
-          <tr class="hover:bg-slate-50">
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
             <td class="px-4 py-3 text-sm">
-              <%= link_to ticket.subject, tickets_ticket_path(ticket), class: "font-medium text-brand-600 hover:text-brand-800" %>
+              <%= link_to ticket.subject, tickets_ticket_path(ticket), class: "font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
               <% if ticket.property.present? %>
-                <span class="ml-1 text-xs text-slate-400"><%= ticket.property.name %></span>
+                <span class="ml-1 text-xs text-slate-400 dark:text-slate-500"><%= ticket.property.name %></span>
               <% end %>
             </td>
             <td class="px-4 py-3 text-sm">
-              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= ticket.category.humanize %></span>
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300"><%= ticket.category.humanize %></span>
             </td>
             <td class="px-4 py-3 text-sm">
               <% case ticket.priority %>
               <% when "low" %>
-                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">Low</span>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">Low</span>
               <% when "normal" %>
-                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Normal</span>
+                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Normal</span>
               <% when "high" %>
-                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">High</span>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">High</span>
               <% when "urgent" %>
-                <span class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700">Urgent</span>
+                <span class="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Urgent</span>
               <% end %>
             </td>
             <td class="px-4 py-3 text-sm">
               <% case ticket.status %>
               <% when "open" %>
-                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">Open</span>
+                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Open</span>
               <% when "in_progress" %>
-                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">In progress</span>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">In progress</span>
               <% when "resolved" %>
-                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">Resolved</span>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Resolved</span>
               <% when "closed" %>
-                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">Closed</span>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400">Closed</span>
               <% end %>
             </td>
             <% if policy(Ticket).update_status? %>
-              <td class="px-4 py-3 text-sm text-slate-500"><%= ticket.user.display_name %></td>
+              <td class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400"><%= ticket.user.display_name %></td>
             <% end %>
-            <td class="px-4 py-3 text-sm text-slate-500"><%= ticket.created_at.strftime("%b %d, %Y") %></td>
+            <td class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400"><%= ticket.created_at.strftime("%b %d, %Y") %></td>
           </tr>
         <% end %>
       </tbody>
@@ -149,7 +149,7 @@
     <%= render "shared/pagination", pagy: @pagy %>
   </div>
 <% else %>
-  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center">
-    <p class="text-sm text-slate-500">No tickets found.</p>
+  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center dark:border-slate-600">
+    <p class="text-sm text-slate-500 dark:text-slate-400">No tickets found.</p>
   </div>
 <% end %>

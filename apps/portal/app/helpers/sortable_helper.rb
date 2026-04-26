@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SortableHelper
-  DEFAULT_TH_CLASS = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
+  DEFAULT_TH_CLASS = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
 
   # Render a <th> whose label links back to the current page with sort/dir
   # query params toggled. Existing query params (filters, etc.) are preserved;
@@ -14,7 +14,7 @@ module SortableHelper
     next_dir, caret = sortable_next_direction(active, current_dir, default_dir)
     sort_url = sortable_url_for(column_str, next_dir)
 
-    link = link_to(sort_url, class: "inline-flex items-center gap-1 hover:text-slate-700") do
+    link = link_to(sort_url, class: "inline-flex items-center gap-1 hover:text-slate-700 dark:hover:text-slate-200") do
       safe_join([label, sortable_caret(active, caret)], " ")
     end
 
@@ -34,7 +34,7 @@ module SortableHelper
   end
 
   def sortable_caret(active, caret)
-    classes = active ? "text-slate-700" : "text-slate-300"
+    classes = active ? "text-slate-700 dark:text-slate-200" : "text-slate-300 dark:text-slate-600"
     content_tag(:span, caret, class: classes, "aria-hidden": true)
   end
 

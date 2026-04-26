@@ -6,7 +6,7 @@ module DocumentsHelper
     if active
       "#{base} bg-brand-600 text-white"
     else
-      "#{base} border border-slate-300 text-slate-700 hover:bg-slate-100"
+      "#{base} border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
     end
   end
 end

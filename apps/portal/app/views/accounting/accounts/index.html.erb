@@ -5,9 +5,9 @@
   <% end %>
 </div>
 
-<div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-  <table class="min-w-full divide-y divide-slate-200">
-    <thead class="bg-slate-50">
+<div class="mt-6 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+  <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+    <thead class="bg-slate-50 dark:bg-slate-800/80">
       <tr>
         <%= sortable_th "name", "Name" %>
         <%= sortable_th "account_type", "Type" %>
@@ -15,21 +15,21 @@
         <th class="px-4 py-3"></th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-slate-200">
+    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
       <% @accounts.each do |account| %>
         <tr>
-          <td class="px-4 py-3 text-sm font-medium text-slate-900">
-            <%= link_to account.name, accounting_account_path(account), class: "hover:text-brand-600" %>
+          <td class="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">
+            <%= link_to account.name, accounting_account_path(account), class: "hover:text-brand-600 dark:hover:text-brand-400" %>
           </td>
-          <td class="px-4 py-3 text-sm text-slate-600"><%= account.account_type.titleize %></td>
+          <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-400"><%= account.account_type.titleize %></td>
           <td class="px-4 py-3 text-sm">
-            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= account.active? ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600" %>">
+            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= account.active? ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300" %>">
               <%= account.active? ? "Active" : "Inactive" %>
             </span>
           </td>
           <td class="px-4 py-3 text-right text-sm">
             <% if policy([:accounting, account]).update? %>
-              <%= link_to "Edit", edit_accounting_account_path(account), class: "text-brand-600 hover:text-brand-800" %>
+              <%= link_to "Edit", edit_accounting_account_path(account), class: "text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
             <% end %>
           </td>
         </tr>

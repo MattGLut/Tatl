@@ -1,7 +1,7 @@
 <% content_for :title, "Edit membership - #{@property.name}" %>
 
-<h1 class="text-2xl font-bold tracking-tight text-slate-900">Edit membership for <%= @property.name %></h1>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Edit membership for <%= @property.name %></h1>
 
-<div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+<div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
   <%= render "form", membership: @membership %>
 </div>
