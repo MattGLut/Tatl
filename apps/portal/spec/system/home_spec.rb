@@ -6,7 +6,7 @@ RSpec.describe "Home" do
   it "shows welcome content and auth links for guests" do
     visit root_path
 
-    expect(page).to have_content("Welcome to NeIQhbor")
+    expect(page).to have_content("Welcome to neiQhbor")
     expect(page).to have_link("Sign in")
     expect(page).to have_link("Sign up")
     expect(page).to have_no_button("Sign out")
