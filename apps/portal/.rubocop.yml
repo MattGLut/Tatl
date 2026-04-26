@@ -24,6 +24,7 @@ AllCops:
     - "log/**/*"
     - "coverage/**/*"
     - "public/**/*"
+    - "lib/tasks/demo.rake"
 
 # Long, multi-block files are normal in Rails projects.
 Metrics/BlockLength:
