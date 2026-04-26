@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module SortableHelper
-  DEFAULT_TH_CLASS = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
+  DEFAULT_TH_CLASS = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider " \
+                     "text-slate-500 dark:text-slate-400"
 
   # Render a <th> whose label links back to the current page with sort/dir
   # query params toggled. Existing query params (filters, etc.) are preserved;
