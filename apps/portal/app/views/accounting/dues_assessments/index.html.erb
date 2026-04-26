@@ -5,31 +5,33 @@
   <% end %>
 </div>
 
-<div class="mt-4">
-  <%= form_tag accounting_dues_assessments_path, method: :get, class: "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" do %>
+<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+  <%= form_tag accounting_dues_assessments_path, method: :get do %>
     <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
     <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
-    <div class="flex min-w-0 flex-col">
-      <label for="dues_property_id" class="mb-0.5 text-xs font-medium text-slate-600">Property</label>
-      <%= select_tag :property_id, options_from_collection_for_select(@filter_properties, :id, :name, params[:property_id]), include_blank: "All properties", id: "dues_property_id", class: "min-w-40 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="dues_status" class="mb-0.5 text-xs font-medium text-slate-600">Status</label>
-      <%= select_tag :status,
-            options_for_select([["All statuses", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] }, params[:status]),
-            id: "dues_status", class: "min-w-36 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="dues_due_on_or_after" class="mb-0.5 text-xs font-medium text-slate-600">Due from</label>
-      <%= date_field_tag :due_on_or_after, params[:due_on_or_after], id: "dues_due_on_or_after", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="dues_due_on_or_before" class="mb-0.5 text-xs font-medium text-slate-600">Due to</label>
-      <%= date_field_tag :due_on_or_before, params[:due_on_or_before], id: "dues_due_on_or_before", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
-    </div>
-    <div class="flex gap-2">
-      <%= submit_tag "Filter", class: "cursor-pointer rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-900" %>
-      <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100" %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div>
+        <label for="dues_property_id" class="mb-1 block text-xs font-medium text-slate-500">Property</label>
+        <%= select_tag :property_id, options_from_collection_for_select(@filter_properties, :id, :name, params[:property_id]), include_blank: "All", id: "dues_property_id", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <label for="dues_status" class="mb-1 block text-xs font-medium text-slate-500">Status</label>
+        <%= select_tag :status,
+              options_for_select([["All", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] }, params[:status]),
+              id: "dues_status", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <label for="dues_due_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Due from</label>
+        <%= date_field_tag :due_on_or_after, params[:due_on_or_after], id: "dues_due_on_or_after", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <label for="dues_due_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Due to</label>
+        <%= date_field_tag :due_on_or_before, params[:due_on_or_before], id: "dues_due_on_or_before", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div class="flex items-end gap-2">
+        <%= submit_tag "Filter", class: "h-9 cursor-pointer rounded-md bg-slate-800 px-4 text-sm font-medium text-white shadow-sm hover:bg-slate-900" %>
+        <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50" %>
+      </div>
     </div>
   <% end %>
 </div>

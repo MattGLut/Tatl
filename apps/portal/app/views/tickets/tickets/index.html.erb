@@ -7,46 +7,48 @@
 
 <% filter_params = tickets_index_path_params.except(:status) %>
 
-<div class="mt-4">
-  <%= form_tag tickets_tickets_path, method: :get, id: "tickets_filters", class: "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" do %>
+<div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+  <%= form_tag tickets_tickets_path, method: :get, id: "tickets_filters" do %>
     <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
     <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
     <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
-    <div class="flex min-w-0 flex-col">
-      <label for="tickets_category" class="mb-0.5 text-xs font-medium text-slate-600">Category</label>
-      <%= select_tag :category,
-            options_for_select(
-              [["All categories", ""]] + Ticket.categories.keys.map { |c| [c.humanize, c] },
-              params[:category]
-            ),
-            id: "tickets_category", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="tickets_priority" class="mb-0.5 text-xs font-medium text-slate-600">Priority</label>
-      <%= select_tag :priority,
-            options_for_select(
-              [["All priorities", ""]] + Ticket.priorities.keys.map { |p| [p.humanize, p] },
-              params[:priority]
-            ),
-            id: "tickets_priority", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="tickets_created_on_or_after" class="mb-0.5 text-xs font-medium text-slate-600">Created from</label>
-      <%= date_field_tag :created_on_or_after, params[:created_on_or_after], id: "tickets_created_on_or_after", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900" %>
-    </div>
-    <div class="flex min-w-0 flex-col">
-      <label for="tickets_created_on_or_before" class="mb-0.5 text-xs font-medium text-slate-600">Created to</label>
-      <%= date_field_tag :created_on_or_before, params[:created_on_or_before], id: "tickets_created_on_or_before", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900" %>
-    </div>
-    <% if @ticket_submitters %>
-      <div class="flex min-w-0 flex-col">
-        <label for="tickets_user_id" class="mb-0.5 text-xs font-medium text-slate-600">Submitted by</label>
-        <%= select_tag :user_id, options_from_collection_for_select(@ticket_submitters, :id, :display_name, params[:user_id]), include_blank: "Everyone", id: "tickets_user_id", class: "min-w-40 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900" %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div>
+        <label for="tickets_category" class="mb-1 block text-xs font-medium text-slate-500">Category</label>
+        <%= select_tag :category,
+              options_for_select(
+                [["All", ""]] + Ticket.categories.keys.map { |c| [c.humanize, c] },
+                params[:category]
+              ),
+              id: "tickets_category", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
       </div>
-    <% end %>
-    <div class="flex gap-2">
-      <%= submit_tag "Filter", class: "cursor-pointer rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-900" %>
-      <%= link_to "Clear", tickets_tickets_path, class: "inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100" %>
+      <div>
+        <label for="tickets_priority" class="mb-1 block text-xs font-medium text-slate-500">Priority</label>
+        <%= select_tag :priority,
+              options_for_select(
+                [["All", ""]] + Ticket.priorities.keys.map { |p| [p.humanize, p] },
+                params[:priority]
+              ),
+              id: "tickets_priority", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <label for="tickets_created_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Created from</label>
+        <%= date_field_tag :created_on_or_after, params[:created_on_or_after], id: "tickets_created_on_or_after", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <label for="tickets_created_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Created to</label>
+        <%= date_field_tag :created_on_or_before, params[:created_on_or_before], id: "tickets_created_on_or_before", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+      <% if @ticket_submitters %>
+        <div>
+          <label for="tickets_user_id" class="mb-1 block text-xs font-medium text-slate-500">Submitted by</label>
+          <%= select_tag :user_id, options_from_collection_for_select(@ticket_submitters, :id, :display_name, params[:user_id]), include_blank: "Everyone", id: "tickets_user_id", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+      <% end %>
+      <div class="flex items-end gap-2">
+        <%= submit_tag "Filter", class: "h-9 cursor-pointer rounded-md bg-slate-800 px-4 text-sm font-medium text-white shadow-sm hover:bg-slate-900" %>
+        <%= link_to "Clear", tickets_tickets_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50" %>
+      </div>
     </div>
   <% end %>
 </div>
