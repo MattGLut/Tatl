@@ -22,10 +22,10 @@ todos:
     status: completed
   - id: sendgrid_email
     content: Configure SendGrid SMTP in production.rb, generate + Tailwind-style custom Devise views, permit first_name/last_name sign-up params, request + mailer specs, update env template
-    status: in_progress
+    status: completed
   - id: core_models
     content: "Add core domain models with model + request specs: Property, Membership, Document (Active Storage)"
-    status: pending
+    status: completed
   - id: doorkeeper_oidc
     content: Configure Doorkeeper + doorkeeper-openid_connect as OIDC IdP with custom roles claim and JWKS; spec coverage for token/userinfo/JWKS endpoints
     status: pending
@@ -69,7 +69,7 @@ isProject: false
 - **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for later slices (sidecar services only).
 - **Local Postgres:** Windows service `postgresql-x64-18`. Role `tatl` (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) on PATH. Credentials in `.env.development` (gitignored).
 - **Staging runtime:** EC2 Ubuntu 24.04, rbenv Ruby 3.4.8, systemd units for Puma + Solid Queue, Caddy reverse proxy. `deploy` user owns `/opt/tatl`. Env vars in `/opt/tatl/.env.production`.
-- **Execution order:** ship in thin slices. Slice 1 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging. Current = SendGrid email + styled sign-up flow. Next = core domain models, then OIDC, accounting, RAG, sidecar services.
+- **Execution order:** ship in thin slices. Slices 1-3 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document). Next = Doorkeeper OIDC, then accounting, RAG, sidecar services.
 
 ## Architecture
 
@@ -115,9 +115,10 @@ flowchart LR
 
 Models (key ones):
 
-- `User` (Devise) with role enum: `resident`, `board`, `treasurer`, `admin`
-- `Property` (unit/lot), `Membership` (User <-> Property), `OwnershipPeriod`
-- `Document` (policy/bylaws/minutes) with Active Storage + LightRAG sync state
+- `User` (Devise) with role enum: `resident`, `board`, `treasurer`, `admin`; `has_many :memberships`, `has_many :properties`, `has_many :uploaded_documents`
+- `Property` (unit/lot) with `name`, `street_address`, `city`, `state`, `zip`, `lot_number` (unique), `property_type` enum (`single_family`, `townhome`, `condo`, `lot`)
+- `Membership` (User <-> Property) with `role` enum (`owner`, `resident`, `tenant`), `started_on`, `ended_on` (nil = active); unique composite index; scopes: `active`, `ended`, `for_user`, `for_property`
+- `Document` (policy/bylaws/minutes) with Active Storage file attachment, `category` enum, `published_at` (nil = draft), `rag_sync_status` enum (`pending`, `indexed`, `failed`), `last_indexed_at`; scopes: `published`, `drafts`, `by_category`, `recent`
 - **Accounting (ledger-lite):**
   - `Account` (categories: Operating, Reserve, Income, Expense, etc.)
   - `Transaction` (date, amount, account, memo, attachment)
@@ -128,7 +129,10 @@ Models (key ones):
 
 Controllers / namespaces:
 
-- `Portal::`* - dashboard, documents, dues, payments
+- `PropertiesController` - CRUD for properties (staff manages, residents view own via policy scope)
+- `MembershipsController` - nested under properties (staff-only create/edit/destroy)
+- `DocumentsController` - index/show/new/create/destroy with category filtering (staff manages, residents see published only)
+- `Portal::`* (future) - dashboard, dues, payments
 - `Accounting::`* - admin/treasurer tools, reports
 - `Chat::`* - chat UI -> POSTs to n8n webhook, streams reply via Turbo Streams
 - `Oauth::`* - mounted from Doorkeeper

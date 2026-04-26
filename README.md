@@ -31,6 +31,12 @@ Rails 8.1 app at `apps/portal/` with:
 - Devise authentication (`:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`, `:confirmable`, `:lockable`, `:trackable`)
 - Custom Tailwind-styled Devise views (sign-in, sign-up, password reset, confirmation, unlock, edit profile)
 - Pundit authorization, with `User` role enum (`resident`, `board`, `treasurer`, `admin`)
+- **Core domain models:**
+  - `Property` (unit/lot with address, lot number, property type)
+  - `Membership` (links users to properties with role: owner/resident/tenant and date range)
+  - `Document` (HOA documents with Active Storage file attachments, categories, published/draft state)
+- Full CRUD UI for properties, memberships (nested), and documents with category filtering
+- Pundit policies: staff (admin/board/treasurer) manages; residents view their own properties and published documents
 - SendGrid SMTP for transactional email in staging/production (confirmations, password resets, unlocks)
 - Letter Opener Web at `/letters` for development emails
 - RSpec test suite with FactoryBot, shoulda-matchers, pundit-matchers, Capybara + Cuprite, WebMock, VCR, SimpleCov
@@ -177,7 +183,7 @@ Devise sends confirmation, password reset, unlock, email change, and password ch
 ## Roadmap (later slices)
 
 1. Doorkeeper + doorkeeper-openid_connect (OIDC IdP)
-2. Domain models: Property, Membership, Document, Account, Transaction, Dues
+2. Accounting ledger: Account, Transaction, DuesAssessment, DuesPayment, BudgetLine
 3. Document upload with LightRAG sync job
 4. Chat UI proxied to n8n with Turbo Streams
 5. Docker Compose for sidecar services: Zammad, Discourse, n8n, LightRAG
