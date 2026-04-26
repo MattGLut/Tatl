@@ -16,6 +16,9 @@ module Tickets
 
     def index
       authorize Ticket
+      if policy(Ticket).update_status?
+        @ticket_submitters = User.where(id: policy_scope(Ticket).select(:user_id)).order(:last_name, :first_name, :id)
+      end
       scope = apply_sort(filtered_tickets, allowed: TICKET_SORTS, default: { created_at: :desc })
       @pagy, @tickets = pagy(scope)
     end
@@ -75,7 +78,23 @@ module Tickets
       TICKET_FILTERS.each do |param, method|
         scope = scope.public_send(method, params[param]) if params[param].present?
       end
+      if (d = date_from_param(:created_on_or_after))
+        scope = scope.created_on_or_after(d)
+      end
+      if (d = date_from_param(:created_on_or_before))
+        scope = scope.created_on_or_before(d)
+      end
+      if policy(Ticket).update_status? && (uid = submitter_id_param)
+        scope = scope.by_submitter(uid)
+      end
       scope
+    end
+
+    def submitter_id_param
+      s = params[:user_id].to_s
+      return if s !~ /\A[1-9]\d*\z/
+
+      s.to_i
     end
 
     def sync_closed_at

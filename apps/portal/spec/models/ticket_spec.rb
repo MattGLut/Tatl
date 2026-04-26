@@ -105,6 +105,41 @@ RSpec.describe Ticket do
         expect(described_class.recent.first).to eq(resolved_ticket)
       end
     end
+
+    describe ".created_on_or_after" do
+      it "excludes older rows" do
+        keep = create(:ticket, created_at: 1.day.ago, subject: "In window")
+        excluded = create(:ticket, created_at: 20.days.ago, subject: "Out window")
+
+        from = 5.days.ago.to_date
+        result = described_class.created_on_or_after(from)
+        expect(result).to include(keep)
+        expect(result).not_to include(excluded)
+      end
+    end
+
+    describe ".created_on_or_after and .created_on_or_before" do
+      it "composes to a date range on created_at" do
+        create(:ticket, created_at: Time.zone.local(2026, 1, 10, 12))
+        edge = create(:ticket, created_at: Time.zone.local(2026, 1, 15, 12))
+        create(:ticket, created_at: Time.zone.local(2026, 1, 20, 12))
+
+        d1 = Date.new(2026, 1, 11)
+        d2 = Date.new(2026, 1, 19)
+        expect(described_class.created_on_or_after(d1).created_on_or_before(d2)).to contain_exactly(edge)
+      end
+    end
+
+    describe ".by_submitter" do
+      it "restricts to user_id" do
+        alice = create(:user)
+        bob = create(:user)
+        t_alice = create(:ticket, user: alice, subject: "A")
+        create(:ticket, user: bob, subject: "B")
+
+        expect(described_class.by_submitter(alice.id)).to contain_exactly(t_alice)
+      end
+    end
   end
 
   describe "#close!" do

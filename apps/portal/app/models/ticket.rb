@@ -38,7 +38,10 @@ class Ticket < ApplicationRecord
   scope :by_status, ->(s) { where(status: s) }
   scope :by_category, ->(c) { where(category: c) }
   scope :by_priority, ->(p) { where(priority: p) }
+  scope :by_submitter, ->(user_id) { where(user_id: user_id) }
   scope :active, -> { where(status: %i[open in_progress]) }
+  scope :created_on_or_after, ->(date) { where(created_at: date.beginning_of_day..) }
+  scope :created_on_or_before, ->(date) { where(created_at: ..date.end_of_day) }
 
   def close!
     update!(status: :closed, closed_at: Time.current)

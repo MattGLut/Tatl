@@ -5,6 +5,29 @@
   <% end %>
 </div>
 
+<div class="mt-4">
+  <%= form_tag accounting_transactions_path, method: :get, class: "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" do %>
+    <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+    <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
+    <div class="flex min-w-0 flex-col">
+      <label for="txn_account_id" class="mb-0.5 text-xs font-medium text-slate-600">Account</label>
+      <%= select_tag :account_id, options_from_collection_for_select(@filter_accounts, :id, :name, params[:account_id]), include_blank: "All accounts", id: "txn_account_id", class: "min-w-40 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex min-w-0 flex-col">
+      <label for="txn_transacted_on_start" class="mb-0.5 text-xs font-medium text-slate-600">Transacted from</label>
+      <%= date_field_tag :transacted_on_start, params[:transacted_on_start], id: "txn_transacted_on_start", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex min-w-0 flex-col">
+      <label for="txn_transacted_on_end" class="mb-0.5 text-xs font-medium text-slate-600">Transacted to</label>
+      <%= date_field_tag :transacted_on_end, params[:transacted_on_end], id: "txn_transacted_on_end", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex gap-2">
+      <%= submit_tag "Filter", class: "cursor-pointer rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-900" %>
+      <%= link_to "Clear", accounting_transactions_path, class: "inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100" %>
+    </div>
+  <% end %>
+</div>
+
 <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">

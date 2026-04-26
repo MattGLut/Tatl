@@ -13,8 +13,10 @@ module Accounting
 
     def index
       authorize Transaction, :index?, policy_class: Accounting::TransactionPolicy
+      @filter_accounts = policy_scope(Account, policy_scope_class: Accounting::AccountPolicy::Scope).order(:name)
       scope = policy_scope(Transaction, policy_scope_class: Accounting::TransactionPolicy::Scope).includes(:account)
-      scope = scope.for_account(params[:account_id]) if params[:account_id].present?
+      scope = scope.for_account(transaction_account_id_param) if transaction_account_id_param
+      scope = apply_transaction_date_filters(scope)
       scope = apply_sort(scope, allowed: TRANSACTION_SORTS, default: { transacted_on: :desc, created_at: :desc })
       @pagy, @transactions = pagy(scope)
     end
@@ -60,6 +62,27 @@ module Accounting
 
     def transaction_params
       params.expect(transaction: %i[transacted_on amount account_id memo file])
+    end
+
+    def transaction_account_id_param
+      s = params[:account_id].to_s
+      return if s !~ /\A[1-9]\d*\z/
+
+      s.to_i
+    end
+
+    def apply_transaction_date_filters(scope)
+      start_d = date_from_param(:transacted_on_start)
+      end_d = date_from_param(:transacted_on_end)
+      if start_d && end_d
+        lo, hi = [start_d, end_d].minmax
+        scope = scope.in_period(lo, hi)
+      elsif start_d
+        scope = scope.transacted_on_or_after(start_d)
+      elsif end_d
+        scope = scope.transacted_on_or_before(end_d)
+      end
+      scope
     end
   end
 end

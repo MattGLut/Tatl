@@ -5,6 +5,35 @@
   <% end %>
 </div>
 
+<div class="mt-4">
+  <%= form_tag accounting_dues_assessments_path, method: :get, class: "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" do %>
+    <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+    <%= hidden_field_tag :dir, params[:dir] if params[:dir].present? %>
+    <div class="flex min-w-0 flex-col">
+      <label for="dues_property_id" class="mb-0.5 text-xs font-medium text-slate-600">Property</label>
+      <%= select_tag :property_id, options_from_collection_for_select(@filter_properties, :id, :name, params[:property_id]), include_blank: "All properties", id: "dues_property_id", class: "min-w-40 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex min-w-0 flex-col">
+      <label for="dues_status" class="mb-0.5 text-xs font-medium text-slate-600">Status</label>
+      <%= select_tag :status,
+            options_for_select([["All statuses", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] }, params[:status]),
+            id: "dues_status", class: "min-w-36 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex min-w-0 flex-col">
+      <label for="dues_due_on_or_after" class="mb-0.5 text-xs font-medium text-slate-600">Due from</label>
+      <%= date_field_tag :due_on_or_after, params[:due_on_or_after], id: "dues_due_on_or_after", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex min-w-0 flex-col">
+      <label for="dues_due_on_or_before" class="mb-0.5 text-xs font-medium text-slate-600">Due to</label>
+      <%= date_field_tag :due_on_or_before, params[:due_on_or_before], id: "dues_due_on_or_before", class: "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm" %>
+    </div>
+    <div class="flex gap-2">
+      <%= submit_tag "Filter", class: "cursor-pointer rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-900" %>
+      <%= link_to "Clear", accounting_dues_assessments_path, class: "inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100" %>
+    </div>
+  <% end %>
+</div>
+
 <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">
