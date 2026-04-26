@@ -1,0 +1,28 @@
+<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-lg font-semibold text-slate-900">Documents</h2>
+    <%= link_to "Library", documents_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" %>
+  </div>
+  <p class="mt-1 text-sm text-slate-500">Recently added items you can access.</p>
+
+  <% if @recent_documents.any? %>
+    <ul class="mt-4 space-y-2">
+      <% @recent_documents.each do |doc| %>
+        <li>
+          <%= link_to document_path(doc), class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" do %>
+            <span class="line-clamp-1"><%= doc.title %></span>
+          <% end %>
+          <p class="text-xs text-slate-500"><%= doc.category.humanize %><% if doc.published? %> &middot; published<% else %> &middot; draft<% end %></p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-500">No documents to list yet.</p>
+  <% end %>
+
+  <% if policy(Document).create? %>
+    <p class="mt-4">
+      <%= link_to "Upload document", new_document_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" %>
+    </p>
+  <% end %>
+</div>

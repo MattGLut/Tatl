@@ -1,0 +1,13 @@
+<header>
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900">Home</h1>
+  <p class="mt-1 text-sm text-slate-600">
+    <% if current_user.staff? %>
+      Community overview &mdash; you are signed in as
+      <span class="font-medium text-slate-800"><%= current_user.role.humanize %></span>.
+    <% else %>
+      Your account &mdash; signed in as
+      <span class="font-medium text-slate-800"><%= current_user.display_name %></span>
+      (<%= current_user.role.humanize %>).
+    <% end %>
+  </p>
+</header>

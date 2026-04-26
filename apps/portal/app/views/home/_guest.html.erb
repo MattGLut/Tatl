@@ -1,0 +1,29 @@
+<section class="rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+  <p class="text-sm font-semibold uppercase tracking-wider text-indigo-600">Your HOA, online</p>
+  <h1 class="mt-2 text-4xl font-bold tracking-tight text-slate-900">Welcome to NeIQhbor</h1>
+  <p class="mt-4 max-w-2xl text-lg text-slate-600">
+    A resident portal for policies, documents, dues, and help requests&mdash;with accounting tools for the board
+    and treasurer. Sign in to see your home dashboard.
+  </p>
+
+  <div class="mt-8 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 p-4">
+      <h2 class="font-semibold text-slate-900">Documents</h2>
+      <p class="mt-1 text-sm text-slate-600">CC&amp;Rs, minutes, and forms in one place.</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 p-4">
+      <h2 class="font-semibold text-slate-900">Dues &amp; payments</h2>
+      <p class="mt-1 text-sm text-slate-600">See what you owe and your payment history.</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 p-4">
+      <h2 class="font-semibold text-slate-900">Tickets</h2>
+      <p class="mt-1 text-sm text-slate-600">Open requests and follow-ups with the association.</p>
+    </div>
+  </div>
+
+  <p class="mt-8 text-sm text-slate-500">
+    <%= link_to "Sign up", new_user_registration_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+    or <%= link_to "sign in", new_user_session_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+    to access your account.
+  </p>
+</section>

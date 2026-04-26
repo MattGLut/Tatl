@@ -12,16 +12,27 @@ RSpec.describe "Home" do
     expect(page).to have_no_button("Sign out")
   end
 
-  it "shows user greeting and role for signed-in users" do
+  it "shows the staff home dashboard for board members" do
     user = create(:user, :board, first_name: "Ada", last_name: "Lovelace")
     sign_in user
 
     visit root_path
 
     expect(page).to have_content("Hi, Ada Lovelace")
-    expect(page).to have_content("Board")
+    expect(page).to have_content("Community overview")
+    expect(page).to have_content("Support tickets")
     expect(page).to have_button("Sign out")
     expect(page).to have_no_link("Sign in")
+  end
+
+  it "shows the resident home dashboard for residents" do
+    user = create(:user, first_name: "Rae", last_name: "Resident")
+    sign_in user
+
+    visit root_path
+
+    expect(page).to have_content("Your account")
+    expect(page).to have_content("Your tickets")
   end
 
   it "displays notice flash messages" do
