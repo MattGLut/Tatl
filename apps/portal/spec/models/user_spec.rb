@@ -3,7 +3,13 @@
 require "rails_helper"
 
 RSpec.describe User do
-  describe "associations & validations" do
+  describe "associations" do
+    it { is_expected.to have_many(:memberships).dependent(:destroy) }
+    it { is_expected.to have_many(:properties).through(:memberships) }
+    it { is_expected.to have_many(:uploaded_documents).class_name("Document").dependent(:nullify) }
+  end
+
+  describe "validations" do
     subject { build(:user) }
 
     it { is_expected.to validate_presence_of(:first_name) }

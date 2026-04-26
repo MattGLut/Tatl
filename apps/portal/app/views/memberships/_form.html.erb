@@ -1,0 +1,44 @@
+<%= form_with(model: [@property, membership], class: "space-y-6") do |f| %>
+  <% if membership.errors.any? %>
+    <div class="rounded-md border border-rose-200 bg-rose-50 p-4">
+      <h3 class="text-sm font-medium text-rose-800"><%= pluralize(membership.errors.count, "error") %> prevented this membership from being saved:</h3>
+      <ul class="mt-2 list-inside list-disc text-sm text-rose-700">
+        <% membership.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= f.label :user_id, "Member", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.collection_select(:user_id,
+                              User.order(:last_name, :first_name),
+                              :id,
+                              :display_name,
+                              { prompt: "Select a user..." },
+                              class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500") %>
+    </div>
+
+    <div>
+      <%= f.label :role, class: "block text-sm font-medium text-slate-700" %>
+      <%= f.select :role, Membership.roles.keys.map { |r| [r.humanize, r] }, {}, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= f.label :started_on, class: "block text-sm font-medium text-slate-700" %>
+      <%= f.date_field :started_on, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= f.label :ended_on, "End date (leave blank if current)", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.date_field :ended_on, class: "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-3">
+    <%= link_to "Cancel", property_path(@property), class: "rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <%= f.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 cursor-pointer" %>
+  </div>
+<% end %>

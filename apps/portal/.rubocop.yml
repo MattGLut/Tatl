@@ -16,6 +16,7 @@ AllCops:
     - "db/schema.rb"
     - "db/queue_schema.rb"
     - "db/migrate/*_devise_create_users.rb"
+    - "db/migrate/*_create_active_storage_tables.active_storage.rb"
     - "tmp/**/*"
     - "vendor/**/*"
     - "node_modules/**/*"
@@ -42,6 +43,9 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Exclude:
     - "db/migrate/*_create_solid_queue_tables.rb"
+
+Rails/I18nLocaleTexts:
+  Enabled: false
 
 Style/Documentation:
   Enabled: false
