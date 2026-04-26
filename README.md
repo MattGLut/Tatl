@@ -101,11 +101,13 @@ createdb -U postgres -h localhost -O tatl tatl_test
 ruby bin/rails db:migrate
 ruby bin/rails db:test:prepare
 
-# 7. Run the app
-ruby bin/rails server
+# 7. Run the app (builds Tailwind CSS, then starts Puma)
+ruby bin/dev
 ```
 
 Then visit <http://localhost:3000>. Mailer previews land at <http://localhost:3000/letters>.
+
+> **Tailwind note:** `bin/dev` runs a one-shot `tailwindcss:build` before starting the server. If you add new Tailwind classes while the server is running, restart it or run `ruby bin/rails tailwindcss:build` in a separate terminal. On Linux/macOS you can use `foreman start -f Procfile.dev` to get a live-reloading CSS watcher instead.
 
 ## Credentials
 

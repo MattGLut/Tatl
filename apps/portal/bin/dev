@@ -1,2 +1,9 @@
 #!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+
+# Build Tailwind CSS before starting the server.
+# On Linux/macOS with foreman, Procfile.dev runs the watcher alongside
+# the server. On Windows, foreman and the filesystem watcher are unreliable,
+# so we do a one-shot build here instead.
+system("ruby", "bin/rails", "tailwindcss:build")
+
+exec "ruby", "bin/rails", "server", *ARGV
