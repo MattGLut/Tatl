@@ -22,9 +22,12 @@
         <label for="txn_transacted_on_end" class="mb-1 block text-xs font-medium text-slate-500">Date to</label>
         <%= date_field_tag :transacted_on_end, params[:transacted_on_end], id: "txn_transacted_on_end", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
       </div>
-      <div class="flex items-end gap-2">
-        <%= submit_tag "Filter", class: "h-9 cursor-pointer rounded-md bg-slate-800 px-4 text-sm font-medium text-white shadow-sm hover:bg-slate-900" %>
-        <%= link_to "Clear", accounting_transactions_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50" %>
+      <div>
+        <span class="mb-1 block text-xs">&nbsp;</span>
+        <div class="flex gap-2">
+          <%= submit_tag "Apply", class: "inline-flex h-9 cursor-pointer items-center rounded-md bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700" %>
+          <%= link_to "Clear", accounting_transactions_path, class: "inline-flex h-9 items-center rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
+        </div>
       </div>
     </div>
   <% end %>
