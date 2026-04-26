@@ -21,6 +21,12 @@ RSpec.describe TicketCommentPolicy do
     it { is_expected.to permit_action(:create) }
   end
 
+  describe "for a treasurer" do
+    let(:user) { create(:user, :treasurer) }
+
+    it { is_expected.to permit_action(:create) }
+  end
+
   describe "for the ticket owner" do
     let(:user) { ticket_owner }
 
