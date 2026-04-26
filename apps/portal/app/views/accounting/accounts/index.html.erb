@@ -9,9 +9,9 @@
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">
       <tr>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Name</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Type</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
+        <%= sortable_th "name", "Name" %>
+        <%= sortable_th "account_type", "Type" %>
+        <%= sortable_th "active", "Status", default_dir: :desc %>
         <th class="px-4 py-3"></th>
       </tr>
     </thead>

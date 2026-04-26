@@ -20,6 +20,30 @@ RSpec.describe "Accounting::Accounts" do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Operating Fund")
     end
+
+    describe "sorting" do
+      it "sorts by name asc by default" do
+        create(:account, name: "Zeta")
+        create(:account, name: "Alpha")
+        sign_in resident
+        get accounting_accounts_path
+        expect(response.body.index("Alpha")).to be < response.body.index("Zeta")
+      end
+
+      it "honors a desc sort param" do
+        create(:account, name: "Zeta")
+        create(:account, name: "Alpha")
+        sign_in resident
+        get accounting_accounts_path(sort: "name", dir: "desc")
+        expect(response.body.index("Zeta")).to be < response.body.index("Alpha")
+      end
+
+      it "ignores unknown sort keys" do
+        sign_in resident
+        get accounting_accounts_path(sort: "boom")
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "GET /accounting/accounts/:id" do

@@ -66,6 +66,62 @@ RSpec.describe "Tickets::Tickets" do
       expect(response.body).to include("Urgent work")
       expect(response.body).not_to include("Low priority item")
     end
+
+    describe "sorting" do
+      it "orders by sort param when whitelisted" do
+        create(:ticket, subject: "Banana", user: resident)
+        create(:ticket, subject: "Apple", user: resident)
+
+        sign_in resident
+        get tickets_tickets_path(sort: "subject", dir: "asc")
+        expect(response.body.index("Apple")).to be < response.body.index("Banana")
+      end
+
+      it "reverses on dir=desc" do
+        create(:ticket, subject: "Banana", user: resident)
+        create(:ticket, subject: "Apple", user: resident)
+
+        sign_in resident
+        get tickets_tickets_path(sort: "subject", dir: "desc")
+        expect(response.body.index("Banana")).to be < response.body.index("Apple")
+      end
+
+      it "falls back to default sort for unknown sort key" do
+        sign_in resident
+        get tickets_tickets_path(sort: "evil; DROP TABLE tickets;--")
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "pagination" do
+      around { |ex| with_pagy_limit(3) { ex.run } }
+
+      it "limits results to one page when there are more than the page size" do
+        create_list(:ticket, 5, user: resident)
+
+        sign_in resident
+        get tickets_tickets_path
+        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(3)
+      end
+
+      it "renders subsequent pages via the page param" do
+        create_list(:ticket, 5, user: resident)
+
+        sign_in resident
+        get tickets_tickets_path(page: 2)
+        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(2)
+      end
+
+      it "preserves filter and sort across pages" do
+        create_list(:ticket, 4, user: resident, status: :open)
+        create(:ticket, :closed, user: resident, subject: "Closed one")
+
+        sign_in resident
+        get tickets_tickets_path(status: "open", sort: "subject", dir: "asc", page: 2)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("Closed one")
+      end
+    end
   end
 
   describe "GET /tickets/:id" do

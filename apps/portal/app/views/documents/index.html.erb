@@ -21,10 +21,10 @@
     <table class="min-w-full divide-y divide-slate-200">
       <thead class="bg-slate-50">
         <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Title</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Category</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Uploaded</th>
+          <%= sortable_th "title", "Title" %>
+          <%= sortable_th "category", "Category" %>
+          <%= sortable_th "published_at", "Status" %>
+          <%= sortable_th "created_at", "Uploaded", default_dir: :desc %>
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
@@ -48,6 +48,7 @@
         <% end %>
       </tbody>
     </table>
+    <%= render "shared/pagination", pagy: @pagy %>
   </div>
 <% else %>
   <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center">

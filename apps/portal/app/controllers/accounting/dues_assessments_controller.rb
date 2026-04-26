@@ -2,15 +2,25 @@
 
 module Accounting
   class DuesAssessmentsController < BaseController
+    DUES_ASSESSMENT_SORTS = {
+      "property" => Arel.sql("properties.name"),
+      "period_start" => :period_start,
+      "due_date" => :due_date,
+      "amount_cents" => :amount_cents,
+      "status" => :status
+    }.freeze
+
     after_action :verify_policy_scoped, only: :index
     before_action :set_assessment, only: %i[show edit update destroy]
 
     def index
       authorize DuesAssessment, :index?, policy_class: Accounting::DuesAssessmentPolicy
-      @assessments = policy_scope(DuesAssessment, policy_scope_class: Accounting::DuesAssessmentPolicy::Scope)
-                     .includes(:property, :dues_payments)
-                     .order(due_date: :desc)
-      @assessments = @assessments.for_property(params[:property_id]) if params[:property_id].present?
+      scope = policy_scope(DuesAssessment, policy_scope_class: Accounting::DuesAssessmentPolicy::Scope)
+              .includes(:property, :dues_payments)
+              .references(:property)
+      scope = scope.for_property(params[:property_id]) if params[:property_id].present?
+      scope = apply_sort(scope, allowed: DUES_ASSESSMENT_SORTS, default: { due_date: :desc })
+      @pagy, @assessments = pagy(scope)
     end
 
     def show

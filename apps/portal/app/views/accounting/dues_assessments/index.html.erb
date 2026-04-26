@@ -9,11 +9,11 @@
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">
       <tr>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Property</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Period</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Due Date</th>
-        <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500">Amount</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
+        <%= sortable_th "property", "Property" %>
+        <%= sortable_th "period_start", "Period" %>
+        <%= sortable_th "due_date", "Due Date", default_dir: :desc %>
+        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: "px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500" %>
+        <%= sortable_th "status", "Status" %>
         <th class="px-4 py-3"></th>
       </tr>
     </thead>
@@ -36,4 +36,5 @@
       <% end %>
     </tbody>
   </table>
+  <%= render "shared/pagination", pagy: @pagy %>
 </div>

@@ -2,12 +2,19 @@
 
 module Accounting
   class AccountsController < BaseController
+    ACCOUNT_SORTS = {
+      "name" => :name,
+      "account_type" => :account_type,
+      "active" => :active
+    }.freeze
+
     after_action :verify_policy_scoped, only: :index
     before_action :set_account, only: %i[show edit update destroy]
 
     def index
       authorize Account, :index?, policy_class: Accounting::AccountPolicy
-      @accounts = policy_scope(Account, policy_scope_class: Accounting::AccountPolicy::Scope).order(:name)
+      scope = policy_scope(Account, policy_scope_class: Accounting::AccountPolicy::Scope)
+      @accounts = apply_sort(scope, allowed: ACCOUNT_SORTS, default: { name: :asc })
     end
 
     def show; end

@@ -2,16 +2,23 @@
 
 module Accounting
   class BudgetLinesController < BaseController
+    BUDGET_LINE_SORTS = {
+      "account" => Arel.sql("accounts.name"),
+      "description" => :description,
+      "amount_cents" => :amount_cents
+    }.freeze
+
     after_action :verify_policy_scoped, only: :index
     before_action :set_budget_line, only: %i[edit update destroy]
 
     def index
       authorize BudgetLine, :index?, policy_class: Accounting::BudgetLinePolicy
-      @budget_lines = policy_scope(BudgetLine, policy_scope_class: Accounting::BudgetLinePolicy::Scope)
-                      .includes(:account)
-                      .order(fiscal_year: :desc, created_at: :asc)
+      scope = policy_scope(BudgetLine, policy_scope_class: Accounting::BudgetLinePolicy::Scope)
+              .includes(:account)
+              .references(:account)
       @fiscal_year = params[:fiscal_year]&.to_i || Date.current.year
-      @budget_lines = @budget_lines.for_year(@fiscal_year)
+      scope = scope.for_year(@fiscal_year)
+      @budget_lines = apply_sort(scope, allowed: BUDGET_LINE_SORTS, default: { created_at: :asc })
     end
 
     def new
