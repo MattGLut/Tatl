@@ -31,6 +31,8 @@ gem "image_processing", "~> 1.2"
 
 # Authentication / Authorization
 gem "devise"
+gem "doorkeeper"
+gem "doorkeeper-openid_connect"
 gem "pundit"
 
 # View / UI helpers
