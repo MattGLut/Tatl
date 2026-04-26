@@ -2,6 +2,7 @@
 
 module Accounting
   class BudgetLinesController < BaseController
+    after_action :verify_policy_scoped, only: :index
     before_action :set_budget_line, only: %i[edit update destroy]
 
     def index

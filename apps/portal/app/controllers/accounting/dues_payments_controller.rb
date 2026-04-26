@@ -2,7 +2,6 @@
 
 module Accounting
   class DuesPaymentsController < BaseController
-    skip_after_action :verify_policy_scoped
     before_action :set_assessment
 
     def new

@@ -3,7 +3,7 @@
 class DuesPayment < ApplicationRecord
   belongs_to :dues_assessment
   belongs_to :ledger_transaction, class_name: "Transaction", foreign_key: :transaction_id,
-                                   inverse_of: false, optional: true
+                                  inverse_of: false, optional: true
 
   monetize :amount_cents
 

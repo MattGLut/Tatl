@@ -2,6 +2,7 @@
 
 module Accounting
   class AccountsController < BaseController
+    after_action :verify_policy_scoped, only: :index
     before_action :set_account, only: %i[show edit update destroy]
 
     def index

@@ -27,9 +27,9 @@ RSpec.describe "Accounting::DuesPayments" do
 
     it "creates a payment and recalculates assessment for staff" do
       sign_in treasurer
-      expect {
+      expect do
         post accounting_dues_assessment_payments_path(assessment), params: valid_params
-      }.to change(DuesPayment, :count).by(1)
+      end.to change(DuesPayment, :count).by(1)
       expect(response).to redirect_to(accounting_dues_assessment_path(assessment))
       expect(assessment.reload.status).to eq("paid")
     end
@@ -46,9 +46,9 @@ RSpec.describe "Accounting::DuesPayments" do
 
     it "removes a payment for admins" do
       sign_in admin
-      expect {
+      expect do
         delete accounting_dues_assessment_payment_path(assessment, payment)
-      }.to change(DuesPayment, :count).by(-1)
+      end.to change(DuesPayment, :count).by(-1)
     end
 
     it "denies deletion for treasurer" do

@@ -2,6 +2,7 @@
 
 module Accounting
   class DuesAssessmentsController < BaseController
+    after_action :verify_policy_scoped, only: :index
     before_action :set_assessment, only: %i[show edit update destroy]
 
     def index

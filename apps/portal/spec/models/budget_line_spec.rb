@@ -40,10 +40,10 @@ RSpec.describe BudgetLine do
   describe "scopes" do
     describe ".for_year" do
       it "filters by fiscal year" do
-        bl_2026 = create(:budget_line, fiscal_year: 2026)
+        budget2026 = create(:budget_line, fiscal_year: 2026)
         create(:budget_line, fiscal_year: 2025)
 
-        expect(described_class.for_year(2026)).to eq([bl_2026])
+        expect(described_class.for_year(2026)).to eq([budget2026])
       end
     end
   end

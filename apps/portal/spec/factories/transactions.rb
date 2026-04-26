@@ -6,7 +6,7 @@ FactoryBot.define do
     amount_cents { 10_000 }
     memo { "Monthly dues collection" }
     account
-    association :recorded_by, factory: %i[user treasurer]
+    recorded_by factory: %i[user treasurer]
 
     trait :expense do
       amount_cents { -5_000 }

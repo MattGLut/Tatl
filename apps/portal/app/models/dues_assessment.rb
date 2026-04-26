@@ -3,7 +3,7 @@
 class DuesAssessment < ApplicationRecord
   belongs_to :property
   belongs_to :ledger_transaction, class_name: "Transaction", foreign_key: :transaction_id,
-                                   inverse_of: false, optional: true
+                                  inverse_of: false, optional: true
 
   has_many :dues_payments, dependent: :destroy
 
@@ -23,7 +23,7 @@ class DuesAssessment < ApplicationRecord
   scope :open_or_partial, -> { where(status: %i[open partial]) }
   scope :overdue, -> { where(status: :overdue) }
   scope :for_property, ->(property_id) { where(property_id: property_id) }
-  scope :for_fiscal_year, ->(year) {
+  scope :for_fiscal_year, lambda { |year|
     where(period_start: Date.new(year, 1, 1)..Date.new(year, 12, 31))
   }
 
