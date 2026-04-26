@@ -47,7 +47,7 @@
   <div class="flex items-center justify-between">
     <h2 class="text-lg font-semibold text-slate-900">Members</h2>
     <% if policy(Membership).create? %>
-      <%= link_to "Add member", new_property_membership_path(@property), class: "rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700" %>
+      <%= link_to "Add member", new_property_membership_path(@property), class: "rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700" %>
     <% end %>
   </div>
 
@@ -72,7 +72,7 @@
               <td class="px-4 py-3 text-sm text-slate-500"><%= membership.started_on.strftime("%b %d, %Y") %></td>
               <% if policy(membership).update? %>
                 <td class="px-4 py-3 text-right text-sm">
-                  <%= link_to "Edit", edit_property_membership_path(@property, membership), class: "text-indigo-600 hover:text-indigo-800" %>
+                  <%= link_to "Edit", edit_property_membership_path(@property, membership), class: "text-brand-600 hover:text-brand-800" %>
                   <%= button_to "Remove", property_membership_path(@property, membership), method: :delete, class: "ml-3 text-rose-600 hover:text-rose-800", data: { turbo_confirm: "Remove this member?" } %>
                 </td>
               <% end %>

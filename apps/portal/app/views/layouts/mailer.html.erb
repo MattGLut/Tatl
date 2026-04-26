@@ -3,11 +3,20 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style>
-      /* Email styles need to be inline */
+      body { margin: 0; padding: 0; background-color: #f0f3f8; }
+      .email-wrapper { max-width: 600px; margin: 0 auto; padding: 32px 16px; }
+      .email-header { text-align: center; padding-bottom: 24px; }
+      .email-header-brand { font-size: 18px; font-weight: 700; color: #1b2a4a; text-decoration: none; }
+      .email-header-iq { color: #339e3d; }
     </style>
   </head>
 
   <body>
-    <%= yield %>
+    <div class="email-wrapper">
+      <div class="email-header">
+        <span class="email-header-brand">ne<span class="email-header-iq">iQ</span>hbor</span>
+      </div>
+      <%= yield %>
+    </div>
   </body>
 </html>

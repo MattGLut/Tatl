@@ -17,7 +17,7 @@
           <% when Integer %>
             <%= link_to item, pagy_pagination.page_url(item), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
           <% when String %>
-            <span class="rounded-md border border-indigo-600 bg-indigo-600 px-3 py-1 text-sm font-medium text-white" aria-current="page"><%= item %></span>
+            <span class="rounded-md border border-brand-600 bg-brand-600 px-3 py-1 text-sm font-medium text-white" aria-current="page"><%= item %></span>
           <% when :gap %>
             <span class="px-2 text-sm text-slate-400">&hellip;</span>
           <% end %>

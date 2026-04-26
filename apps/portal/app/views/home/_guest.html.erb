@@ -1,6 +1,16 @@
 <section class="rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
-  <p class="text-sm font-semibold uppercase tracking-wider text-indigo-600">Your HOA, online</p>
-  <h1 class="mt-2 text-4xl font-bold tracking-tight text-slate-900">Welcome to NeIQhbor</h1>
+  <div class="flex items-center gap-3">
+    <svg width="40" height="40" class="h-10 w-10 shrink-0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <rect width="512" height="512" rx="96" fill="#1b2a4a" />
+      <polygon points="256,100 120,210 150,210 150,340 362,340 362,210 392,210" fill="#3da84a" />
+      <rect x="170" y="210" width="172" height="130" fill="#ffffff" />
+      <rect x="230" y="270" width="52" height="70" rx="4" fill="#1b2a4a" />
+      <rect x="185" y="230" width="35" height="30" rx="3" fill="#1b2a4a" />
+      <rect x="292" y="230" width="35" height="30" rx="3" fill="#1b2a4a" />
+    </svg>
+    <p class="text-sm font-semibold uppercase tracking-wider text-brand-600">The Smarter HOA App</p>
+  </div>
+  <h1 class="mt-4 text-4xl font-bold tracking-tight text-navy-800">Welcome to ne<span class="text-brand-600">iQ</span>hbor</h1>
   <p class="mt-4 max-w-2xl text-lg text-slate-600">
     A resident portal for policies, documents, dues, and help requests&mdash;with accounting tools for the board
     and treasurer. Sign in to see your home dashboard.
@@ -8,22 +18,22 @@
 
   <div class="mt-8 grid gap-4 sm:grid-cols-3">
     <div class="rounded-xl border border-slate-200 p-4">
-      <h2 class="font-semibold text-slate-900">Documents</h2>
+      <h2 class="font-semibold text-navy-800">Documents</h2>
       <p class="mt-1 text-sm text-slate-600">CC&amp;Rs, minutes, and forms in one place.</p>
     </div>
     <div class="rounded-xl border border-slate-200 p-4">
-      <h2 class="font-semibold text-slate-900">Dues &amp; payments</h2>
+      <h2 class="font-semibold text-navy-800">Dues &amp; payments</h2>
       <p class="mt-1 text-sm text-slate-600">See what you owe and your payment history.</p>
     </div>
     <div class="rounded-xl border border-slate-200 p-4">
-      <h2 class="font-semibold text-slate-900">Tickets</h2>
+      <h2 class="font-semibold text-navy-800">Tickets</h2>
       <p class="mt-1 text-sm text-slate-600">Open requests and follow-ups with the association.</p>
     </div>
   </div>
 
   <p class="mt-8 text-sm text-slate-500">
-    <%= link_to "Sign up", new_user_registration_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-    or <%= link_to "sign in", new_user_session_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+    <%= link_to "Sign up", new_user_registration_path, class: "font-medium text-brand-600 hover:text-brand-500" %>
+    or <%= link_to "sign in", new_user_session_path, class: "font-medium text-brand-600 hover:text-brand-500" %>
     to access your account.
   </p>
 </section>
