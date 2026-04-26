@@ -22,10 +22,10 @@ todos:
     status: completed
   - id: sendgrid_email
     content: Configure SendGrid SMTP in production.rb, generate + Tailwind-style custom Devise views, permit first_name/last_name sign-up params, request + mailer specs, update env template
-    status: in_progress
+    status: completed
   - id: core_models
     content: "Add core domain models with model + request specs: Property, Membership, Document (Active Storage)"
-    status: pending
+    status: in_progress
   - id: doorkeeper_oidc
     content: Configure Doorkeeper + doorkeeper-openid_connect as OIDC IdP with custom roles claim and JWKS; spec coverage for token/userinfo/JWKS endpoints
     status: pending
