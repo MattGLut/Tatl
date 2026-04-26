@@ -1,8 +1,7 @@
 <header
   class="border-b border-slate-200 bg-white"
   data-controller="mobile-nav"
-  data-action="keydown@window->mobile-nav#keydown"
->
+  data-action="keydown@window->mobile-nav#keydown">
   <div class="mx-auto max-w-6xl">
     <div class="flex items-center justify-between gap-4 px-6 py-4">
       <%= link_to root_path, class: "flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-navy-800" do %>
@@ -66,8 +65,7 @@
           data-mobile-nav-target="button"
           aria-controls="mobile-nav-panel"
           aria-expanded="false"
-          aria-label="Open main menu"
-        >
+          aria-label="Open main menu">
           <svg
             class="h-5 w-5"
             data-mobile-nav-target="iconMenu"
@@ -75,8 +73,7 @@
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            aria-hidden="true"
-          >
+            aria-hidden="true">
             <path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
           </svg>
           <svg
@@ -86,8 +83,7 @@
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            aria-hidden="true"
-          >
+            aria-hidden="true">
             <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -99,8 +95,7 @@
       class="hidden border-t border-slate-200 bg-white md:hidden"
       data-mobile-nav-target="panel"
       data-action="click->mobile-nav#handlePanelNavigate"
-      aria-hidden="true"
-    >
+      aria-hidden="true">
       <div class="flex flex-col gap-1 px-6 py-3 text-sm">
         <% if user_signed_in? %>
           <%= link_to "Properties", properties_path, class: "rounded-md px-2 py-2 text-slate-700 hover:bg-slate-100" %>
@@ -110,8 +105,7 @@
           <% if current_user.admin? || current_user.board? || current_user.treasurer? %>
             <details class="group">
               <summary
-                class="list-none cursor-pointer select-none rounded-md px-2 py-2 text-slate-700 hover:bg-slate-100 [&::-webkit-details-marker]:hidden"
-              >
+                class="list-none cursor-pointer select-none rounded-md px-2 py-2 text-slate-700 hover:bg-slate-100 [&::-webkit-details-marker]:hidden">
                 <span class="block">Accounting</span>
               </summary>
               <div class="mt-1 flex flex-col border-l-2 border-slate-200 pl-3 text-sm">
