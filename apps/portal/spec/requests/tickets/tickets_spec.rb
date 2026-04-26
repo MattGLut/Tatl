@@ -4,7 +4,6 @@ require "rails_helper"
 
 RSpec.describe "Tickets::Tickets" do
   let(:admin) { create(:user, :admin) }
-  let(:board_member) { create(:user, :board) }
   let(:resident) { create(:user) }
   let(:other_resident) { create(:user) }
 
@@ -14,15 +13,17 @@ RSpec.describe "Tickets::Tickets" do
       expect(response).to redirect_to(new_user_session_path)
     end
 
-    it "shows all tickets to staff" do
-      create(:ticket, subject: "Admin sees this", user: resident)
-      create(:ticket, subject: "And this too", user: other_resident)
+    { "admin" => :admin, "board member" => :board, "treasurer" => :treasurer }.each do |label, trait|
+      it "shows all tickets to #{label}" do
+        create(:ticket, subject: "First ticket", user: resident)
+        create(:ticket, subject: "Second ticket", user: other_resident)
 
-      sign_in admin
-      get tickets_tickets_path
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Admin sees this")
-      expect(response.body).to include("And this too")
+        sign_in create(:user, trait)
+        get tickets_tickets_path
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("First ticket")
+        expect(response.body).to include("Second ticket")
+      end
     end
 
     it "shows only own tickets to residents" do
@@ -55,6 +56,16 @@ RSpec.describe "Tickets::Tickets" do
       expect(response.body).to include("Landscaping issue")
       expect(response.body).not_to include("Parking issue")
     end
+
+    it "filters by priority" do
+      create(:ticket, subject: "Urgent work", user: resident, priority: :urgent)
+      create(:ticket, subject: "Low priority item", user: resident, priority: :low)
+
+      sign_in resident
+      get tickets_tickets_path(priority: "urgent")
+      expect(response.body).to include("Urgent work")
+      expect(response.body).not_to include("Low priority item")
+    end
   end
 
   describe "GET /tickets/:id" do
@@ -66,11 +77,13 @@ RSpec.describe "Tickets::Tickets" do
       expect(response.body).to include("My issue")
     end
 
-    it "allows staff to view any ticket" do
-      ticket = create(:ticket, user: resident)
-      sign_in admin
-      get tickets_ticket_path(ticket)
-      expect(response).to have_http_status(:ok)
+    { "admin" => :admin, "board member" => :board, "treasurer" => :treasurer }.each do |label, trait|
+      it "allows #{label} to view any ticket" do
+        ticket = create(:ticket, user: resident)
+        sign_in create(:user, trait)
+        get tickets_ticket_path(ticket)
+        expect(response).to have_http_status(:ok)
+      end
     end
 
     it "denies another resident access" do
@@ -151,14 +164,16 @@ RSpec.describe "Tickets::Tickets" do
   describe "PATCH /tickets/:id/update_status" do
     let(:ticket) { create(:ticket, user: resident) }
 
-    it "allows admin to update status" do
-      sign_in admin
-      patch update_status_tickets_ticket_path(ticket), params: { ticket: { status: "in_progress", priority: "high" } }
-      expect(response).to redirect_to(tickets_ticket_path(ticket))
+    { "admin" => :admin, "board member" => :board, "treasurer" => :treasurer }.each do |label, trait|
+      it "allows #{label} to update status" do
+        sign_in create(:user, trait)
+        patch update_status_tickets_ticket_path(ticket), params: { ticket: { status: "in_progress", priority: "high" } }
+        expect(response).to redirect_to(tickets_ticket_path(ticket))
 
-      ticket.reload
-      expect(ticket.status).to eq("in_progress")
-      expect(ticket.priority).to eq("high")
+        ticket.reload
+        expect(ticket.status).to eq("in_progress")
+        expect(ticket.priority).to eq("high")
+      end
     end
 
     it "sends a notification when status changes" do
