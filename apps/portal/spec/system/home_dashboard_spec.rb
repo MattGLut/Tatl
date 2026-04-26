@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "Home dashboard", type: :system do
+RSpec.describe "Home dashboard" do
   it "shows a resident's property, ticket, and link to the tickets list" do
     resident = create(:user, first_name: "Rae", last_name: "Resident")
     property = create(:property, name: "Sunset View 1A")
