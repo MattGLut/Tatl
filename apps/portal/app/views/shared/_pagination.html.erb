@@ -1,22 +1,21 @@
-<% pagy = local_assigns[:pagy] %>
-<% if pagy && pagy.count.positive? %>
+<% if (pagy_pagination = local_assigns[:pagy]) && pagy_pagination.count.positive? %>
   <div class="flex flex-col gap-2 border-t border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-xs text-slate-500">
-      Showing <span class="font-medium"><%= pagy.from %></span>&ndash;<span class="font-medium"><%= pagy.to %></span>
-      of <span class="font-medium"><%= pagy.count %></span>
+      Showing <span class="font-medium"><%= pagy_pagination.from %></span>&ndash;<span class="font-medium"><%= pagy_pagination.to %></span>
+      of <span class="font-medium"><%= pagy_pagination.count %></span>
     </p>
-    <% if pagy.last > 1 %>
+    <% if pagy_pagination.last > 1 %>
       <nav class="inline-flex flex-wrap items-center gap-1" aria-label="Pagination">
-        <% if pagy.previous %>
-          <%= link_to "Prev", pagy.page_url(:previous), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
+        <% if pagy_pagination.previous %>
+          <%= link_to "Prev", pagy_pagination.page_url(:previous), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
         <% else %>
           <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-400">Prev</span>
         <% end %>
 
-        <% pagy.send(:series).each do |item| %>
+        <% pagy_pagination.send(:series).each do |item| %>
           <% case item %>
           <% when Integer %>
-            <%= link_to item, pagy.page_url(item), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
+            <%= link_to item, pagy_pagination.page_url(item), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
           <% when String %>
             <span class="rounded-md border border-indigo-600 bg-indigo-600 px-3 py-1 text-sm font-medium text-white" aria-current="page"><%= item %></span>
           <% when :gap %>
@@ -24,8 +23,8 @@
           <% end %>
         <% end %>
 
-        <% if pagy.next %>
-          <%= link_to "Next", pagy.page_url(:next), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
+        <% if pagy_pagination.next %>
+          <%= link_to "Next", pagy_pagination.page_url(:next), class: "rounded-md border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-100" %>
         <% else %>
           <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-400">Next</span>
         <% end %>
