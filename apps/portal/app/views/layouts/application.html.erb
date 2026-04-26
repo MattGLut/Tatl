@@ -35,7 +35,7 @@
             <%= link_to "Dues", accounting_dues_assessments_path, class: "text-slate-600 hover:text-indigo-600" %>
             <% if current_user.admin? || current_user.board? || current_user.treasurer? %>
               <div class="relative group">
-                <button type="button" class="text-slate-600 hover:text-indigo-600">Accounting</button>
+                <button type="button" class="cursor-pointer text-slate-600 hover:text-indigo-600">Accounting</button>
                 <div class="invisible absolute right-0 top-full z-10 w-48 pt-1 group-hover:visible group-focus-within:visible">
                   <div class="rounded-md border border-slate-200 bg-white py-1 shadow-lg">
                     <%= link_to "Accounts", accounting_accounts_path, class: "block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
