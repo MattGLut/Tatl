@@ -1,0 +1,56 @@
+<% content_for :title, "Documents - NeIQhbor" %>
+
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900">Documents</h1>
+  <% if policy(Document).create? %>
+    <%= link_to "Upload document", new_document_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+  <% end %>
+</div>
+
+<nav class="mt-4 flex gap-2">
+  <%= link_to("All", documents_path,
+              class: params[:category].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+  <% Document.categories.each_key do |cat| %>
+    <%= link_to(cat.humanize, documents_path(category: cat),
+                class: params[:category] == cat ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100") %>
+  <% end %>
+</nav>
+
+<% if @documents.any? %>
+  <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Title</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Category</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Uploaded</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <% @documents.each do |document| %>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm">
+              <%= link_to document.title, document_path(document), class: "font-medium text-indigo-600 hover:text-indigo-800" %>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= document.category.humanize %></span>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <% if document.published? %>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">Published</span>
+              <% else %>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Draft</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-500"><%= document.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="mt-8 rounded-xl border border-dashed border-slate-300 p-10 text-center">
+    <p class="text-sm text-slate-500">No documents found.</p>
+  </div>
+<% end %>

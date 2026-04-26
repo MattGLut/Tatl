@@ -10,6 +10,13 @@ class User < ApplicationRecord
          :lockable,
          :trackable
 
+  has_many :memberships, dependent: :destroy
+  has_many :properties, through: :memberships
+  has_many :uploaded_documents, class_name: "Document",
+                                foreign_key: :uploaded_by_id,
+                                dependent: :nullify,
+                                inverse_of: :uploaded_by
+
   enum :role, {
     resident: 0,
     board: 1,
