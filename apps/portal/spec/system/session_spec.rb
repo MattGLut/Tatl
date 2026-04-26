@@ -18,7 +18,9 @@ RSpec.describe "Session" do
     visit root_path
     expect(page).to have_content("Hi, #{user.display_name}")
 
-    click_button "Sign out"
+    within "nav[aria-label='Main']" do
+      click_button "Sign out"
+    end
 
     expect(page).to have_current_path(root_path)
     expect(page).to have_link("Sign in")

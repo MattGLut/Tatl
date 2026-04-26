@@ -29,6 +29,7 @@ VCR.configure do |c|
   c.configure_rspec_metadata!
   c.default_cassette_options = { record: :once }
   c.filter_sensitive_data("<TATL_DB_PASSWORD>") { ENV["TATL_DB_PASSWORD"] }
+  c.ignore_localhost = true
 end
 
 Capybara.register_driver(:cuprite) do |app|

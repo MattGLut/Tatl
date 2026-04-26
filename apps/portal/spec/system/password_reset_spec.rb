@@ -29,7 +29,9 @@ RSpec.describe "Password Reset" do
     expect(page).to have_content("Hi, #{user.display_name}")
 
     # Verify old password no longer works
-    click_button "Sign out"
+    within "nav[aria-label='Main']" do
+      click_button "Sign out"
+    end
     sign_in_via_form(email: user.email, password: "Tatl-Password-1!")
     expect(page).to have_content("Invalid email or password")
 
