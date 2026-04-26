@@ -11,9 +11,10 @@ RSpec.describe "Profile" do
   it "is reachable from the header dropdown" do
     visit root_path
 
-    expect(page).to have_link("Account settings", href: edit_user_registration_path)
-
-    click_link "Account settings"
+    within "nav[aria-label='Main']" do
+      expect(page).to have_link("Account settings", href: edit_user_registration_path)
+      click_link "Account settings"
+    end
 
     expect(page).to have_current_path(edit_user_registration_path)
     expect(page).to have_content("Account settings")
@@ -67,7 +68,9 @@ RSpec.describe "Profile" do
 
     expect(page).to have_current_path(root_path)
 
-    click_button "Sign out"
+    within "nav[aria-label='Main']" do
+      click_button "Sign out"
+    end
     sign_in_via_form(email: user.email, password: "Brand-New-Pass-1!")
     expect(page).to have_content("Hi, Ada Lovelace")
   end
