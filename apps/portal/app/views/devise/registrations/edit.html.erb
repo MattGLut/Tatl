@@ -24,7 +24,7 @@
                                     class: "block w-full text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200" %>
           <p class="text-xs text-slate-500">PNG, JPEG, GIF, or WebP. Max 5 MB.</p>
           <% if resource.avatar.attached? %>
-            <label class="flex items-center gap-2 text-sm text-slate-700">
+            <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
               <%= f.check_box :remove_avatar, { class: "rounded border-slate-300 text-brand-600 focus:ring-brand-500" }, "1", "0" %>
               Remove current photo
             </label>
