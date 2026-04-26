@@ -5,8 +5,6 @@
   <%= link_to "New ticket", new_tickets_ticket_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
 </div>
 
-<% filter_params = tickets_index_path_params.except(:status) %>
-
 <div class="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
   <%= form_tag tickets_tickets_path, method: :get, id: "tickets_filters" do %>
     <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
@@ -15,34 +13,56 @@
     <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
       <div>
         <label for="tickets_category" class="mb-1 block text-xs font-medium text-slate-500">Category</label>
-        <%= select_tag :category,
+        <%= select_tag(
+              :category,
               options_for_select(
                 [["All", ""]] + Ticket.categories.keys.map { |c| [c.humanize, c] },
                 params[:category]
               ),
-              id: "tickets_category", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+              id: "tickets_category",
+              class: filter_form_control_class
+            ) %>
       </div>
       <div>
         <label for="tickets_priority" class="mb-1 block text-xs font-medium text-slate-500">Priority</label>
-        <%= select_tag :priority,
+        <%= select_tag(
+              :priority,
               options_for_select(
                 [["All", ""]] + Ticket.priorities.keys.map { |p| [p.humanize, p] },
                 params[:priority]
               ),
-              id: "tickets_priority", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+              id: "tickets_priority",
+              class: filter_form_control_class
+            ) %>
       </div>
       <div>
         <label for="tickets_created_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Created from</label>
-        <%= date_field_tag :created_on_or_after, params[:created_on_or_after], id: "tickets_created_on_or_after", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= date_field_tag :created_on_or_after, params[:created_on_or_after], {
+              id: "tickets_created_on_or_after",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
       </div>
       <div>
         <label for="tickets_created_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Created to</label>
-        <%= date_field_tag :created_on_or_before, params[:created_on_or_before], id: "tickets_created_on_or_before", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= date_field_tag :created_on_or_before, params[:created_on_or_before], {
+              id: "tickets_created_on_or_before",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
       </div>
       <% if @ticket_submitters %>
         <div>
           <label for="tickets_user_id" class="mb-1 block text-xs font-medium text-slate-500">Submitted by</label>
-          <%= select_tag :user_id, options_from_collection_for_select(@ticket_submitters, :id, :display_name, params[:user_id]), include_blank: "Everyone", id: "tickets_user_id", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+          <%= select_tag(
+                :user_id,
+                options_from_collection_for_select(
+                  @ticket_submitters, :id, :display_name, params[:user_id]
+                ),
+                include_blank: "Everyone",
+                id: "tickets_user_id",
+                class: filter_form_control_class
+              ) %>
         </div>
       <% end %>
       <div>
@@ -58,11 +78,10 @@
 
 <% if policy(Ticket).update_status? %>
   <nav class="mt-4 flex flex-wrap gap-2" aria-label="Status">
-    <% all_active = params[:status].blank? %>
-    <%= link_to "All", tickets_tickets_path(filter_params),
-                class: all_active ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100" %>
+    <%= link_to "All", tickets_tickets_path(tickets_index_path_params.except(:status)),
+                class: params[:status].blank? ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100" %>
     <% Ticket.statuses.each_key do |s| %>
-      <%= link_to s.humanize, tickets_tickets_path(filter_params.merge(status: s)),
+      <%= link_to s.humanize, tickets_tickets_path(tickets_index_path_params.merge(status: s)),
                   class: params[:status] == s ? "rounded-md px-3 py-1.5 text-sm font-medium bg-indigo-600 text-white" : "rounded-md px-3 py-1.5 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100" %>
     <% end %>
   </nav>

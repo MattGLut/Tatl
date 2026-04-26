@@ -12,21 +12,43 @@
     <div class="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
       <div>
         <label for="dues_property_id" class="mb-1 block text-xs font-medium text-slate-500">Property</label>
-        <%= select_tag :property_id, options_from_collection_for_select(@filter_properties, :id, :name, params[:property_id]), include_blank: "All", id: "dues_property_id", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= select_tag(
+              :property_id,
+              options_from_collection_for_select(
+                @filter_properties, :id, :name, params[:property_id]
+              ),
+              include_blank: "All",
+              id: "dues_property_id",
+              class: filter_form_control_class
+            ) %>
       </div>
       <div>
         <label for="dues_status" class="mb-1 block text-xs font-medium text-slate-500">Status</label>
-        <%= select_tag :status,
-              options_for_select([["All", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] }, params[:status]),
-              id: "dues_status", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= select_tag(
+              :status,
+              options_for_select(
+                [["All", ""]] + DuesAssessment.statuses.keys.map { |s| [s.titleize, s] },
+                params[:status]
+              ),
+              id: "dues_status",
+              class: filter_form_control_class
+            ) %>
       </div>
       <div>
         <label for="dues_due_on_or_after" class="mb-1 block text-xs font-medium text-slate-500">Due from</label>
-        <%= date_field_tag :due_on_or_after, params[:due_on_or_after], id: "dues_due_on_or_after", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= date_field_tag :due_on_or_after, params[:due_on_or_after], {
+              id: "dues_due_on_or_after",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
       </div>
       <div>
         <label for="dues_due_on_or_before" class="mb-1 block text-xs font-medium text-slate-500">Due to</label>
-        <%= date_field_tag :due_on_or_before, params[:due_on_or_before], id: "dues_due_on_or_before", class: "block h-9 w-full rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
+        <%= date_field_tag :due_on_or_before, params[:due_on_or_before], {
+              id: "dues_due_on_or_before",
+              class: filter_form_control_class,
+              autocomplete: "off"
+            } %>
       </div>
       <div>
         <span class="mb-1 block text-xs">&nbsp;</span>
