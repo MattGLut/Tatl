@@ -72,14 +72,14 @@ RSpec.describe "Documents" do
         create_list(:document, 5)
         sign_in admin
         get documents_path
-        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(3)
+        expect(response.body.scan(%r{<tr class="[^"]*hover:bg-slate-50[^"]*">}).size).to eq(3)
       end
 
       it "renders the next page" do
         create_list(:document, 5)
         sign_in admin
         get documents_path(page: 2)
-        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(2)
+        expect(response.body.scan(%r{<tr class="[^"]*hover:bg-slate-50[^"]*">}).size).to eq(2)
       end
     end
   end
