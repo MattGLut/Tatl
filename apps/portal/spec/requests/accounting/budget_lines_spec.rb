@@ -28,6 +28,28 @@ RSpec.describe "Accounting::BudgetLines" do
       get accounting_budget_lines_path
       expect(response).to redirect_to(root_path)
     end
+
+    describe "sorting" do
+      let!(:zeta) { create(:account, name: "Zeta Fund") }
+      let!(:alpha) { create(:account, name: "Alpha Fund") }
+
+      before do
+        create(:budget_line, account: zeta, fiscal_year: Date.current.year, description: "Z line")
+        create(:budget_line, account: alpha, fiscal_year: Date.current.year, description: "A line")
+      end
+
+      it "sorts by joined account name" do
+        sign_in treasurer
+        get accounting_budget_lines_path(sort: "account", dir: "asc")
+        expect(response.body.index("Alpha Fund")).to be < response.body.index("Zeta Fund")
+      end
+
+      it "ignores unknown sort keys" do
+        sign_in treasurer
+        get accounting_budget_lines_path(sort: "evil")
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "POST /accounting/budget_lines" do

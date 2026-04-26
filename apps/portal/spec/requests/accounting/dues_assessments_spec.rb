@@ -34,6 +34,43 @@ RSpec.describe "Accounting::DuesAssessments" do
       expect(response.body).to include("My Lot")
       expect(response.body).not_to include("Other Lot")
     end
+
+    describe "sorting" do
+      it "sorts by joined property name" do
+        create(:dues_assessment, property: create(:property, name: "Zeta House"))
+        create(:dues_assessment, property: create(:property, name: "Alpha House"))
+
+        sign_in treasurer
+        get accounting_dues_assessments_path(sort: "property", dir: "asc")
+        expect(response.body.index("Alpha House")).to be < response.body.index("Zeta House")
+      end
+
+      it "ignores unknown sort keys" do
+        sign_in treasurer
+        get accounting_dues_assessments_path(sort: "drop")
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "pagination" do
+      around { |ex| with_pagy_limit(3) { ex.run } }
+
+      it "limits results to one page" do
+        create_list(:dues_assessment, 5, property: property)
+        sign_in treasurer
+        get accounting_dues_assessments_path
+        # 3 body rows + 1 thead row
+        expect(response.body.scan("<tr>").size).to eq(4)
+      end
+
+      it "renders subsequent pages" do
+        create_list(:dues_assessment, 5, property: property)
+        sign_in treasurer
+        get accounting_dues_assessments_path(page: 2)
+        # 2 remaining body rows + 1 thead row
+        expect(response.body.scan("<tr>").size).to eq(3)
+      end
+    end
   end
 
   describe "GET /accounting/dues/:id" do

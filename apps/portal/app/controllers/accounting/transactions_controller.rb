@@ -2,13 +2,21 @@
 
 module Accounting
   class TransactionsController < BaseController
+    TRANSACTION_SORTS = {
+      "transacted_on" => :transacted_on,
+      "amount_cents" => :amount_cents,
+      "memo" => :memo
+    }.freeze
+
     after_action :verify_policy_scoped, only: :index
     before_action :set_transaction, only: %i[show edit update destroy]
 
     def index
       authorize Transaction, :index?, policy_class: Accounting::TransactionPolicy
-      @transactions = policy_scope(Transaction, policy_scope_class: Accounting::TransactionPolicy::Scope).recent
-      @transactions = @transactions.for_account(params[:account_id]) if params[:account_id].present?
+      scope = policy_scope(Transaction, policy_scope_class: Accounting::TransactionPolicy::Scope).includes(:account)
+      scope = scope.for_account(params[:account_id]) if params[:account_id].present?
+      scope = apply_sort(scope, allowed: TRANSACTION_SORTS, default: { transacted_on: :desc, created_at: :desc })
+      @pagy, @transactions = pagy(scope)
     end
 
     def show; end

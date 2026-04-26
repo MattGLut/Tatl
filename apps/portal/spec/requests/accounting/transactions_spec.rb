@@ -28,6 +28,43 @@ RSpec.describe "Accounting::Transactions" do
       get accounting_transactions_path
       expect(response).to redirect_to(root_path)
     end
+
+    describe "sorting" do
+      it "sorts by memo asc" do
+        create(:transaction, memo: "Zebra")
+        create(:transaction, memo: "Apple")
+
+        sign_in treasurer
+        get accounting_transactions_path(sort: "memo", dir: "asc")
+        expect(response.body.index("Apple")).to be < response.body.index("Zebra")
+      end
+
+      it "ignores unknown sort keys" do
+        sign_in treasurer
+        get accounting_transactions_path(sort: "drop_table")
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "pagination" do
+      around { |ex| with_pagy_limit(3) { ex.run } }
+
+      it "limits results to one page" do
+        create_list(:transaction, 5)
+        sign_in treasurer
+        get accounting_transactions_path
+        # 3 body rows + 1 thead row
+        expect(response.body.scan("<tr>").size).to eq(4)
+      end
+
+      it "renders subsequent pages" do
+        create_list(:transaction, 5)
+        sign_in treasurer
+        get accounting_transactions_path(page: 2)
+        # 2 remaining body rows + 1 thead row
+        expect(response.body.scan("<tr>").size).to eq(3)
+      end
+    end
   end
 
   describe "GET /accounting/transactions/:id" do

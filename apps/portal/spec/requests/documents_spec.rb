@@ -47,6 +47,41 @@ RSpec.describe "Documents" do
       expect(response.body).to include("Bylaws Doc")
       expect(response.body).not_to include("Minutes Doc")
     end
+
+    describe "sorting" do
+      it "orders by title when sort=title&dir=asc" do
+        create(:document, title: "Zeta Doc")
+        create(:document, title: "Alpha Doc")
+
+        sign_in admin
+        get documents_path(sort: "title", dir: "asc")
+        expect(response.body.index("Alpha Doc")).to be < response.body.index("Zeta Doc")
+      end
+
+      it "ignores unknown sort keys" do
+        sign_in admin
+        get documents_path(sort: "; bad")
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "pagination" do
+      around { |ex| with_pagy_limit(3) { ex.run } }
+
+      it "limits to page size" do
+        create_list(:document, 5)
+        sign_in admin
+        get documents_path
+        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(3)
+      end
+
+      it "renders the next page" do
+        create_list(:document, 5)
+        sign_in admin
+        get documents_path(page: 2)
+        expect(response.body.scan('<tr class="hover:bg-slate-50">').size).to eq(2)
+      end
+    end
   end
 
   describe "GET /documents/:id" do

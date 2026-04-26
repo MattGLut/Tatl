@@ -9,10 +9,10 @@
   <table class="min-w-full divide-y divide-slate-200">
     <thead class="bg-slate-50">
       <tr>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Date</th>
+        <%= sortable_th "transacted_on", "Date", default_dir: :desc %>
         <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Account</th>
-        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Memo</th>
-        <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500">Amount</th>
+        <%= sortable_th "memo", "Memo" %>
+        <%= sortable_th "amount_cents", "Amount", default_dir: :desc, th_class: "px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500" %>
         <th class="px-4 py-3"></th>
       </tr>
     </thead>
@@ -32,4 +32,5 @@
       <% end %>
     </tbody>
   </table>
+  <%= render "shared/pagination", pagy: @pagy %>
 </div>

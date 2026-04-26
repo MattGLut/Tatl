@@ -3,13 +3,21 @@
 module Tickets
   class TicketsController < BaseController
     TICKET_FILTERS = { status: :by_status, category: :by_category, priority: :by_priority }.freeze
+    TICKET_SORTS = {
+      "subject" => :subject,
+      "category" => :category,
+      "priority" => :priority,
+      "status" => :status,
+      "created_at" => :created_at
+    }.freeze
 
     after_action :verify_policy_scoped, only: :index
     before_action :set_ticket, only: %i[show update_status]
 
     def index
       authorize Ticket
-      @tickets = filtered_tickets
+      scope = apply_sort(filtered_tickets, allowed: TICKET_SORTS, default: { created_at: :desc })
+      @pagy, @tickets = pagy(scope)
     end
 
     def show
@@ -63,7 +71,7 @@ module Tickets
     end
 
     def filtered_tickets
-      scope = policy_scope(Ticket).includes(:user, :property).recent
+      scope = policy_scope(Ticket).includes(:user, :property)
       TICKET_FILTERS.each do |param, method|
         scope = scope.public_send(method, params[param]) if params[param].present?
       end

@@ -1,13 +1,22 @@
 # frozen_string_literal: true
 
 class DocumentsController < ApplicationController
+  DOCUMENT_SORTS = {
+    "title" => :title,
+    "category" => :category,
+    "published_at" => :published_at,
+    "created_at" => :created_at
+  }.freeze
+
   before_action :authenticate_user!
   before_action :set_document, only: %i[show destroy]
 
   def index
     authorize Document
-    @documents = policy_scope(Document).recent
-    @documents = @documents.by_category(params[:category]) if params[:category].present?
+    scope = policy_scope(Document)
+    scope = scope.by_category(params[:category]) if params[:category].present?
+    scope = apply_sort(scope, allowed: DOCUMENT_SORTS, default: { created_at: :desc })
+    @pagy, @documents = pagy(scope)
   end
 
   def show; end
