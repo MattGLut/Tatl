@@ -33,7 +33,7 @@ todos:
     content: Build ledger-lite accounting (Account, Transaction, DuesAssessment, DuesPayment, BudgetLine) with model + policy specs and treasurer report request specs
     status: completed
   - id: seed_data
-    content: "Demo seed data via rake demo:seed (users, properties, memberships, accounts, transactions, assessments, payments, budget lines, tickets, comments) with demo:teardown"
+    content: Demo seed data via rake demo:seed (users, properties, memberships, accounts, transactions, assessments, payments, budget lines, tickets, comments) with demo:teardown
     status: completed
   - id: native_ticketing
     content: "Native ticketing system: Ticket + TicketComment models, Tickets:: controller namespace, Pundit policies (residents own, staff all), TicketMailer (new ticket, status change, comment notifications), Tailwind UI, demo seed data, full RSpec coverage"
@@ -45,7 +45,7 @@ todos:
     content: Chat UI (Turbo Streams + Solid Cable) proxying to n8n webhook; system specs for chat flow with WebMock-stubbed n8n
     status: pending
   - id: compose_sidecar
-    content: "Docker Compose for sidecar services (n8n, LightRAG) on separate EC2 or same instance. Zammad and Discourse removed -- native ticketing replaces Zammad, announcements replace forum."
+    content: Docker Compose for sidecar services (n8n, LightRAG) on separate EC2 or same instance. Zammad and Discourse removed -- native ticketing replaces Zammad, announcements replace forum.
     status: pending
   - id: sso_zammad_discourse
     content: "Cancelled: Zammad and Discourse integrations removed from scope. Native ticketing replaces Zammad; announcements + tickets cover community communication without a forum."
@@ -72,7 +72,7 @@ todos:
     content: "Dues reminder emails: Solid Queue recurring job that emails residents with upcoming or overdue dues, using existing mailer patterns"
     status: pending
   - id: seed_and_docs
-    content: "Write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env). Seed data is complete via demo:seed."
+    content: Write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env). Seed data is complete via demo:seed.
     status: pending
 isProject: false
 ---

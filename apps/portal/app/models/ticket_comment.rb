@@ -17,9 +17,11 @@ class TicketComment < ApplicationRecord
   private
 
   def broadcast_new_comment
-    broadcast_append_to ticket,
+    broadcast_append_to(
+      ticket,
       target: dom_id(ticket, :comments),
       partial: "tickets/tickets/comment",
       locals: { comment: self }
+    )
   end
 end

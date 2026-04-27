@@ -62,9 +62,11 @@ class Ticket < ApplicationRecord
   end
 
   def broadcast_header_update
-    broadcast_replace_to self,
+    broadcast_replace_to(
+      self,
       target: dom_id(self, :header),
       partial: "tickets/tickets/ticket_header",
       locals: { ticket: self }
+    )
   end
 end
