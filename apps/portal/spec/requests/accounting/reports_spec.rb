@@ -25,6 +25,14 @@ RSpec.describe "Accounting::Reports" do
       get accounting_reports_summary_path
       expect(response).to redirect_to(root_path)
     end
+
+    it "honors start_date and end_date query params" do
+      sign_in treasurer
+      get accounting_reports_summary_path(start_date: "2026-04-01", end_date: "2026-04-30")
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Apr 01, 2026")
+      expect(response.body).to include("Apr 30, 2026")
+    end
   end
 
   describe "GET /accounting/reports/dues_aging" do

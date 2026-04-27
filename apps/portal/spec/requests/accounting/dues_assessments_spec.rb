@@ -85,6 +85,14 @@ RSpec.describe "Accounting::DuesAssessments" do
       expect(response.body).to include(property.name)
     end
 
+    it "ignores invalid due date filter params" do
+      create(:dues_assessment, property: property)
+      sign_in treasurer
+      get accounting_dues_assessments_path(due_on_or_after: "nope", due_on_or_before: "bad")
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(property.name)
+    end
+
     describe "sorting" do
       it "sorts by joined property name" do
         create(:dues_assessment, property: create(:property, name: "Zeta House"))
@@ -159,6 +167,37 @@ RSpec.describe "Accounting::DuesAssessments" do
     end
   end
 
+  describe "GET /accounting/dues/new" do
+    it "renders the form for staff" do
+      sign_in treasurer
+      get new_accounting_dues_assessment_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "denies access to residents" do
+      sign_in resident
+      get new_accounting_dues_assessment_path
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "GET /accounting/dues/:id/edit" do
+    let(:assessment) { create(:dues_assessment, property: property, description: "Editable row") }
+
+    it "renders the form for staff" do
+      sign_in treasurer
+      get edit_accounting_dues_assessment_path(assessment)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Editable row")
+    end
+
+    it "denies access to residents" do
+      sign_in resident
+      get edit_accounting_dues_assessment_path(assessment)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "POST /accounting/dues" do
     let(:valid_params) do
       {
@@ -181,6 +220,37 @@ RSpec.describe "Accounting::DuesAssessments" do
       sign_in resident
       post accounting_dues_assessments_path, params: valid_params
       expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "PATCH /accounting/dues/:id" do
+    let(:assessment) { create(:dues_assessment, property: property, description: "Before") }
+    let(:patch_params) do
+      {
+        dues_assessment: {
+          property_id: assessment.property_id,
+          amount: "250.00",
+          period_start: assessment.period_start,
+          period_end: assessment.period_end,
+          due_date: assessment.due_date,
+          description: "After patch",
+          status: assessment.status
+        }
+      }
+    end
+
+    it "updates for staff" do
+      sign_in treasurer
+      patch accounting_dues_assessment_path(assessment), params: patch_params
+      expect(response).to redirect_to(accounting_dues_assessment_path(assessment))
+      expect(assessment.reload.description).to eq("After patch")
+    end
+
+    it "denies update for residents" do
+      sign_in resident
+      patch accounting_dues_assessment_path(assessment), params: patch_params
+      expect(response).to redirect_to(root_path)
+      expect(assessment.reload.description).to eq("Before")
     end
   end
 

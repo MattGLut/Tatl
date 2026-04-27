@@ -23,6 +23,22 @@ RSpec.describe "Memberships" do
     end
   end
 
+  describe "GET /properties/:property_id/memberships/:id/edit" do
+    let!(:membership) { create(:membership, property: property) }
+
+    it "renders the form for staff" do
+      sign_in admin
+      get edit_property_membership_path(property, membership)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "denies access to residents" do
+      sign_in resident
+      get edit_property_membership_path(property, membership)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "POST /properties/:property_id/memberships" do
     let(:valid_params) do
       { membership: { user_id: target_user.id, role: "owner", started_on: Date.current.to_s } }

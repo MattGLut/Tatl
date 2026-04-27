@@ -71,6 +71,23 @@ RSpec.describe "Accounting::Accounts" do
     end
   end
 
+  describe "GET /accounting/accounts/:id/edit" do
+    let(:account) { create(:account, name: "Editable Fund") }
+
+    it "renders the form for staff" do
+      sign_in treasurer
+      get edit_accounting_account_path(account)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Editable Fund")
+    end
+
+    it "denies access to residents" do
+      sign_in resident
+      get edit_accounting_account_path(account)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "POST /accounting/accounts" do
     let(:valid_params) { { account: { name: "Reserve Fund", account_type: "reserve" } } }
 

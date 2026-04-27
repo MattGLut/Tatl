@@ -72,6 +72,23 @@ RSpec.describe "Properties" do
     end
   end
 
+  describe "GET /properties/:id/edit" do
+    let(:property) { create(:property) }
+
+    it "renders the form for staff" do
+      sign_in board_member
+      get edit_property_path(property)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(property.name)
+    end
+
+    it "denies access to residents" do
+      sign_in resident
+      get edit_property_path(property)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "POST /properties" do
     let(:valid_params) { { property: { name: "Unit 99", property_type: "condo", lot_number: "L-99" } } }
 
