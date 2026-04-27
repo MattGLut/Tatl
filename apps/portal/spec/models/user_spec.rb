@@ -7,6 +7,9 @@ RSpec.describe User do
     it { is_expected.to have_many(:memberships).dependent(:destroy) }
     it { is_expected.to have_many(:properties).through(:memberships) }
     it { is_expected.to have_many(:uploaded_documents).class_name("Document").dependent(:nullify) }
+    it { is_expected.to have_many(:recorded_transactions).class_name("Transaction").dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:tickets).dependent(:destroy) }
+    it { is_expected.to have_many(:ticket_comments).dependent(:destroy) }
     it { is_expected.to have_one_attached(:avatar) }
   end
 
@@ -38,6 +41,18 @@ RSpec.describe User do
         expect(user).to be_valid
         expect(user.public_send("#{role}?")).to be true
       end
+    end
+  end
+
+  describe "#full_name" do
+    it "joins first and last name with a space" do
+      user = build(:user, first_name: "Ada", last_name: "Lovelace")
+      expect(user.full_name).to eq("Ada Lovelace")
+    end
+
+    it "omits blank segments" do
+      user = build(:user, first_name: "Ada", last_name: "")
+      expect(user.full_name).to eq("Ada")
     end
   end
 

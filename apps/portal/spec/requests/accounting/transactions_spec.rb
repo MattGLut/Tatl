@@ -122,6 +122,37 @@ RSpec.describe "Accounting::Transactions" do
     end
   end
 
+  describe "GET /accounting/transactions/new" do
+    it "renders the form for treasurer" do
+      sign_in treasurer
+      get new_accounting_transaction_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "denies access to board members" do
+      sign_in board_member
+      get new_accounting_transaction_path
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "GET /accounting/transactions/:id/edit" do
+    let(:txn) { create(:transaction, memo: "Original memo") }
+
+    it "renders the form for treasurer" do
+      sign_in treasurer
+      get edit_accounting_transaction_path(txn)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Original memo")
+    end
+
+    it "denies access to board members" do
+      sign_in board_member
+      get edit_accounting_transaction_path(txn)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "GET /accounting/transactions/:id" do
     let(:txn) { create(:transaction) }
 
@@ -160,6 +191,35 @@ RSpec.describe "Accounting::Transactions" do
       sign_in resident
       post accounting_transactions_path, params: valid_params
       expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "PATCH /accounting/transactions/:id" do
+    let(:txn) { create(:transaction, memo: "Before", account: account) }
+    let(:update_params) do
+      {
+        transaction: {
+          transacted_on: txn.transacted_on,
+          amount: "200.00",
+          account_id: account.id,
+          memo: "After update"
+        }
+      }
+    end
+
+    it "updates for treasurer" do
+      sign_in treasurer
+      patch accounting_transaction_path(txn), params: update_params
+      expect(response).to redirect_to(accounting_transaction_path(txn))
+      expect(txn.reload.memo).to eq("After update")
+      expect(txn.amount_cents).to eq(20_000)
+    end
+
+    it "denies update for board members" do
+      sign_in board_member
+      patch accounting_transaction_path(txn), params: update_params
+      expect(response).to redirect_to(root_path)
+      expect(txn.reload.memo).to eq("Before")
     end
   end
 

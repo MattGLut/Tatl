@@ -52,6 +52,37 @@ RSpec.describe "Accounting::BudgetLines" do
     end
   end
 
+  describe "GET /accounting/budget_lines/new" do
+    it "renders the form for treasurer" do
+      sign_in treasurer
+      get new_accounting_budget_line_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "denies access to board members" do
+      sign_in board_member
+      get new_accounting_budget_line_path
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "GET /accounting/budget_lines/:id/edit" do
+    let(:budget_line) { create(:budget_line, description: "Line to edit") }
+
+    it "renders the form for treasurer" do
+      sign_in treasurer
+      get edit_accounting_budget_line_path(budget_line)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Line to edit")
+    end
+
+    it "denies access to board members" do
+      sign_in board_member
+      get edit_accounting_budget_line_path(budget_line)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
   describe "POST /accounting/budget_lines" do
     let(:valid_params) do
       { budget_line: { account_id: account.id, fiscal_year: 2026, amount: "500.00", description: "Insurance" } }
