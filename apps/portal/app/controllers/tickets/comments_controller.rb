@@ -11,10 +11,18 @@ module Tickets
 
       if @comment.save
         TicketMailer.new_comment_notification(@comment).deliver_later
-        redirect_to tickets_ticket_path(@ticket), notice: "Comment was successfully added."
+        respond_to do |format|
+          format.turbo_stream { render_comment_success }
+          format.html { redirect_to tickets_ticket_path(@ticket), notice: "Comment was successfully added." }
+        end
       else
-        @comments = @ticket.ticket_comments.includes(:user).chronological
-        render "tickets/tickets/show", status: :unprocessable_content
+        respond_to do |format|
+          format.turbo_stream { render_comment_errors }
+          format.html do
+            @comments = @ticket.ticket_comments.includes(:user).chronological
+            render "tickets/tickets/show", status: :unprocessable_content
+          end
+        end
       end
     end
 
@@ -26,6 +34,25 @@ module Tickets
 
     def comment_params
       params.expect(ticket_comment: %i[body file])
+    end
+
+    def render_comment_success
+      render turbo_stream: [
+        turbo_stream.replace(
+          helpers.dom_id(@ticket, :comment_form),
+          partial: "tickets/tickets/comment_form",
+          locals: { ticket: @ticket, comment: TicketComment.new }
+        ),
+        turbo_stream.remove(helpers.dom_id(@ticket, :no_comments))
+      ]
+    end
+
+    def render_comment_errors
+      render turbo_stream: turbo_stream.replace(
+        helpers.dom_id(@ticket, :comment_form),
+        partial: "tickets/tickets/comment_form",
+        locals: { ticket: @ticket, comment: @comment }
+      ), status: :unprocessable_content
     end
   end
 end

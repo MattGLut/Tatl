@@ -35,4 +35,17 @@ RSpec.describe TicketComment do
       end
     end
   end
+
+  describe "broadcasts" do
+    it "broadcasts append to the ticket stream after create" do
+      ticket = create(:ticket)
+      comment = build(:ticket_comment, ticket: ticket, body: "Live update")
+      allow(comment).to receive(:broadcast_append_to)
+      comment.save!
+      expect(comment).to have_received(:broadcast_append_to).with(
+        ticket,
+        hash_including(target: ActionView::RecordIdentifier.dom_id(ticket, :comments))
+      )
+    end
+  end
 end
