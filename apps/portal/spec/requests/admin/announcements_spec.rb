@@ -6,6 +6,8 @@ RSpec.describe "Admin::Announcements" do
   let(:admin) { create(:user, :admin) }
   let(:resident) { create(:user) }
   let!(:announcement) { create(:announcement, title: "Water Shutoff Notice") }
+  let(:opted_in) { create(:user, email: "opted-in@tatl.example") }
+  let(:opted_out) { create(:user, email: "opted-out@tatl.example", announcement_emails_enabled: false) }
 
   describe "GET /admin/announcements" do
     it "requires authentication" do
@@ -45,10 +47,7 @@ RSpec.describe "Admin::Announcements" do
       expect(response).to redirect_to(admin_announcements_path)
     end
 
-    it "enqueues announcement emails when requested" do
-      opted_in = create(:user, email: "opted-in@tatl.example")
-      opted_out = create(:user, email: "opted-out@tatl.example", announcement_emails_enabled: false)
-
+    it "enqueues announcement email for opted-in users when requested" do
       sign_in admin
       expect do
         post admin_announcements_path, params: valid_params.deep_merge(
@@ -58,14 +57,17 @@ RSpec.describe "Admin::Announcements" do
         an_instance_of(Announcement),
         opted_in
       )
+    end
+
+    it "does not enqueue announcement email for opted-out users" do
+      opted_in
+      opted_out
+
+      sign_in admin
+      create_announcement_with_email
 
       expect(Announcement.last).to be_present
-      expect(
-        enqueued_jobs.any? do |job|
-          args = job[:args] || []
-          args.inspect.include?("opted-out@tatl.example")
-        end
-      ).to eq(false)
+      expect(enqueued_for_email?("opted-out@tatl.example")).to be(false)
       expect(opted_out.announcement_emails_enabled).to be(false)
     end
 
@@ -116,6 +118,21 @@ RSpec.describe "Admin::Announcements" do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include("Water Shutoff Notice")
+    end
+  end
+
+  private
+
+  def create_announcement_with_email
+    post admin_announcements_path, params: valid_params.deep_merge(
+      announcement: { send_email_notification: "1" }
+    )
+  end
+
+  def enqueued_for_email?(email)
+    enqueued_jobs.any? do |job|
+      args = job[:args] || []
+      args.inspect.include?(email)
     end
   end
 end

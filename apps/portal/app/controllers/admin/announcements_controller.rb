@@ -15,6 +15,8 @@ module Admin
       @announcement = authorize Announcement.new
     end
 
+    def edit; end
+
     def create
       @announcement = Announcement.new(announcement_params)
       authorize @announcement
@@ -26,8 +28,6 @@ module Admin
         render :new, status: :unprocessable_content
       end
     end
-
-    def edit; end
 
     def update
       if @announcement.update(announcement_params)
