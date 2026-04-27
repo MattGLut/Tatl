@@ -19,6 +19,10 @@ Rails.application.routes.draw do
     get "reports/reserve_balance", to: "reports#reserve_balance"
   end
 
+  namespace :admin do
+    resources :announcements
+  end
+
   namespace :tickets do
     resources :tickets, path: "/", only: %i[index show new create] do
       resources :comments, controller: "comments", only: %i[create]

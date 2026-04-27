@@ -38,6 +38,9 @@
               </div>
             </div>
           <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Announcements", admin_announcements_path, class: "text-[var(--color-text-secondary)] hover:text-brand-600 dark:hover:text-brand-400" %>
+          <% end %>
 
           <div class="relative group">
             <button type="button" class="flex cursor-pointer items-center gap-2 rounded-md p-0 text-left text-[var(--color-text-secondary)] hover:text-brand-600 dark:hover:text-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
@@ -119,6 +122,9 @@
                 <%= link_to "Reserve Balance", accounting_reports_reserve_balance_path, class: "py-1.5 text-[var(--color-text-secondary)] hover:text-brand-600 dark:hover:text-brand-400" %>
               </div>
             </details>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Announcements", admin_announcements_path, class: "rounded-md px-2 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
           <% end %>
 
           <div class="mt-2 border-t border-[var(--color-border)] pt-3">

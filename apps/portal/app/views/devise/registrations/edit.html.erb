@@ -61,6 +61,15 @@
         <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Only required if you're changing your email.</p>
       </div>
 
+      <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-700 dark:bg-slate-900/30">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Email preferences</h3>
+        <label class="mt-2 flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300">
+          <%= f.check_box :announcement_emails_enabled,
+                          class: "mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700" %>
+          <span>Send me announcement emails from the HOA board/admin team.</span>
+        </label>
+      </div>
+
       <div class="flex justify-end">
         <%= f.submit "Save profile", class: devise_form_submit_class %>
       </div>

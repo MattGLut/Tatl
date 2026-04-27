@@ -1,0 +1,12 @@
+<% content_for :title, "New Announcement - NeIQhbor" %>
+
+<div class="max-w-3xl">
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">New announcement</h1>
+  <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+    Create a portal-wide announcement banner for signed-in users.
+  </p>
+
+  <div class="mt-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-card)] p-6">
+    <%= render "form", announcement: @announcement %>
+  </div>
+</div>

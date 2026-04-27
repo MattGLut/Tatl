@@ -21,6 +21,9 @@
 
   <body class="h-full text-[var(--color-text-primary)] antialiased">
     <%= render "shared/application_header" %>
+    <% if user_signed_in? %>
+      <%= render "shared/announcement_banner" %>
+    <% end %>
 
     <% if notice.present? %>
       <div class="mx-auto mt-4 max-w-6xl rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"><%= notice %></div>

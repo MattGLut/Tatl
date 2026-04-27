@@ -1,0 +1,24 @@
+<% content_for :title, "Announcement - NeIQhbor" %>
+
+<div class="flex items-center justify-between gap-4">
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"><%= @announcement.title %></h1>
+  <div class="flex items-center gap-3">
+    <%= link_to "Edit", edit_admin_announcement_path(@announcement), class: "rounded-md border border-[var(--color-border)] px-3 py-1.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
+    <%= link_to "Back", admin_announcements_path, class: "text-sm text-[var(--color-text-secondary)] hover:text-brand-600 dark:hover:text-brand-400" %>
+  </div>
+</div>
+
+<div class="mt-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-card)] p-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <% if @announcement.active? %>
+      <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Active</span>
+    <% else %>
+      <span class="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">Inactive</span>
+    <% end %>
+    <span class="text-xs text-slate-500 dark:text-slate-400">
+      Pin until: <%= @announcement.pinned_until ? @announcement.pinned_until.strftime("%b %d, %Y %l:%M %p") : "Not pinned" %>
+    </span>
+  </div>
+
+  <p class="mt-4 whitespace-pre-line text-sm text-[var(--color-text-primary)]"><%= @announcement.body %></p>
+</div>

@@ -69,6 +69,17 @@ RSpec.describe "User account update" do
       expect(response).to redirect_to(root_path)
       expect(user.reload.avatar).not_to be_attached
     end
+
+    it "lets users opt out of announcement emails without current_password" do
+      expect(user.announcement_emails_enabled).to be(true)
+
+      put user_registration_path, params: {
+        user: { announcement_emails_enabled: "0" }
+      }
+
+      expect(response).to redirect_to(root_path)
+      expect(user.reload.announcement_emails_enabled).to be(false)
+    end
   end
 
   describe "PUT /users (email change)" do
