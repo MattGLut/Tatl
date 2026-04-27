@@ -1,0 +1,57 @@
+<div id="<%= dom_id(ticket, :header) %>">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"><%= ticket.subject %></h1>
+      <div class="mt-1 flex flex-wrap items-center gap-2">
+        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300"><%= ticket.category.humanize %></span>
+        <% case ticket.status %>
+        <% when "open" %>
+          <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Open</span>
+        <% when "in_progress" %>
+          <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">In progress</span>
+        <% when "resolved" %>
+          <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Resolved</span>
+        <% when "closed" %>
+          <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400">Closed</span>
+        <% end %>
+        <% case ticket.priority %>
+        <% when "high" %>
+          <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">High priority</span>
+        <% when "urgent" %>
+          <span class="rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-900/40 dark:text-rose-400">Urgent</span>
+        <% end %>
+      </div>
+    </div>
+    <%= link_to "Back", tickets_tickets_path, class: "rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700" %>
+  </div>
+
+  <%# Ticket details card %>
+  <section class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <div class="text-sm text-slate-700 dark:text-slate-300"><%= simple_format(ticket.description) %></div>
+
+    <hr class="my-4 border-slate-200 dark:border-slate-700">
+
+    <dl class="grid gap-4 sm:grid-cols-3 text-sm">
+      <div>
+        <dt class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitted by</dt>
+        <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= ticket.user.display_name %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium text-slate-500 dark:text-slate-400">Created</dt>
+        <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= ticket.created_at.strftime("%B %d, %Y at %l:%M %p") %></dd>
+      </div>
+      <% if ticket.property.present? %>
+        <div>
+          <dt class="text-xs font-medium text-slate-500 dark:text-slate-400">Property</dt>
+          <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= link_to ticket.property.name, property_path(ticket.property), class: "text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %></dd>
+        </div>
+      <% end %>
+      <% if ticket.closed_at.present? %>
+        <div>
+          <dt class="text-xs font-medium text-slate-500 dark:text-slate-400">Closed</dt>
+          <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= ticket.closed_at.strftime("%B %d, %Y at %l:%M %p") %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </section>
+</div>

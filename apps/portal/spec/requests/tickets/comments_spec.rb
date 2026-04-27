@@ -8,7 +8,7 @@ RSpec.describe "Tickets::Comments" do
   let(:other_resident) { create(:user) }
   let(:ticket) { create(:ticket, user: resident) }
 
-  describe "POST /tickets/:ticket_id/comments" do
+  describe "POST /tickets/:ticket_id/comments (HTML)" do
     it "allows the ticket owner to add a comment" do
       sign_in resident
       expect do
@@ -55,6 +55,39 @@ RSpec.describe "Tickets::Comments" do
 
       comment = TicketComment.last
       expect(comment.file).to be_attached
+    end
+  end
+
+  describe "POST /tickets/:ticket_id/comments (Turbo Stream)" do
+    let(:turbo_headers) { { "Accept" => "text/vnd.turbo-stream.html, text/html" } }
+
+    it "returns turbo_stream response on success" do
+      sign_in resident
+      post tickets_ticket_comments_path(ticket),
+           params: { ticket_comment: { body: "Live comment" } },
+           headers: turbo_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+    end
+
+    it "creates the comment" do
+      sign_in resident
+      expect do
+        post tickets_ticket_comments_path(ticket),
+             params: { ticket_comment: { body: "Live comment" } },
+             headers: turbo_headers
+      end.to change(TicketComment, :count).by(1)
+    end
+
+    it "returns turbo_stream with validation errors on failure" do
+      sign_in resident
+      post tickets_ticket_comments_path(ticket),
+           params: { ticket_comment: { body: "" } },
+           headers: turbo_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.media_type).to eq("text/vnd.turbo-stream.html")
     end
   end
 end

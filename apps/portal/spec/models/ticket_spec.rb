@@ -159,4 +159,33 @@ RSpec.describe Ticket do
       expect(ticket.closed_at).to be_nil
     end
   end
+
+  describe "broadcasts" do
+    it "broadcasts header update on status change" do
+      ticket = create(:ticket)
+      allow(ticket).to receive(:broadcast_replace_to)
+      ticket.update!(status: :in_progress)
+      expect(ticket).to have_received(:broadcast_replace_to).with(
+        ticket,
+        hash_including(target: ActionView::RecordIdentifier.dom_id(ticket, :header))
+      )
+    end
+
+    it "broadcasts header update on priority change" do
+      ticket = create(:ticket)
+      allow(ticket).to receive(:broadcast_replace_to)
+      ticket.update!(priority: :urgent)
+      expect(ticket).to have_received(:broadcast_replace_to).with(
+        ticket,
+        hash_including(target: ActionView::RecordIdentifier.dom_id(ticket, :header))
+      )
+    end
+
+    it "does not broadcast when non-status/priority fields change" do
+      ticket = create(:ticket)
+      allow(ticket).to receive(:broadcast_replace_to)
+      ticket.update!(subject: "Updated subject")
+      expect(ticket).not_to have_received(:broadcast_replace_to)
+    end
+  end
 end

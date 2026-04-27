@@ -1,6 +1,6 @@
 ---
 name: Tatl - HOA Portal Platform
-overview: "Tatl: a Rails 8 resident portal for HOA management. Doorkeeper OIDC IdP is live for Zammad (tickets) and Discourse (forum) SSO. Native ticketing system built into the portal (Ticket + TicketComment models, Pundit policies, email notifications, demo seed data). Future slices add document/LightRAG sync, n8n chat, and sidecar service wiring. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Sidecar services containerized in later slices. Single monorepo."
+overview: "Tatl: a Rails 8 resident portal for HOA management. Doorkeeper OIDC IdP is live (available for future service integrations). Native ticketing system built into the portal (Ticket + TicketComment models, Pundit policies, email notifications, demo seed data). Role-based modular dashboard for residents and staff. Future slices add announcements, violation tracking, architectural review requests, online payments, document/LightRAG sync, and n8n chat. Rails runs natively on Windows (dev) and AWS EC2 (staging) with systemd + Caddy, backed by RDS Postgres 16 and S3 in us-east-2. SendGrid SMTP for transactional email. Single monorepo."
 todos:
   - id: scaffold_rails
     content: Scaffold Rails 8 app (apps/portal) with PostgreSQL, Tailwind, Solid Queue/Cache/Cable; skip Minitest in favor of RSpec
@@ -33,7 +33,7 @@ todos:
     content: Build ledger-lite accounting (Account, Transaction, DuesAssessment, DuesPayment, BudgetLine) with model + policy specs and treasurer report request specs
     status: completed
   - id: seed_data
-    content: "Demo seed data via rake demo:seed (users, properties, memberships, accounts, transactions, assessments, payments, budget lines, tickets, comments) with demo:teardown"
+    content: Demo seed data via rake demo:seed (users, properties, memberships, accounts, transactions, assessments, payments, budget lines, tickets, comments) with demo:teardown
     status: completed
   - id: native_ticketing
     content: "Native ticketing system: Ticket + TicketComment models, Tickets:: controller namespace, Pundit policies (residents own, staff all), TicketMailer (new ticket, status change, comment notifications), Tailwind UI, demo seed data, full RSpec coverage"
@@ -45,13 +45,13 @@ todos:
     content: Chat UI (Turbo Streams + Solid Cable) proxying to n8n webhook; system specs for chat flow with WebMock-stubbed n8n
     status: pending
   - id: compose_sidecar
-    content: Docker Compose for sidecar services (Zammad, Discourse, n8n, LightRAG) on separate EC2 or same instance
+    content: Docker Compose for sidecar services (n8n, LightRAG) on separate EC2 or same instance. Zammad and Discourse removed -- native ticketing replaces Zammad, announcements replace forum.
     status: pending
   - id: sso_zammad_discourse
-    content: Wire Zammad OIDC and Discourse openid-connect plugin to Rails IdP; verify role mapping in all three envs
-    status: pending
+    content: "Cancelled: Zammad and Discourse integrations removed from scope. Native ticketing replaces Zammad; announcements + tickets cover community communication without a forum."
+    status: cancelled
   - id: webhooks_events
-    content: Inbound webhooks (n8n chat callback, Zammad/Discourse events) with request specs and signed-payload verification
+    content: Inbound webhooks (n8n chat callback) with request specs and signed-payload verification
     status: pending
   - id: cloudflare_dns
     content: Purchase domain, configure Cloudflare DNS records per env, DKIM/SPF/DMARC for SendGrid, Let's Encrypt via Caddy
@@ -59,8 +59,20 @@ todos:
   - id: production_deploy
     content: Provision production EC2, deploy natively with systemd; RDS Multi-AZ with backups, S3 lifecycle, CloudWatch + Sentry; manual tagged deploy from master
     status: pending
+  - id: live_ticket_updates
+    content: "Live ticket updates via Turbo Streams + Solid Cable: real-time status changes and new comments broadcast to all viewers of a ticket"
+    status: pending
+  - id: announcement_banner
+    content: "Announcement banner: simple Announcement model (title, body, active, pinned_until), board creates announcements that display as a banner across the portal for all residents"
+    status: pending
+  - id: global_search
+    content: "Global search: search bar in nav searching across tickets, documents, and properties via PostgreSQL full-text or ILIKE, Turbo Frame for instant results"
+    status: pending
+  - id: dues_reminder_emails
+    content: "Dues reminder emails: Solid Queue recurring job that emails residents with upcoming or overdue dues, using existing mailer patterns"
+    status: pending
   - id: seed_and_docs
-    content: "Write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env). Seed data is complete via demo:seed."
+    content: Write docs/architecture.md, docs/testing.md, docs/runbook.md (per-env). Seed data is complete via demo:seed.
     status: pending
 isProject: false
 ---
@@ -72,46 +84,37 @@ isProject: false
 - **Region:** AWS `us-east-2` (Ohio) - closest AWS region to Tennessee with full service parity.
 - **Repo:** single monorepo (`apps/portal/`, `infra/`, `.github/workflows/`). GitHub: `MattGLut/Tatl`.
 - **Branch model:** `develop` (staging auto-deploy), `master` (production, future). Feature branches PR into `develop`.
-- **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for later slices (sidecar services only).
+- **Dev runtime:** Native on Windows. Ruby 3.4.8, Rails 8.1.3, Bundler 4, Node 22, Git, PostgreSQL 18 (Windows service). Rails dev server runs natively via `ruby bin/rails server`. Docker reserved for future sidecar services (n8n, LightRAG) only.
 - **Local Postgres:** Windows service `postgresql-x64-18`. Role `tatl` (password `tatl_dev`) owns `tatl_development` and `tatl_test`. PG bin (`C:\Program Files\PostgreSQL\18\bin`) on PATH. Credentials in `.env.development` (gitignored).
 - **Staging runtime:** EC2 Ubuntu 24.04, rbenv Ruby 3.4.8, systemd units for Puma + Solid Queue, Caddy reverse proxy. `deploy` user owns `/opt/tatl`. Env vars in `/opt/tatl/.env.production`.
-- **Execution order:** ship in thin slices. Slices 1-7 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document) + Doorkeeper OIDC IdP + Accounting Ledger + Demo Seed Data + Native Ticketing (Ticket, TicketComment). Next = documents/LightRAG, then chat/n8n, sidecar services.
+- **Execution order:** ship in thin slices. Slices 1-7 (complete) = Rails foundation + Devise + Pundit + RSpec + CI/CD + AWS staging + SendGrid email + core domain models (Property, Membership, Document) + Doorkeeper OIDC IdP + Accounting Ledger + Demo Seed Data + Native Ticketing (Ticket, TicketComment) + Role-based Dashboard. Next = announcements, violation tracking, ARB requests, online payments, meeting minutes, then documents/LightRAG, chat/n8n.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     User((Resident / Board))
-    Rails[Rails 8 Portal<br/>Doorkeeper OIDC IdP<br/>Accounting Ledger<br/>Docs Library]
+    Rails[Rails 8 Portal<br/>Doorkeeper OIDC IdP<br/>Accounting Ledger<br/>Tickets / Docs]
     PG[(PostgreSQL)]
-    Zammad[Zammad<br/>Tickets]
-    Discourse[Discourse<br/>Forum]
     N8N[n8n<br/>Chat Agents]
     LightRAG[LightRAG<br/>Knowledge Graph]
 
     User --> Rails
-    User -->|SSO| Zammad
-    User -->|SSO| Discourse
     Rails --- PG
-    Zammad -->|OIDC| Rails
-    Discourse -->|OIDC| Rails
     Rails -->|chat webhook| N8N
     N8N -->|query| LightRAG
     Rails -->|policy docs sync| LightRAG
-    Zammad -.ticket events.-> N8N
 ```
 
 
 
 ## Stack
 
-- **Rails 8** (Hotwire/Turbo, Stimulus, Propshaft, Solid Queue/Cache/Cable, importmap or esbuild)
-- **PostgreSQL 16** - separate logical DBs per service (portal, zammad, discourse)
-- **Zammad** (latest) - self-hosted OSS helpdesk (Rails-based), OIDC client
-- **Discourse** (latest) - forum, OIDC client via `discourse-openid-connect` plugin
-- **n8n** - workflow/chat agent runtime
-- **LightRAG** (HKUDS) - knowledge graph + retrieval API
-- **Docker Compose** (future) - for sidecar services (Zammad, Discourse, n8n, LightRAG) only; Rails runs natively
+- **Rails 8** (Hotwire/Turbo, Stimulus, Propshaft, Solid Queue/Cache/Cable, importmap)
+- **PostgreSQL 16** (managed via RDS in staging/production)
+- **n8n** (future) - workflow/chat agent runtime
+- **LightRAG** (future, HKUDS) - knowledge graph + retrieval API
+- **Docker Compose** (future) - for sidecar services (n8n, LightRAG) only; Rails runs natively
 - **AWS** - EC2 hosts Rails natively via systemd; RDS Postgres 16 (managed); S3 for Active Storage; no ECR needed (no Docker for Rails)
 - **Caddy** - lightweight reverse proxy on EC2, port 80 -> localhost:3000 (HTTPS via Let's Encrypt when domain is ready)
 - **SendGrid** - transactional email (Action Mailer SMTP) for Devise confirmations/resets, dues notices, ticket and chat notifications
@@ -146,7 +149,7 @@ Controllers / namespaces:
 - `Accounting::`* - admin/treasurer tools, reports
 - `Chat::`* - chat UI -> POSTs to n8n webhook, streams reply via Turbo Streams
 - `Oauth::`* - mounted from Doorkeeper
-- `Webhooks::`* - receive events from Zammad/Discourse/n8n
+- `Webhooks::`* - receive events from n8n
 
 Key gems (runtime):
 
@@ -155,7 +158,7 @@ Key gems (runtime):
 - `pundit` for role-based authorization (every controller `include Pundit::Authorization`, `after_action :verify_authorized` in admin namespaces)
 - `pagy`, `view_component`, `tailwindcss-rails`
 - `money-rails` for currency, `groupdate` + `chartkick` for reports
-- `httpx` or `faraday` for service clients (Zammad, Discourse, n8n, LightRAG)
+- `httpx` or `faraday` for service clients (n8n, LightRAG)
 - `dotenv-rails` (dev/test only), `lockbox` for any sensitive fields
 - `lograge`, `sentry-ruby` + `sentry-rails` for prod observability
 
@@ -164,7 +167,7 @@ Key gems (test/dev):
 - `rspec-rails`, `factory_bot_rails`, `faker`
 - `shoulda-matchers`, `rails-controller-testing`
 - `capybara`, `cuprite` (headless Chrome via CDP) for system specs
-- `webmock`, `vcr` for HTTP isolation (n8n, LightRAG, Zammad, Discourse)
+- `webmock`, `vcr` for HTTP isolation (n8n, LightRAG)
 - `pundit-matchers` for policy specs
 - `simplecov` (with branch coverage) - fail CI under threshold
 - `rubocop`, `rubocop-rails`, `rubocop-rspec`, `rubocop-performance`, `erb_lint`
@@ -179,7 +182,7 @@ Layout under `apps/portal/spec/`:
 - `requests/` - controller-level: portal, accounting, oauth (OIDC discovery/JWKS/userinfo), webhooks
 - `system/` - end-to-end Capybara + Cuprite (login, dues payment flow, document upload, chat round-trip)
 - `jobs/` - LightRAG sync, chat dispatch (with VCR cassettes)
-- `services/` - clients for Zammad/Discourse/n8n/LightRAG (WebMock-stubbed)
+- `services/` - clients for n8n/LightRAG (WebMock-stubbed)
 - `support/` - shared contexts (`sign_in_as(role)`), VCR config, factories
 
 Conventions:
@@ -229,7 +232,7 @@ Configuration approach:
 
 - Staging/production: `/opt/tatl/.env.production` sourced by `deploy.sh` before Rails commands
 - Secrets not in the repo; env vars supplied via the `.env.production` file on the server and GitHub Secrets for CI/CD
-- No Docker for the Rails app; sidecar services (Zammad, Discourse, n8n, LightRAG) will be containerized in later slices
+- No Docker for the Rails app; sidecar services (n8n, LightRAG) will be containerized in later slices
 
 ## Email (SendGrid)
 
@@ -277,20 +280,14 @@ Rails is now a full OIDC Identity Provider via Doorkeeper 5.9 + doorkeeper-openi
 - Auth code grant flow only (no implicit), RS256 JWT signing, refresh tokens enabled, 1-hour access token expiry.
 - Signing key: ephemeral in dev/test, persistent via `OIDC_SIGNING_KEY` env var in staging/production. Generate with `rake oidc:generate_signing_key`.
 - Claims: `sub`, `iss`, `email`, `email_verified`, `name`, `given_name`, `family_name`, and custom `roles` (in both ID token and UserInfo).
-- OAuth apps for Zammad and Discourse can be seeded via `rake oidc:seed_applications` (placeholder redirect URIs until those services are deployed).
-
-**Remaining (future slices):**
-1. Discourse `discourse-openid-connect` plugin configured with the above endpoints.
-2. Zammad configured via Admin > Security > Third-party > OIDC pointing at the same endpoints.
-3. Verify role mapping (admin/board -> elevated groups) in all three envs.
+- OAuth apps can be seeded via `rake oidc:seed_applications`. The OIDC IdP is ready for any future service that supports OIDC client auth.
 
 ## RAG / Chat Path
 
 - **Indexing:** When a `Document` is created/updated, an Active Job posts the file to LightRAG's `/documents` insert endpoint. Sync state stored on the model (`pending`, `indexed`, `failed`, `last_indexed_at`).
 - **Chat:** `Chat::MessagesController#create` persists the user's message, then calls an n8n webhook (`/webhook/hoa-chat`) with `{session_id, user_id, role, query}`. n8n workflow:
   1. Calls LightRAG `/query` (mode: `hybrid`)
-  2. Optionally pulls context from Zammad/Discourse APIs
-  3. Calls the LLM and posts the streamed reply back to a Rails callback URL (`/webhooks/n8n/chat`)
+  2. Calls the LLM and posts the streamed reply back to a Rails callback URL (`/webhooks/n8n/chat`)
 - Rails broadcasts the reply via Turbo Streams (Solid Cable) to the chat UI.
 
 ## Accounting (ledger-lite)
@@ -302,10 +299,8 @@ Rails is now a full OIDC Identity Provider via Doorkeeper 5.9 + doorkeeper-openi
 
 ## Sidecar Services (future, Docker Compose)
 
-- `zammad-railsserver`, `zammad-websocket`, `zammad-scheduler`, `zammad-elasticsearch`, `zammad-memcached`
-- `discourse` + `discourse-redis`
-- `n8n`
-- `lightrag` (HKUDS `lightrag-server` image)
+- `n8n` - workflow/chat agent runtime
+- `lightrag` (HKUDS `lightrag-server` image) - knowledge graph + retrieval API
 - May run on the same EC2 or a dedicated instance depending on resource needs for ~200 users
 
 ## Repo Layout

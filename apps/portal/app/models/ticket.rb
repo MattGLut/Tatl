@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 class Ticket < ApplicationRecord
+  include ActionView::RecordIdentifier
+
   belongs_to :user
   belongs_to :property, optional: true
 
   has_many :ticket_comments, dependent: :destroy
+
+  after_update_commit :broadcast_header_update, if: :saved_change_to_status_or_priority?
 
   enum :category, {
     maintenance: 0,
@@ -49,5 +53,20 @@ class Ticket < ApplicationRecord
 
   def reopen!
     update!(status: :open, closed_at: nil)
+  end
+
+  private
+
+  def saved_change_to_status_or_priority?
+    saved_change_to_status? || saved_change_to_priority?
+  end
+
+  def broadcast_header_update
+    broadcast_replace_to(
+      self,
+      target: dom_id(self, :header),
+      partial: "tickets/tickets/ticket_header",
+      locals: { ticket: self }
+    )
   end
 end

@@ -4,7 +4,7 @@ A resident portal for HOA policies, accounting, tickets, and a knowledge-graph c
 
 Repo: <https://github.com/MattGLut/Tatl>
 
-This monorepo is being built in thin slices. Slice 1 is the Rails portal foundation. Later slices add Doorkeeper/OIDC, accounting, document indexing into LightRAG, n8n-driven chat, Zammad and Discourse integrations, and AWS deployment.
+This monorepo is being built in thin slices. The portal foundation, authentication, authorization, accounting ledger, native ticketing, and AWS staging deployment are complete. Later slices add announcements, violation tracking, architectural review requests, online payments, document search (LightRAG), and an AI chat assistant (n8n).
 
 ## Repository layout
 
@@ -51,6 +51,7 @@ Rails 8.1 app at `apps/portal/` with:
   - `TicketComment` (threaded comments with optional file attachments)
   - Tickets namespace with Pundit policies: residents submit/view own, staff manage all
   - TicketMailer notifications (new ticket to admin, status changes to resident, comment replies)
+- **Role-based modular dashboard:** guest landing page, resident view (my properties, my tickets, recent documents, outstanding dues), staff view (open ticket counts, all documents, treasurer/admin callouts). Composed from `home/dashboards/` partials driven by Pundit policy scopes.
 - SendGrid SMTP for transactional email in staging/production (confirmations, password resets, unlocks)
 - Letter Opener Web at `/letters` for development emails
 - RSpec test suite with FactoryBot, shoulda-matchers, pundit-matchers, Capybara + Cuprite, WebMock, VCR, SimpleCov
@@ -196,11 +197,25 @@ When CI passes on `develop`, `.github/workflows/deploy-staging.yml` SSHs to the 
 
 Devise sends confirmation, password reset, unlock, email change, and password change emails automatically.
 
-## Roadmap (later slices)
+## Roadmap
 
-1. Document upload with LightRAG sync job
-2. Chat UI proxied to n8n with Turbo Streams
-3. Docker Compose for sidecar services: Zammad, Discourse, n8n, LightRAG
-4. Zammad and Discourse SSO via Tatl OIDC
-5. Production environment: EC2 + RDS + S3 + Cloudflare DNS + SendGrid (in `us-east-2`)
-6. Deploy-to-prod workflow (merge `develop` -> `master`)
+### Next up -- core HOA features
+
+1. **Announcements** -- board-posted news feed with optional email blast to residents
+2. **Violation tracking** -- log violations against properties, warning/fine/resolved workflow
+3. **Architectural review requests (ARB)** -- resident submits modification request with photos, board reviews and approves/denies
+4. **Online dues payment** -- Stripe integration for resident self-service payment, auto-reconciles against assessments
+5. **Meeting minutes & calendar** -- schedule board meetings, post agendas, publish approved minutes
+
+### Later -- quality of life
+
+6. **Common area reservations** -- clubhouse/pool/pavilion booking with calendar and conflict detection
+7. **Bulk notifications** -- targeted email to resident groups (all, by street, by property)
+8. **Voting / polls** -- one-vote-per-property balloting for elections and bylaw amendments
+9. **Resident directory** -- opt-in contact directory with privacy controls
+
+### Infrastructure & AI
+
+10. **Document search (LightRAG)** -- AI-powered search across CC&Rs, bylaws, and meeting minutes
+11. **Chat assistant (n8n)** -- natural-language Q&A against the document knowledge base via Turbo Streams
+12. **Production environment** -- EC2 + RDS + S3 + Cloudflare DNS + HTTPS + deploy-to-prod workflow
