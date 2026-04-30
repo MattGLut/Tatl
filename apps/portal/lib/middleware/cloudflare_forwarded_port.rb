@@ -22,7 +22,7 @@ module Middleware
     private
 
     def client_forwarded_port(proto)
-      (proto == "https") ? "443" : "80"
+      proto == "https" ? "443" : "80"
     end
   end
 end
