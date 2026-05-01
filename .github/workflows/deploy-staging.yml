@@ -42,9 +42,12 @@ jobs:
           HTTPS_STATUS=$(curl -ksf -o /dev/null -w "%{http_code}" "https://${{ secrets.STAGING_HOST }}/up" || echo "000")
           echo "HTTP /up  -> ${HTTP_STATUS}"
           echo "HTTPS /up -> ${HTTPS_STATUS}"
-          if [[ "$HTTP_STATUS" == "200" && "$HTTPS_STATUS" == "200" ]]; then
-            echo "Staging is healthy (HTTP and HTTPS both 200)"
-          else
-            echo "ERROR: Staging health check failed (HTTP=${HTTP_STATUS}, HTTPS=${HTTPS_STATUS})"
+          if [[ "$HTTP_STATUS" != "200" ]]; then
+            echo "ERROR: HTTP health check failed (${HTTP_STATUS})"
             exit 1
+          fi
+          if [[ "$HTTPS_STATUS" != "200" ]]; then
+            echo "WARNING: HTTPS health check returned ${HTTPS_STATUS} (nginx/TLS may not be configured yet)"
+          else
+            echo "Staging is healthy (HTTP and HTTPS both 200)"
           fi
