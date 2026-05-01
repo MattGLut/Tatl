@@ -56,6 +56,10 @@ bin/rails db:migrate
 echo "── Precompiling assets ──"
 bin/rails assets:precompile
 
+echo "── Syncing nginx config ──"
+sudo cp "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
+sudo nginx -t && sudo systemctl reload nginx
+
 echo "── Restarting services ──"
 sudo systemctl restart tatl-web
 sudo systemctl restart tatl-worker

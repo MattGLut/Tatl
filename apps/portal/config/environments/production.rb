@@ -24,11 +24,10 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # SSL is handled by Caddy when a domain is configured.
-  # Enable these once HTTPS is live:
-  # config.assume_ssl = true
-  # config.force_ssl = true
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # SSL is terminated by nginx with a Cloudflare Origin Certificate.
+  config.assume_ssl = true
+  config.force_ssl = true
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [:request_id]

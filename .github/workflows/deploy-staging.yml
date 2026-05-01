@@ -38,10 +38,13 @@ jobs:
       - name: Smoke test
         run: |
           sleep 5
-          STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "http://${{ secrets.STAGING_HOST }}/up" || echo "000")
-          if [[ "$STATUS" == "200" ]]; then
-            echo "Staging is healthy (HTTP 200)"
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "http://${{ secrets.STAGING_HOST }}/up" || echo "000")
+          HTTPS_STATUS=$(curl -ksf -o /dev/null -w "%{http_code}" "https://${{ secrets.STAGING_HOST }}/up" || echo "000")
+          echo "HTTP /up  -> ${HTTP_STATUS}"
+          echo "HTTPS /up -> ${HTTPS_STATUS}"
+          if [[ "$HTTP_STATUS" == "200" && "$HTTPS_STATUS" == "200" ]]; then
+            echo "Staging is healthy (HTTP and HTTPS both 200)"
           else
-            echo "ERROR: Staging health check returned HTTP ${STATUS}"
+            echo "ERROR: Staging health check failed (HTTP=${HTTP_STATUS}, HTTPS=${HTTPS_STATUS})"
             exit 1
           fi

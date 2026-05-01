@@ -28,15 +28,9 @@ apt-get install -y --no-install-recommends \
   postgresql-client \
   autoconf bison rustc
 
-# ── Caddy ────────────────────────────────────────────────────────────
-echo "── Installing Caddy ──"
-if ! command -v caddy &>/dev/null; then
-  apt-get install -y debian-keyring debian-archive-keyring apt-transport-https
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-  apt-get update -qq
-  apt-get install -y caddy
-fi
+# ── nginx ─────────────────────────────────────────────────────────────
+echo "── Installing nginx ──"
+apt-get install -y nginx
 
 # ── Deploy user ──────────────────────────────────────────────────────
 echo "── Creating deploy user ──"
@@ -47,6 +41,8 @@ fi
 # Let deploy user restart services without a password
 cat > /etc/sudoers.d/tatl-deploy <<SUDOERS
 ${DEPLOY_USER} ALL=(ALL) NOPASSWD: /bin/systemctl restart tatl-web, /bin/systemctl restart tatl-worker, /bin/systemctl restart tatl-web tatl-worker
+${DEPLOY_USER} ALL=(ALL) NOPASSWD: /usr/sbin/nginx -t
+${DEPLOY_USER} ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx
 ${DEPLOY_USER} ALL=(ALL) NOPASSWD: /bin/journalctl *
 SUDOERS
 chmod 0440 /etc/sudoers.d/tatl-deploy
@@ -106,13 +102,22 @@ cp "${APP_ROOT}/infra/systemd/tatl-worker.service" /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable tatl-web tatl-worker
 
-# ── Configure Caddy ─────────────────────────────────────────────────
-echo "── Configuring Caddy ──"
-cp "${APP_ROOT}/infra/caddy/Caddyfile.staging" /etc/caddy/Caddyfile
-mkdir -p /var/log/caddy
-chown caddy:caddy /var/log/caddy
-systemctl restart caddy
-systemctl enable caddy
+# ── Configure nginx ─────────────────────────────────────────────────
+echo "── Configuring nginx ──"
+mkdir -p /etc/ssl/cloudflare
+cp "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
+ln -sf /etc/nginx/sites-available/neiqhbor.conf /etc/nginx/sites-enabled/neiqhbor.conf
+rm -f /etc/nginx/sites-enabled/default
+
+if [[ -f /etc/ssl/cloudflare/origin.pem && -f /etc/ssl/cloudflare/origin-key.pem ]]; then
+  nginx -t && systemctl restart nginx
+  systemctl enable nginx
+else
+  echo "WARNING: Cloudflare Origin Certificate not found."
+  echo "  Place your cert at /etc/ssl/cloudflare/origin.pem"
+  echo "  Place your key  at /etc/ssl/cloudflare/origin-key.pem"
+  echo "  Then run: sudo nginx -t && sudo systemctl restart nginx"
+fi
 
 # ── Summary ──────────────────────────────────────────────────────────
 echo ""
@@ -122,7 +127,7 @@ echo "============================================================"
 echo ""
 echo "Ruby: $(sudo -u ${DEPLOY_USER} ${RBENV_ROOT}/shims/ruby --version)"
 echo "Bundler: $(sudo -u ${DEPLOY_USER} ${RBENV_ROOT}/shims/bundle --version)"
-echo "Caddy: $(caddy version)"
+echo "nginx: $(nginx -v 2>&1)"
 echo ""
 echo "Next steps:"
 echo ""
@@ -153,10 +158,16 @@ echo "  2. Set file ownership:"
 echo "     sudo chown deploy:deploy /opt/tatl/.env.production"
 echo "     sudo chmod 600 /opt/tatl/.env.production"
 echo ""
-echo "  3. Run the initial deploy:"
+echo "  3. Install the Cloudflare Origin Certificate:"
+echo "     sudo nano /etc/ssl/cloudflare/origin.pem      (paste cert PEM)"
+echo "     sudo nano /etc/ssl/cloudflare/origin-key.pem  (paste key PEM)"
+echo "     sudo chmod 600 /etc/ssl/cloudflare/origin-key.pem"
+echo "     sudo nginx -t && sudo systemctl restart nginx"
+echo ""
+echo "  4. Run the initial deploy:"
 echo "     sudo -u deploy /opt/tatl/infra/scripts/deploy.sh"
 echo ""
-echo "  4. Check it's running:"
+echo "  5. Check it's running:"
 echo "     curl http://localhost:3000/up"
-echo "     curl http://localhost/up  (through Caddy)"
+echo "     curl -k https://localhost/up  (through nginx)"
 echo ""
