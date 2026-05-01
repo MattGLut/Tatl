@@ -105,7 +105,7 @@ systemctl enable tatl-web tatl-worker
 # ── Configure nginx ─────────────────────────────────────────────────
 echo "── Configuring nginx ──"
 mkdir -p /etc/ssl/cloudflare
-cp "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
+ln -sf "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
 ln -sf /etc/nginx/sites-available/neiqhbor.conf /etc/nginx/sites-enabled/neiqhbor.conf
 rm -f /etc/nginx/sites-enabled/default
 
