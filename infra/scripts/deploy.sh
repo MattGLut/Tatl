@@ -57,8 +57,12 @@ echo "── Precompiling assets ──"
 bin/rails assets:precompile
 
 echo "── Syncing nginx config ──"
-sudo cp "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
-sudo nginx -t && sudo systemctl reload nginx
+if command -v nginx &>/dev/null && [[ -f /etc/ssl/cloudflare/origin.pem ]]; then
+  sudo cp "${APP_ROOT}/infra/nginx/neiqhbor.conf" /etc/nginx/sites-available/neiqhbor.conf
+  sudo nginx -t && sudo systemctl reload nginx
+else
+  echo "nginx not yet configured (cert missing or nginx not installed) – skipping reload"
+fi
 
 echo "── Restarting services ──"
 sudo systemctl restart tatl-web
