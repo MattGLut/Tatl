@@ -13,12 +13,12 @@ RSpec.describe "Registration" do
     fill_in "Password confirmation", with: "Tatl-Password-1!"
     click_button "Create account"
 
-    expect(page).to have_content("confirmation link")
+    expect(page).to have_text("confirmation link")
     expect(ActionMailer::Base.deliveries.size).to eq(1)
 
     # Cannot sign in before confirming
     sign_in_via_form(email: "ada@tatl.example", password: "Tatl-Password-1!")
-    expect(page).to have_content("confirm")
+    expect(page).to have_text("confirm")
 
     # Confirm via token from email
     token = extract_token_from_email(:confirmation_token)
@@ -26,26 +26,26 @@ RSpec.describe "Registration" do
 
     # Now sign in succeeds
     sign_in_via_form(email: "ada@tatl.example", password: "Tatl-Password-1!")
-    expect(page).to have_content("Ada Lovelace")
+    expect(page).to have_text("Ada Lovelace")
   end
 
   describe "validation errors" do
     it "shows error when first name is blank" do
       sign_up_via_form(first_name: "", last_name: "Lovelace", email: "ada@tatl.example", password: "Tatl-Password-1!")
-      expect(page).to have_content("First name")
-      expect(page).to have_content("can't be blank")
+      expect(page).to have_text("First name")
+      expect(page).to have_text("can't be blank")
     end
 
     it "shows error when last name is blank" do
       sign_up_via_form(first_name: "Ada", last_name: "", email: "ada@tatl.example", password: "Tatl-Password-1!")
-      expect(page).to have_content("Last name")
-      expect(page).to have_content("can't be blank")
+      expect(page).to have_text("Last name")
+      expect(page).to have_text("can't be blank")
     end
 
     it "shows error when password is too short" do
       sign_up_via_form(first_name: "Ada", last_name: "Lovelace", email: "ada@tatl.example", password: "short")
-      expect(page).to have_content("Password")
-      expect(page).to have_content("too short")
+      expect(page).to have_text("Password")
+      expect(page).to have_text("too short")
     end
 
     it "shows error when passwords do not match" do
@@ -57,16 +57,16 @@ RSpec.describe "Registration" do
       fill_in "Password confirmation", with: "something-else"
       click_button "Create account"
 
-      expect(page).to have_content("Password confirmation")
-      expect(page).to have_content("match")
+      expect(page).to have_text("Password confirmation")
+      expect(page).to have_text("match")
     end
 
     it "shows error when email is already taken" do
       create(:user, email: "ada@tatl.example")
       sign_up_via_form(first_name: "Ada", last_name: "Lovelace", email: "ada@tatl.example",
                        password: "Tatl-Password-1!")
-      expect(page).to have_content("Email")
-      expect(page).to have_content("already been taken")
+      expect(page).to have_text("Email")
+      expect(page).to have_text("already been taken")
     end
   end
 end

@@ -9,14 +9,14 @@ RSpec.describe "Session" do
   it "signs in a confirmed user and shows greeting" do
     sign_in_via_form(email: user.email, password: password)
 
-    expect(page).to have_content("Hi, #{user.display_name}")
+    expect(page).to have_text("Hi, #{user.display_name}")
     expect(page).to have_current_path(root_path)
   end
 
   it "signs out and returns to guest view" do
     sign_in user
     visit root_path
-    expect(page).to have_content("Hi, #{user.display_name}")
+    expect(page).to have_text("Hi, #{user.display_name}")
 
     within "nav[aria-label='Main']" do
       click_button "Sign out"
@@ -31,7 +31,7 @@ RSpec.describe "Session" do
   it "shows error for invalid password" do
     sign_in_via_form(email: user.email, password: "wrong-password")
 
-    expect(page).to have_content("Invalid email or password")
+    expect(page).to have_text("Invalid email or password")
     expect(page).to have_current_path(new_user_session_path)
   end
 
@@ -40,7 +40,7 @@ RSpec.describe "Session" do
 
     sign_in_via_form(email: unconfirmed.email, password: password)
 
-    expect(page).to have_content("confirm")
+    expect(page).to have_text("confirm")
   end
 
   it "displays the remember me checkbox" do

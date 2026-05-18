@@ -6,7 +6,7 @@ RSpec.describe "Home" do
   it "shows welcome content and auth links for guests" do
     visit root_path
 
-    expect(page).to have_content("Welcome to neiQhbor")
+    expect(page).to have_text("Welcome to neiQhbor")
     expect(page).to have_link("Sign in")
     expect(page).to have_link("Sign up")
     expect(page).to have_no_button("Sign out")
@@ -18,9 +18,9 @@ RSpec.describe "Home" do
 
     visit root_path
 
-    expect(page).to have_content("Hi, Ada Lovelace")
-    expect(page).to have_content("Community overview")
-    expect(page).to have_content("Support tickets")
+    expect(page).to have_text("Hi, Ada Lovelace")
+    expect(page).to have_text("Community overview")
+    expect(page).to have_text("Support tickets")
     expect(page).to have_button("Sign out")
     expect(page).to have_no_link("Sign in")
   end
@@ -31,8 +31,8 @@ RSpec.describe "Home" do
 
     visit root_path
 
-    expect(page).to have_content("Your account")
-    expect(page).to have_content("Your tickets")
+    expect(page).to have_text("Your account")
+    expect(page).to have_text("Your tickets")
   end
 
   it "displays notice flash messages" do
