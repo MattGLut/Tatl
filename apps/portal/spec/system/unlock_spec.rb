@@ -10,7 +10,7 @@ RSpec.describe "Account Unlock" do
 
     # One more failed attempt triggers the lock
     sign_in_via_form(email: user.email, password: "wrong-password")
-    expect(page).to have_content("locked")
+    expect(page).to have_text("locked")
     expect(user.reload).to be_access_locked
 
     expect(ActionMailer::Base.deliveries.size).to eq(1)
@@ -23,7 +23,7 @@ RSpec.describe "Account Unlock" do
 
     # Can sign in again
     sign_in_via_form(email: user.email, password: password)
-    expect(page).to have_content("Hi, #{user.display_name}")
+    expect(page).to have_text("Hi, #{user.display_name}")
   end
 
   it "allows requesting unlock instructions for a locked account" do
@@ -34,12 +34,12 @@ RSpec.describe "Account Unlock" do
     fill_in "Email", with: locked_user.email
     click_button "Send unlock instructions"
 
-    expect(page).to have_content("receive an email with instructions")
+    expect(page).to have_text("receive an email with instructions")
     expect(ActionMailer::Base.deliveries.size).to eq(1)
   end
 
   it "shows error for an invalid unlock token" do
     visit user_unlock_path(unlock_token: "bogus-token")
-    expect(page).to have_content("Unlock token")
+    expect(page).to have_text("Unlock token")
   end
 end

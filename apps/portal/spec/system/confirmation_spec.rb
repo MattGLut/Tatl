@@ -11,7 +11,7 @@ RSpec.describe "Confirmation" do
     fill_in "Email", with: unconfirmed.email
     click_button "Resend confirmation"
 
-    expect(page).to have_content("receive an email with instructions")
+    expect(page).to have_text("receive an email with instructions")
     expect(ActionMailer::Base.deliveries.size).to eq(1)
 
     token = extract_token_from_email(:confirmation_token)
@@ -23,13 +23,13 @@ RSpec.describe "Confirmation" do
 
   it "shows error for an invalid confirmation token" do
     visit user_confirmation_path(confirmation_token: "bogus-token")
-    expect(page).to have_content("Confirmation token")
+    expect(page).to have_text("Confirmation token")
   end
 
   it "navigates to resend confirmation from sign-in page" do
     visit new_user_session_path
     click_link "Didn't receive confirmation instructions?"
 
-    expect(page).to have_content("Resend confirmation email")
+    expect(page).to have_text("Resend confirmation email")
   end
 end

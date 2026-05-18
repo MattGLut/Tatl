@@ -17,7 +17,7 @@ RSpec.describe "Profile" do
     end
 
     expect(page).to have_current_path(edit_user_registration_path)
-    expect(page).to have_content("Account settings")
+    expect(page).to have_text("Account settings")
   end
 
   it "updates first and last name without requiring the current password" do
@@ -27,7 +27,7 @@ RSpec.describe "Profile" do
     fill_in "Last name", with: "Hopper"
     click_button "Save profile"
 
-    expect(page).to have_content("Hi, Grace Hopper")
+    expect(page).to have_text("Hi, Grace Hopper")
     expect(user.reload.first_name).to eq("Grace")
   end
 
@@ -72,7 +72,7 @@ RSpec.describe "Profile" do
       click_button "Sign out"
     end
     sign_in_via_form(email: user.email, password: "Brand-New-Pass-1!")
-    expect(page).to have_content("Hi, Ada Lovelace")
+    expect(page).to have_text("Hi, Ada Lovelace")
   end
 
   it "rejects a password change without the current password" do
@@ -84,8 +84,8 @@ RSpec.describe "Profile" do
       click_button "Update password"
     end
 
-    expect(page).to have_content("Current password")
-    expect(page).to have_content("can't be blank")
+    expect(page).to have_text("Current password")
+    expect(page).to have_text("can't be blank")
   end
 
   it "shows pending reconfirmation when email changes with the current password" do
@@ -103,7 +103,7 @@ RSpec.describe "Profile" do
   it "does not expose a delete-account affordance" do
     visit edit_user_registration_path
 
-    expect(page).to have_content("Account settings")
+    expect(page).to have_text("Account settings")
     expect(page).to have_no_button("Delete my account")
     expect(page).to have_no_link("Delete my account")
   end

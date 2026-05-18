@@ -13,9 +13,9 @@ RSpec.describe "Home dashboard" do
 
     visit root_path
 
-    expect(page).to have_content("Sunset View 1A")
-    expect(page).to have_content("Gate not closing")
-    expect(page).to have_content("Parking policy")
+    expect(page).to have_text("Sunset View 1A")
+    expect(page).to have_text("Gate not closing")
+    expect(page).to have_text("Parking policy")
     expect(page).to have_link("View all tickets", href: tickets_tickets_path)
 
     click_link "View all tickets"
@@ -46,10 +46,10 @@ RSpec.describe "Home dashboard" do
     sign_in create(:user, :board, first_name: "Boardy", last_name: "Member")
 
     visit root_path
-    expect(page).to have_content("Community overview")
-    expect(page).to have_content("1 open or in progress")
-    expect(page).to have_content("Patio inspection request")
-    expect(page).to have_content("Pat")
+    expect(page).to have_text("Community overview")
+    expect(page).to have_text("1 open or in progress")
+    expect(page).to have_text("Patio inspection request")
+    expect(page).to have_text("Pat")
   end
 
   it "shows the treasurer callout to treasurers" do
@@ -57,7 +57,7 @@ RSpec.describe "Home dashboard" do
 
     visit root_path
 
-    expect(page).to have_content("Accounting & reporting")
+    expect(page).to have_text("Accounting & reporting")
     expect(page).to have_link("Dues aging", href: accounting_reports_dues_aging_path)
   end
 
@@ -66,7 +66,7 @@ RSpec.describe "Home dashboard" do
 
     visit root_path
 
-    expect(page).to have_content("Support tickets")
+    expect(page).to have_text("Support tickets")
     expect(page).to have_no_content("Accounting & reporting")
   end
 end
