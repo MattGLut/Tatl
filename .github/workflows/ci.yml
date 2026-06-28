@@ -17,7 +17,7 @@ jobs:
       run:
         working-directory: apps/portal
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -37,7 +37,7 @@ jobs:
       run:
         working-directory: apps/portal
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -54,7 +54,7 @@ jobs:
       run:
         working-directory: apps/portal
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -95,7 +95,7 @@ jobs:
       TATL_DB_PASSWORD: tatl_test
       TATL_TEST_DB_NAME: tatl_test
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
