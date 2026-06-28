@@ -52,7 +52,7 @@ module Accounting
     private
 
     def set_account
-      @account = authorize Account.find(params[:id]), policy_class: Accounting::AccountPolicy
+      @account = authorize Account.find(params.expect(:id)), policy_class: Accounting::AccountPolicy
     end
 
     def account_params

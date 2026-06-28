@@ -57,7 +57,7 @@ module Accounting
     private
 
     def set_transaction
-      @transaction = authorize Transaction.find(params[:id]), policy_class: Accounting::TransactionPolicy
+      @transaction = authorize Transaction.find(params.expect(:id)), policy_class: Accounting::TransactionPolicy
     end
 
     def transaction_params

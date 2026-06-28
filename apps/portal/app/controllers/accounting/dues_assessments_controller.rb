@@ -59,7 +59,7 @@ module Accounting
     private
 
     def set_assessment
-      @assessment = authorize DuesAssessment.find(params[:id]), policy_class: Accounting::DuesAssessmentPolicy
+      @assessment = authorize DuesAssessment.find(params.expect(:id)), policy_class: Accounting::DuesAssessmentPolicy
     end
 
     def assessment_params

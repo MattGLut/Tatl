@@ -58,7 +58,7 @@ module Accounting
     private
 
     def set_budget_line
-      @budget_line = authorize BudgetLine.find(params[:id]), policy_class: Accounting::BudgetLinePolicy
+      @budget_line = authorize BudgetLine.find(params.expect(:id)), policy_class: Accounting::BudgetLinePolicy
     end
 
     def budget_line_params

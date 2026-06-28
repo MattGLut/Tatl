@@ -62,7 +62,7 @@ module Tickets
     private
 
     def set_ticket
-      @ticket = authorize Ticket.find(params[:id])
+      @ticket = authorize Ticket.find(params.expect(:id))
     end
 
     def ticket_params

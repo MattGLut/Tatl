@@ -43,7 +43,7 @@ class PropertiesController < ApplicationController
   private
 
   def set_property
-    @property = authorize Property.find(params[:id])
+    @property = authorize Property.find(params.expect(:id))
   end
 
   def property_params

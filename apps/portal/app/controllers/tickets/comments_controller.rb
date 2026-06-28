@@ -27,7 +27,7 @@ module Tickets
     end
 
     def set_ticket
-      @ticket = Ticket.find(params[:ticket_id])
+      @ticket = Ticket.find(params.expect(:ticket_id))
     end
 
     def comment_params

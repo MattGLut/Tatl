@@ -45,7 +45,7 @@ class DocumentsController < ApplicationController
   private
 
   def set_document
-    @document = authorize Document.find(params[:id])
+    @document = authorize Document.find(params.expect(:id))
   end
 
   def document_params

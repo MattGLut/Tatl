@@ -38,11 +38,11 @@ class MembershipsController < ApplicationController
   private
 
   def set_property
-    @property = Property.find(params[:property_id])
+    @property = Property.find(params.expect(:property_id))
   end
 
   def set_membership
-    @membership = authorize @property.memberships.find(params[:id])
+    @membership = authorize @property.memberships.find(params.expect(:id))
   end
 
   def membership_params

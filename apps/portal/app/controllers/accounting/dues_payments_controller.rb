@@ -21,7 +21,7 @@ module Accounting
     end
 
     def destroy
-      @payment = authorize @assessment.dues_payments.find(params[:id]), policy_class: Accounting::DuesPaymentPolicy
+      @payment = authorize @assessment.dues_payments.find(params.expect(:id)), policy_class: Accounting::DuesPaymentPolicy
       @payment.destroy!
       redirect_to accounting_dues_assessment_path(@assessment), notice: "Payment was successfully removed.",
                                                                 status: :see_other
@@ -30,7 +30,7 @@ module Accounting
     private
 
     def set_assessment
-      @assessment = DuesAssessment.find(params[:dues_assessment_id])
+      @assessment = DuesAssessment.find(params.expect(:dues_assessment_id))
     end
 
     def payment_params

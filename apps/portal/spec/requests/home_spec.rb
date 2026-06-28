@@ -7,7 +7,7 @@ RSpec.describe "Home" do
     it "renders the landing page for guests" do
       get root_path
       expect(response).to have_http_status(:ok)
-      heading_text = Nokogiri::HTML(response.body).at_css("h1")&.text
+      heading_text = response.parsed_body.at_css("h1")&.text
       expect(heading_text).to include("Welcome to neiQhbor")
       expect(response.body).to include("Sign up")
       expect(response.body).not_to include("Community overview")
