@@ -67,6 +67,6 @@ RSpec.describe "Home dashboard" do
     visit root_path
 
     expect(page).to have_text("Support tickets")
-    expect(page).to have_no_content("Accounting & reporting")
+    expect(page).to have_no_text("Accounting & reporting")
   end
 end

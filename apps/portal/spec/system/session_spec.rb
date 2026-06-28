@@ -25,7 +25,7 @@ RSpec.describe "Session" do
     expect(page).to have_current_path(root_path)
     expect(page).to have_link("Sign in")
     expect(page).to have_link("Sign up")
-    expect(page).to have_no_content("Hi, #{user.display_name}")
+    expect(page).to have_no_text("Hi, #{user.display_name}")
   end
 
   it "shows error for invalid password" do
