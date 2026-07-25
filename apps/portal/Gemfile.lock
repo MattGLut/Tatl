@@ -133,7 +133,7 @@ GEM
     docile (1.4.1)
     doorkeeper (5.9.3)
       railties (>= 5)
-    doorkeeper-openid_connect (1.10.3)
+    doorkeeper-openid_connect (1.10.5)
       doorkeeper (>= 5.5, < 6.0)
       jwt (>= 2.5)
       ostruct (>= 0.5)
@@ -605,7 +605,7 @@ CHECKSUMS
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
   doorkeeper (5.9.3) sha256=e6d120235bd134494bd02d08e8063c994fc1a58a681285077e671529bfc5d90b
-  doorkeeper-openid_connect (1.10.3) sha256=73d5194c36e86abe8a46b1a311286eacaad3fc76236b8c4d4eb8cc371eee58fa
+  doorkeeper-openid_connect (1.10.5) sha256=1382e5573e2fdfef2b16ce9969af777e61496b8e9cff0197789d8bf9c12efb02
   dotenv (3.2.0) sha256=e375b83121ea7ca4ce20f214740076129ab8514cd81378161f11c03853fe619d
   dotenv-rails (3.2.0) sha256=657e25554ba622ffc95d8c4f1670286510f47f2edda9f68293c3f661b303beab
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
