@@ -61,6 +61,8 @@ class User < ApplicationRecord
     admin? || board? || treasurer?
   end
 
+  scope :announcement_email_enabled, -> { where(announcement_emails_enabled: true) }
+
   private
 
   def acceptable_avatar

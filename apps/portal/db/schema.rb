@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_150130) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_27_021200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_150130) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "pinned_until"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_announcements_on_active"
+    t.index ["pinned_until"], name: "index_announcements_on_pinned_until"
   end
 
   create_table "budget_lines", force: :cascade do |t|
@@ -354,6 +365,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_150130) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "announcement_emails_enabled", default: true, null: false
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
